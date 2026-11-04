@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   addWorkspaceAdmin,
+  createWorkspace,
   createWorkspaceScimToken,
   deleteWorkspace,
   getWorkspace,
@@ -20,6 +21,17 @@ import { qk } from '@/services/queryKeys';
 
 export function useWorkspacesQuery() {
   return useQuery({ queryKey: qk.workspaces, queryFn: () => listWorkspaces() });
+}
+
+export function useCreateWorkspace() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { name: string }) => createWorkspace(input),
+    onSuccess: (workspace) => {
+      qc.setQueryData(qk.workspace(workspace.id), workspace);
+      void qc.invalidateQueries({ queryKey: qk.workspaces });
+    },
+  });
 }
 
 export function useWorkspaceQuery(workspaceId: number) {

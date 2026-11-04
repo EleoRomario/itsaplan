@@ -69,11 +69,10 @@ export async function getRunLimit(workspaceId: number, limits: Limits): Promise<
   return tightestLimit(row?.own ?? 0, limits.maxConcurrentRuns);
 }
 
-// How many workspaces one person may own. A self-hosted instance gives each person one;
-// a hosted build raises it. 0 reads as unlimited, as in Limits.
-let ownedWorkspaceLimit = 1;
+// How many workspaces one person may own. 0 reads as unlimited.
+let ownedWorkspaceLimit = 0;
 
-export function setOwnedWorkspaceLimit(next = 1): void {
+export function setOwnedWorkspaceLimit(next = 0): void {
   ownedWorkspaceLimit = next;
 }
 

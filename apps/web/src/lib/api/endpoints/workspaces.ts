@@ -50,6 +50,12 @@ export interface WorkspaceManager extends WorkspacePerson {
 
 export const listWorkspaces = () => request<WorkspaceSummary[]>('/workspaces');
 
+export const createWorkspace = (input: { name: string }) =>
+  request<Workspace>('/workspaces', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+
 export const getWorkspace = (workspaceId: number) =>
   request<Workspace>(`/workspaces/${workspaceId}`);
 

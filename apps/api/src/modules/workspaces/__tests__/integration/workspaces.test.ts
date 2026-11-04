@@ -446,10 +446,11 @@ describe('workspaces', () => {
   });
 
   describe('createOwnWorkspace', () => {
-    afterEach(() => setOwnedWorkspaceLimit());
+    afterEach(() => setOwnedWorkspaceLimit(0));
 
-    it('keeps a person to one workspace unless the limit is raised', async () => {
+    it('keeps a person to one workspace when the limit is set', async () => {
       await setup();
+      setOwnedWorkspaceLimit(1);
       const person = await signUpTestUser({ team: false });
       const account = { id: person.userId, role: 'user' };
 
@@ -458,6 +459,31 @@ describe('workspaces', () => {
       );
       setOwnedWorkspaceLimit(0);
       expect(await createOwnWorkspace(account, 'Second')).toBeNumber();
+    });
+
+    it('creates a workspace over HTTP', async () => {
+      await setup();
+      const person = await signUpTestUser({ team: false });
+      const client = authedApi(person.cookie);
+
+      const res = await client.workspaces.post({ name: 'Acme Corp' });
+      expect(res.status).toBe(201);
+      expect(res.data).toMatchObject({
+        name: 'Acme Corp',
+        role: 'owner',
+      });
+
+      const list = await client.workspaces.get();
+      expect(list.data!.some((w) => w.name === 'Acme Corp')).toBe(true);
+    });
+
+    it('rejects an empty workspace name', async () => {
+      await setup();
+      const person = await signUpTestUser({ team: false });
+      const client = authedApi(person.cookie);
+
+      const res = await client.workspaces.post({ name: '   ' });
+      expect(res.status).toBe(400);
     });
 
     it('leaves creation to the instance owner while personal workspaces are off', async () => {
