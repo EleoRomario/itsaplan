@@ -82,4 +82,61 @@ export const WorkspaceManagerListResponse = t.Array(t.Object({ ...person, role: 
 
 export const WorkspaceCandidateListResponse = t.Array(t.Object(person));
 
+export const WorkspaceDashboardResponse = t.Object({
+  totals: t.Object({
+    teams: t.Number(),
+    projects: t.Number(),
+    people: t.Number(),
+    agents: t.Number(),
+    openIssues: t.Number(),
+    completedIssues: t.Number(),
+    totalIssues: t.Number(),
+    storageBytes: t.Number(),
+  }),
+  projects: t.Array(
+    t.Object({
+      id: t.Number(),
+      teamId: t.Number(),
+      teamName: t.String(),
+      teamRef: t.String(),
+      name: t.String(),
+      key: t.String(),
+      ref: t.String(),
+      createdAt: t.String(),
+      openIssues: t.Number(),
+      inProgressIssues: t.Number(),
+      completedIssues: t.Number(),
+      totalIssues: t.Number(),
+      progressPercentage: t.Number(),
+      activeCycle: t.Nullable(
+        t.Object({
+          id: t.Number(),
+          name: t.String(),
+          startDate: t.String(),
+          endDate: t.String(),
+          status: t.String(),
+        }),
+      ),
+      activeInitiative: t.Nullable(
+        t.Object({
+          id: t.Number(),
+          title: t.String(),
+          startDate: t.Nullable(t.String()),
+          targetDate: t.Nullable(t.String()),
+          status: t.String(),
+        }),
+      ),
+    }),
+  ),
+  teams: t.Array(
+    t.Object({
+      id: t.Number(),
+      name: t.String(),
+      ref: t.String(),
+      memberCount: t.Number(),
+      projectCount: t.Number(),
+    }),
+  ),
+});
+
 export const scimGroupParams = t.Object({ workspaceId: t.Numeric(), groupId: t.String() });

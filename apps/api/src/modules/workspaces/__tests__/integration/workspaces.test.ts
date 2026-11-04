@@ -486,6 +486,24 @@ describe('workspaces', () => {
       expect(res.status).toBe(400);
     });
 
+    it('returns workspace dashboard with totals, projects and teams', async () => {
+      const { ownerApi, workspaceId } = await setup();
+      const res = await ownerApi.workspaces({ workspaceId }).dashboard.get();
+      expect(res.status).toBe(200);
+      expect(res.data!.totals).toMatchObject({
+        teams: 1,
+        projects: 0,
+        people: 1,
+        agents: 0,
+        openIssues: 0,
+        completedIssues: 0,
+        totalIssues: 0,
+        storageBytes: 0,
+      });
+      expect(res.data!.teams.length).toBe(1);
+      expect(res.data!.projects).toEqual([]);
+    });
+
     it('leaves creation to the instance owner while personal workspaces are off', async () => {
       await setup();
       await setAuthSettings({ personalWorkspaces: false });

@@ -27,6 +27,7 @@ export const qk = {
   // One workspace a caller manages. Its managers, candidates and settings sit under it, so
   // invalidating the workspace refreshes all of them.
   workspace: (workspaceId: number) => ['workspace', workspaceId] as const,
+  workspaceDashboard: (workspaceId: number) => ['workspace', workspaceId, 'dashboard'] as const,
   workspaceManagers: (workspaceId: number) => ['workspace', workspaceId, 'managers'] as const,
   workspaceManagerCandidates: (workspaceId: number, search: string) =>
     ['workspace', workspaceId, 'managers', 'candidates', search] as const,

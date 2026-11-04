@@ -14,7 +14,7 @@ import type { WorkspaceSummary } from '@/lib/api/endpoints/workspaces';
 import type { WorkspaceSection } from '@/features/teams/types/workspaceSection';
 import WorkspaceAgentBudgetsPreview from '@/features/teams/components/workspace/preview/WorkspaceAgentBudgetsPreview';
 import WorkspaceAuditLogPreview from '@/features/teams/components/workspace/preview/WorkspaceAuditLogPreview';
-import WorkspaceDashboardPreview from '@/features/teams/components/workspace/preview/WorkspaceDashboardPreview';
+import WorkspaceDashboard from '@/features/teams/components/workspace/WorkspaceDashboard';
 import WorkspaceEmailDomainsPreview from '@/features/teams/components/workspace/preview/WorkspaceEmailDomainsPreview';
 import WorkspacePortalPreview from '@/features/teams/components/workspace/preview/WorkspacePortalPreview';
 import WorkspaceScimPreview from '@/features/teams/components/workspace/preview/WorkspaceScimPreview';
@@ -38,7 +38,7 @@ export default function useWorkspaceSections(
       label: t('dashboard.title'),
       icon: LayoutDashboard,
       group: 'overview',
-      Component: WorkspaceDashboardPreview,
+      Component: WorkspaceDashboard,
     },
     ...core.slice(0, afterQueue),
     {

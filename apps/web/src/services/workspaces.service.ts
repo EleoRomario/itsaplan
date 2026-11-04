@@ -5,6 +5,7 @@ import {
   createWorkspaceScimToken,
   deleteWorkspace,
   getWorkspace,
+  getWorkspaceDashboard,
   getWorkspaceScim,
   listWorkspaceManagerCandidates,
   listWorkspaceManagers,
@@ -38,6 +39,13 @@ export function useWorkspaceQuery(workspaceId: number) {
   return useQuery({
     queryKey: qk.workspace(workspaceId),
     queryFn: () => getWorkspace(workspaceId),
+  });
+}
+
+export function useWorkspaceDashboardQuery(workspaceId: number) {
+  return useQuery({
+    queryKey: qk.workspaceDashboard(workspaceId),
+    queryFn: () => getWorkspaceDashboard(workspaceId),
   });
 }
 

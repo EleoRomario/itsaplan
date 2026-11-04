@@ -23,6 +23,7 @@ import {
 } from '#modules/scim/mappings';
 import {
   WorkspaceCandidateListResponse,
+  WorkspaceDashboardResponse,
   WorkspaceListResponse,
   WorkspaceManagerListResponse,
   WorkspaceResponse,
@@ -39,6 +40,7 @@ import {
   createOwnWorkspace,
   deleteWorkspace,
   getWorkspace,
+  getWorkspaceDashboard,
   listManagerCandidates,
   listManagers,
   listWorkspaces,
@@ -87,6 +89,20 @@ export const workspaceRoutes = new Elysia({ name: 'workspaces', detail: { tags: 
       params: workspaceParams,
       response: { 200: WorkspaceResponse, ...errors(401, 404) },
       detail: { summary: 'Get a workspace', description: 'A workspace you manage.' },
+    },
+  )
+
+  .get(
+    '/workspaces/:workspaceId/dashboard',
+    ({ standing }) => getWorkspaceDashboard(standing.workspaceId),
+    {
+      workspaceManager: true,
+      params: workspaceParams,
+      response: { 200: WorkspaceDashboardResponse, ...errors(401, 404) },
+      detail: {
+        summary: 'Get workspace dashboard',
+        description: 'Dashboard metrics, projects and teams in the workspace.',
+      },
     },
   )
 

@@ -59,6 +59,64 @@ export const createWorkspace = (input: { name: string }) =>
 export const getWorkspace = (workspaceId: number) =>
   request<Workspace>(`/workspaces/${workspaceId}`);
 
+export interface WorkspaceDashboardTotal {
+  teams: number;
+  projects: number;
+  people: number;
+  agents: number;
+  openIssues: number;
+  completedIssues: number;
+  totalIssues: number;
+  storageBytes: number;
+}
+
+export interface WorkspaceDashboardProject {
+  id: number;
+  teamId: number;
+  teamName: string;
+  teamRef: string;
+  name: string;
+  key: string;
+  ref: string;
+  createdAt: string;
+  openIssues: number;
+  inProgressIssues: number;
+  completedIssues: number;
+  totalIssues: number;
+  progressPercentage: number;
+  activeCycle: {
+    id: number;
+    name: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+  } | null;
+  activeInitiative: {
+    id: number;
+    title: string;
+    startDate: string | null;
+    targetDate: string | null;
+    status: string;
+  } | null;
+}
+
+export interface WorkspaceDashboardTeam {
+  id: number;
+  name: string;
+  ref: string;
+  memberCount: number;
+  projectCount: number;
+}
+
+export interface WorkspaceDashboardData {
+  totals: WorkspaceDashboardTotal;
+  projects: WorkspaceDashboardProject[];
+  teams: WorkspaceDashboardTeam[];
+}
+
+export const getWorkspaceDashboard = (workspaceId: number) =>
+  request<WorkspaceDashboardData>(`/workspaces/${workspaceId}/dashboard`);
+
 export const updateWorkspace = (workspaceId: number, input: WorkspacePatch) =>
   request<Workspace>(`/workspaces/${workspaceId}`, {
     method: 'PATCH',

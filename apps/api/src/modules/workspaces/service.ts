@@ -2,30 +2,38 @@ import { forgetPersonalWorkspace, getAuthSettings } from '@repo/auth';
 import {
   aiAgent,
   createWorkspace,
+  cycle,
   db,
+  initiative,
+  issue,
   project,
+  projectColumn,
   team,
   teamMember,
   user,
   workspace,
   workspaceManager,
+  workspaceStoredBytes,
   type DbExecutor,
 } from '@repo/db';
 import {
   and,
   asc,
+  desc,
   eq,
   exists,
   ilike,
   inArray,
+  isNull,
   ne,
   notExists,
   or,
   sql,
   type SQL,
 } from 'drizzle-orm';
+import { cycleStatus } from '#modules/cycles/service';
 import { requireUser, type AuthUser } from '#shared/access';
-import { HttpError } from '#shared/lib';
+import { HttpError, iso } from '#shared/lib';
 import { getLimits, getOwnedWorkspaceLimit, tightestLimit } from '#shared/limits';
 import { getAgentSettings } from '#modules/settings/service';
 import { workspaceRoleGrant, type WorkspaceGrant } from '#shared/workspace-roles';
@@ -437,4 +445,240 @@ export async function removeAdmin(workspaceId: number, userId: string): Promise<
   await db
     .delete(workspaceManager)
     .where(and(eq(workspaceManager.workspaceId, workspaceId), eq(workspaceManager.userId, userId)));
+}
+
+export async function getWorkspaceDashboard(workspaceId: number) {
+  const workspaceTeams = await db
+    .select({
+      id: team.id,
+      name: team.name,
+      slug: team.slug,
+    })
+    .from(team)
+    .where(eq(team.workspaceId, workspaceId))
+    .orderBy(asc(team.name));
+
+  if (workspaceTeams.length === 0) {
+    return {
+      totals: {
+        teams: 0,
+        projects: 0,
+        people: 0,
+        agents: 0,
+        openIssues: 0,
+        completedIssues: 0,
+        totalIssues: 0,
+        storageBytes: 0,
+      },
+      projects: [],
+      teams: [],
+    };
+  }
+
+  const teamIds = workspaceTeams.map((t) => t.id);
+
+  const [memberCounts, peopleTotal, agentsTotal, storageBytes, projectsList] = await Promise.all([
+    db
+      .select({
+        teamId: teamMember.teamId,
+        count: sql<number>`count(distinct ${teamMember.userId})::int`,
+      })
+      .from(teamMember)
+      .where(inArray(teamMember.teamId, teamIds))
+      .groupBy(teamMember.teamId),
+    db
+      .select({ count: sql<number>`count(distinct ${teamMember.userId})::int` })
+      .from(teamMember)
+      .where(inArray(teamMember.teamId, teamIds)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(aiAgent)
+      .where(inArray(aiAgent.teamId, teamIds)),
+    workspaceStoredBytes(workspaceId),
+    db
+      .select({
+        id: project.id,
+        teamId: project.teamId,
+        name: project.name,
+        key: project.key,
+        createdAt: project.createdAt,
+      })
+      .from(project)
+      .where(and(inArray(project.teamId, teamIds), isNull(project.archivedAt)))
+      .orderBy(asc(project.name)),
+  ]);
+
+  const teamMemberMap = new Map(memberCounts.map((m) => [m.teamId, m.count]));
+  const teamMap = new Map(workspaceTeams.map((t) => [t.id, { ...t, ref: t.slug ?? String(t.id) }]));
+
+  const projectIds = projectsList.map((p) => p.id);
+
+  const issueStatsMap = new Map<
+    number,
+    { open: number; inProgress: number; completed: number; total: number }
+  >();
+  const activeCyclesMap = new Map<
+    number,
+    { id: number; name: string; startDate: string; endDate: string; status: string }
+  >();
+  const activeInitiativesMap = new Map<
+    number,
+    {
+      id: number;
+      title: string;
+      startDate: string | null;
+      targetDate: string | null;
+      status: string;
+    }
+  >();
+
+  if (projectIds.length > 0) {
+    const [issueRows, cycleRows, initiativeRows] = await Promise.all([
+      db
+        .select({
+          projectId: issue.projectId,
+          stateType: projectColumn.stateType,
+          count: sql<number>`count(*)::int`,
+        })
+        .from(issue)
+        .innerJoin(projectColumn, eq(projectColumn.id, issue.columnId))
+        .where(and(inArray(issue.projectId, projectIds), isNull(issue.archivedAt)))
+        .groupBy(issue.projectId, projectColumn.stateType),
+      db
+        .select({
+          id: cycle.id,
+          projectId: cycle.projectId,
+          name: cycle.name,
+          startDate: cycle.startDate,
+          endDate: cycle.endDate,
+          completedAt: cycle.completedAt,
+        })
+        .from(cycle)
+        .where(inArray(cycle.projectId, projectIds))
+        .orderBy(desc(cycle.startDate)),
+      db
+        .select({
+          id: initiative.id,
+          projectId: initiative.projectId,
+          title: initiative.title,
+          startDate: initiative.startDate,
+          targetDate: initiative.targetDate,
+          status: initiative.status,
+        })
+        .from(initiative)
+        .where(and(inArray(initiative.projectId, projectIds), eq(initiative.status, 'active')))
+        .orderBy(desc(initiative.createdAt)),
+    ]);
+
+    for (const row of issueRows) {
+      const current = issueStatsMap.get(row.projectId) ?? {
+        open: 0,
+        inProgress: 0,
+        completed: 0,
+        total: 0,
+      };
+      current.total += row.count;
+      if (row.stateType !== 'completed' && row.stateType !== 'canceled') {
+        current.open += row.count;
+      }
+      if (row.stateType === 'started') {
+        current.inProgress += row.count;
+      }
+      if (row.stateType === 'completed') {
+        current.completed += row.count;
+      }
+      issueStatsMap.set(row.projectId, current);
+    }
+
+    for (const c of cycleRows) {
+      const status = cycleStatus(c.startDate, c.endDate, c.completedAt);
+      if (status === 'active' && !activeCyclesMap.has(c.projectId)) {
+        activeCyclesMap.set(c.projectId, {
+          id: c.id,
+          name: c.name,
+          startDate: c.startDate,
+          endDate: c.endDate,
+          status,
+        });
+      }
+    }
+
+    for (const init of initiativeRows) {
+      if (!activeInitiativesMap.has(init.projectId)) {
+        activeInitiativesMap.set(init.projectId, {
+          id: init.id,
+          title: init.title,
+          startDate: init.startDate,
+          targetDate: init.targetDate,
+          status: init.status,
+        });
+      }
+    }
+  }
+
+  const teamProjectsCount = new Map<number, number>();
+  for (const p of projectsList) {
+    teamProjectsCount.set(p.teamId, (teamProjectsCount.get(p.teamId) ?? 0) + 1);
+  }
+
+  let totalOpenIssues = 0;
+  let totalCompletedIssues = 0;
+  let totalIssuesAll = 0;
+
+  const projectsResponse = projectsList.map((p) => {
+    const parentTeam = teamMap.get(p.teamId)!;
+    const stats = issueStatsMap.get(p.id) ?? {
+      open: 0,
+      inProgress: 0,
+      completed: 0,
+      total: 0,
+    };
+    totalOpenIssues += stats.open;
+    totalCompletedIssues += stats.completed;
+    totalIssuesAll += stats.total;
+
+    const progressPercentage =
+      stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+
+    return {
+      id: p.id,
+      teamId: p.teamId,
+      teamName: parentTeam.name,
+      teamRef: parentTeam.ref,
+      name: p.name,
+      key: p.key,
+      ref: `${parentTeam.ref}.${p.key}`,
+      createdAt: iso(p.createdAt),
+      openIssues: stats.open,
+      inProgressIssues: stats.inProgress,
+      completedIssues: stats.completed,
+      totalIssues: stats.total,
+      progressPercentage,
+      activeCycle: activeCyclesMap.get(p.id) ?? null,
+      activeInitiative: activeInitiativesMap.get(p.id) ?? null,
+    };
+  });
+
+  const teamsResponse = workspaceTeams.map((t) => ({
+    id: t.id,
+    name: t.name,
+    ref: t.slug ?? String(t.id),
+    memberCount: teamMemberMap.get(t.id) ?? 0,
+    projectCount: teamProjectsCount.get(t.id) ?? 0,
+  }));
+
+  return {
+    totals: {
+      teams: workspaceTeams.length,
+      projects: projectsList.length,
+      people: peopleTotal[0]?.count ?? 0,
+      agents: agentsTotal[0]?.count ?? 0,
+      openIssues: totalOpenIssues,
+      completedIssues: totalCompletedIssues,
+      totalIssues: totalIssuesAll,
+      storageBytes,
+    },
+    projects: projectsResponse,
+    teams: teamsResponse,
+  };
 }
