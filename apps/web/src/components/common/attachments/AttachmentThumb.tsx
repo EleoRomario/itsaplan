@@ -1,21 +1,23 @@
 import Image from 'next/image';
-import { FileIcon } from 'lucide-react';
+import { FileIcon, FileSpreadsheet, FileText, FileCode, Headphones } from 'lucide-react';
 import {
   isImage,
   isSvg,
   isVideo,
+  isAudio,
+  isPdf,
+  isDocx,
+  isSpreadsheet,
+  isCsv,
+  isText,
   type Embeddable,
 } from '@/components/common/editor/attachmentEmbed';
 
-// An attachment's leading thumbnail: images and videos preview themselves,
-// every other type falls back to a generic file glyph.
 export default function AttachmentThumb({
   attachment,
   sizes = '40px',
 }: {
   attachment: Embeddable;
-  // The rendered width, for the image optimizer. The default is the w-10 (40px)
-  // thumbnail every card uses; a larger preview passes its own.
   sizes?: string;
 }) {
   if (isImage(attachment))
@@ -25,8 +27,6 @@ export default function AttachmentThumb({
         alt={attachment.filename}
         fill
         sizes={sizes}
-        // A file picked in the new issue modal is previewed from a local blob:
-        // URL, which the image optimizer cannot fetch; it refuses SVG.
         unoptimized={attachment.url.startsWith('blob:') || isSvg(attachment)}
         draggable={false}
         className="object-cover"
@@ -36,5 +36,11 @@ export default function AttachmentThumb({
     return (
       <video src={attachment.url} className="size-full object-cover" muted draggable={false} />
     );
+  if (isAudio(attachment)) return <Headphones className="text-muted-foreground" />;
+  if (isPdf(attachment)) return <FileText className="text-red-500" />;
+  if (isSpreadsheet(attachment) || isCsv(attachment))
+    return <FileSpreadsheet className="text-emerald-600 dark:text-emerald-400" />;
+  if (isDocx(attachment)) return <FileText className="text-blue-600 dark:text-blue-400" />;
+  if (isText(attachment)) return <FileCode className="text-muted-foreground" />;
   return <FileIcon className="text-muted-foreground" />;
 }

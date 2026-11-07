@@ -33,12 +33,17 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   // No page may be framed, except the public ones (/share, /p) on the sites the instance
-  // owner trusts: src/proxy.ts decides those per request.
+  // owner trusts: src/proxy.ts decides those per request. Media attachments are frameable
+  // on the same origin so the planner's preview modal can show them.
   headers: async () => [
     { source: '/(.*)', headers: SECURITY_HEADERS },
     {
-      source: '/:path((?!(?:share|p)(?:/|$)).*)',
+      source: '/:path((?!(?:share|p|media|protected-media)(?:/|$)).*)',
       headers: [{ key: 'X-Frame-Options', value: 'DENY' }],
+    },
+    {
+      source: '/:path((?:media|protected-media)(?:/|$).*)',
+      headers: [{ key: 'X-Frame-Options', value: 'SAMEORIGIN' }],
     },
   ],
   // Monorepo: include the repo root in file tracing for standalone.

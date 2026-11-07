@@ -6,6 +6,33 @@ export type Embeddable = { url: string; contentType: string; filename: string };
 
 export const isImage = (a: Embeddable) => a.contentType.startsWith('image/');
 export const isVideo = (a: Embeddable) => a.contentType.startsWith('video/');
+export const isAudio = (a: Embeddable) => a.contentType.startsWith('audio/');
+export const isPdf = (a: Embeddable) =>
+  a.contentType.split(';')[0]?.trim() === 'application/pdf' ||
+  a.filename.toLowerCase().endsWith('.pdf');
+export const isDocx = (a: Embeddable) =>
+  a.contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+  a.filename.toLowerCase().endsWith('.docx');
+export const isSpreadsheet = (a: Embeddable) =>
+  a.contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+  a.contentType === 'application/vnd.ms-excel' ||
+  /\.(xlsx|xls)$/i.test(a.filename);
+export const isCsv = (a: Embeddable) =>
+  a.contentType === 'text/csv' || a.filename.toLowerCase().endsWith('.csv');
+export const isText = (a: Embeddable) =>
+  (a.contentType.startsWith('text/') && !isCsv(a)) ||
+  /\.(txt|md|markdown|json|xml|yaml|yml|log|ts|tsx|js|jsx|css|html|sql|sh)$/i.test(a.filename);
+
+export const isViewable = (a: Embeddable) =>
+  isImage(a) ||
+  isVideo(a) ||
+  isAudio(a) ||
+  isPdf(a) ||
+  isDocx(a) ||
+  isSpreadsheet(a) ||
+  isCsv(a) ||
+  isText(a);
+
 // next/image's optimizer refuses SVG (dangerouslyAllowSVG is off), and an
 // attachment URL (/media/.../raw) has no .svg extension for it to skip the
 // optimizer by, so an SVG has to be shown unoptimized. Shown in an <img>, it

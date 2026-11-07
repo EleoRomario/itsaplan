@@ -171,7 +171,8 @@ export function attachmentEtag(s3Key: string): string {
   return `"${createHash('sha256').update(s3Key).digest('base64url').slice(0, 22)}"`;
 }
 
-const INLINE_TYPE = /^(image\/(png|jpe?g|gif|webp|avif|bmp)|(video|audio)\/[\w.+-]+)$/i;
+const INLINE_TYPE =
+  /^(image\/(png|jpe?g|gif|webp|avif|bmp)|(video|audio)\/[\w.+-]+|application\/pdf)$/i;
 
 export function attachmentResponseHeaders(input: {
   contentType: string;

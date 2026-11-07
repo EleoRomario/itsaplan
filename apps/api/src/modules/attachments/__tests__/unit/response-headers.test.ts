@@ -19,4 +19,11 @@ describe('attachment response headers', () => {
     expect(headers['Content-Disposition']).toStartWith('inline');
     expect(headers['Content-Type']).toBe('image/png');
   });
+
+  it('serves a PDF file inline without sandbox', () => {
+    const headers = headersFor('application/pdf');
+    expect(headers['Content-Disposition']).toStartWith('inline');
+    expect(headers['Content-Type']).toBe('application/pdf');
+    expect(headers['Content-Security-Policy']).toBeUndefined();
+  });
 });

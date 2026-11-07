@@ -23,4 +23,24 @@ describe('AttachmentThumb', () => {
       /^\/_next\/image\?url=%2Fmedia%2Fattachments%2Fabc%2Fraw/,
     );
   });
+
+  it('renders specialized glyphs for non-image embeddables', () => {
+    const markup = (contentType: string, filename = 'file') =>
+      renderToStaticMarkup(
+        <AttachmentThumb
+          attachment={{ url: '/media/attachments/abc/raw', contentType, filename }}
+        />,
+      );
+
+    assert.ok(markup('audio/mp3', 'song.mp3').includes('<svg'));
+    assert.ok(markup('application/pdf', 'doc.pdf').includes('text-red-500'));
+    assert.ok(markup('application/vnd.ms-excel', 'data.xls').includes('text-emerald-600'));
+    assert.ok(
+      markup(
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'doc.docx',
+      ).includes('text-blue-600'),
+    );
+    assert.ok(markup('text/plain', 'note.txt').includes('<svg'));
+  });
 });

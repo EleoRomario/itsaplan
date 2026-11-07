@@ -1,7 +1,7 @@
 import { type DragEvent } from 'react';
 import { Download, PenLine, Plus, Trash2 } from 'lucide-react';
 import type { Attachment } from '@/lib/api/endpoints/attachments';
-import { attachmentHtml, isImage, isVideo } from '@/components/common/editor/attachmentEmbed';
+import { attachmentHtml, isImage, isViewable } from '@/components/common/editor/attachmentEmbed';
 import { formatSize } from '@/utils/fileSize';
 import AttachmentThumb from '@/components/common/attachments/AttachmentThumb';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export default function IssueAttachmentCard({
 }) {
   const t = useTranslations('issue.attachments');
   const tCommon = useTranslations('common');
-  const viewable = isImage(attachment) || isVideo(attachment);
+  const viewable = isViewable(attachment);
   const dragProps = readOnly
     ? {}
     : {

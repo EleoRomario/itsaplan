@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Download, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Attachment } from '@/lib/api/endpoints/attachments';
-import { isImage, isVideo } from '@/components/common/editor/attachmentEmbed';
+import { isViewable } from '@/components/common/editor/attachmentEmbed';
 import AttachmentThumb from '@/components/common/attachments/AttachmentThumb';
 import AttachmentViewer from '@/components/common/attachments/AttachmentViewer';
 import ConfirmDialog from '@/components/common/overlay/ConfirmDialog';
@@ -98,7 +98,7 @@ export default function InitiativeAttachments({ initiativeId }: { initiativeId: 
       ) : (
         <ul className="mt-3 space-y-1">
           {items.map((a) => {
-            const viewable = isImage(a) || isVideo(a);
+            const viewable = isViewable(a);
             return (
               <li
                 key={a.id}
