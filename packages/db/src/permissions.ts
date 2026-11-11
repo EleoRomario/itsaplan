@@ -29,6 +29,7 @@ export const PERMISSION_RESOURCES = [
   'note_boards',
   'import_export',
   'danger_zone',
+  'companies',
 ] as const;
 export type PermissionResource = (typeof PERMISSION_RESOURCES)[number];
 
@@ -90,6 +91,7 @@ export function defaultMemberPermissions(): Permissions {
   p.ai_agents.read = true;
   p.members_manage.read = true;
   p.members_invite.read = true;
+  p.companies = { create: true, edit: true, read: true, delete: false };
   return p;
 }
 

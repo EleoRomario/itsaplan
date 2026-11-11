@@ -1,0 +1,93 @@
+{
+  "title": "Directorio de Empresas",
+  "description": "Organizaciones y empresas clientes participantes en concursos, fondos no reembolsables, certificaciones y proyectos.",
+  "register": "Registrar Empresa",
+  "myCompanies": "Mis Empresas",
+  "allCompanies": "Todas las Empresas",
+  "assignedExecutive": "Ejecutivo Asignado",
+  "assignedToYou": "Asignado a ti",
+  "selectExecutive": "Seleccionar ejecutivo",
+  "reassign": "Reasignar",
+  "reassignTitle": "Reasignar Ejecutivo",
+  "searchPlaceholder": "Filtrar por razón social, RUC...",
+  "filterBlacklisted": "Filtrar Sancionadas / Blacklist",
+  "showingBlacklisted": "Viendo Sancionadas",
+  "loading": "Cargando empresas...",
+  "noCompanies": "No se encontraron empresas",
+  "noCompaniesDesc": "Registra tu primera empresa para comenzar a rastrear su participación a lo largo de los proyectos.",
+  "noCompaniesAdjust": "Intenta ajustar los criterios de búsqueda",
+  "viewFile": "Ver expediente",
+  "commercialName": "Comercial:",
+  "reason": "Motivo:",
+  "status": "Estado Registral",
+  "location": "Ubicación",
+  "mainContact": "Contacto Principal",
+  "notRegistered": "No registrada",
+  "blacklistBannerTitle": "EMPRESA EN LISTA NEGRA (BLACKLIST)",
+  "blacklistBannerDesc": "Esta empresa ha sido marcada como no apta o sancionada para participar en concursos y proyectos.",
+  "tabs": {
+    "documents": "Documentos Base",
+    "contacts": "Contactos",
+    "activity": "Historial Proyectos"
+  },
+  "documents": {
+    "description": "Documentos reutilizables: Ficha RUC, Vigencia de Poder, Testimonio de Constitución, etc.",
+    "typePlaceholder": "Tipo (e.g. Vigencia de Poder)",
+    "yearPlaceholder": "Año",
+    "selectFile": "Seleccionar Archivo",
+    "save": "Guardar Documento",
+    "empty": "No hay documentos base subidos para esta empresa.",
+    "viewDownload": "Ver / Descargar"
+  },
+  "contacts": {
+    "description": "Representantes legales, gerentes y contactos de coordinación.",
+    "add": "Agregar Contacto",
+    "empty": "No hay contactos registrados para esta empresa.",
+    "nameLabel": "Nombre Completo *",
+    "roleLabel": "Cargo",
+    "docIdLabel": "DNI / Documento",
+    "emailLabel": "Email",
+    "phoneLabel": "Teléfono",
+    "isPrimary": "Contacto Principal",
+    "isLegalRep": "Representante Legal",
+    "principalBadge": "Principal",
+    "legalRepBadge": "Rep. Legal"
+  },
+  "activity": {
+    "description": "Historial de participación de esta empresa en todos los concursos y proyectos a lo largo del tiempo.",
+    "loading": "Cargando historial...",
+    "empty": "Esta empresa aún no tiene tareas o hitos asociados en ningún proyecto."
+  },
+  "blacklistModal": {
+    "removeTitle": "Retirar de Lista Negra",
+    "addTitle": "Marcar Empresa en Lista Negra",
+    "removeConfirm": "¿Estás seguro de que deseas retirar a {name} de la lista negra? Volverá a figurar como apta en los concursos y tareas.",
+    "addNotice": "Al agregar esta empresa a la lista negra, se mostrará una advertencia destacada en cualquier tarea o proyecto donde se intente seleccionar.",
+    "reasonLabel": "Motivo de sanción / Blacklist *",
+    "reasonPlaceholder": "e.g. Incumplimiento de hitos en ProInnova 2023 o sanción administrativa...",
+    "confirmRemoval": "Confirmar Retiro",
+    "confirmBlacklist": "Confirmar Blacklist"
+  },
+  "newModal": {
+    "title": "Registrar Nueva Empresa",
+    "searchSunat": "Consultar SUNAT",
+    "taxIdLabel": "RUC / ID Fiscal *",
+    "countryLabel": "País",
+    "nameLabel": "Razón Social *",
+    "tradeNameLabel": "Nombre Comercial",
+    "cityLabel": "Ciudad / Región",
+    "addressLabel": "Dirección Fiscal",
+    "notesLabel": "Notas Internas",
+    "notesPlaceholder": "Observaciones de la empresa...",
+    "submit": "Registrar Empresa"
+  },
+  "select": {
+    "placeholder": "Seleccionar empresa",
+    "search": "Buscar por nombre o RUC / ID fiscal...",
+    "loading": "Cargando empresas...",
+    "notFound": "No se encontró empresa.",
+    "clear": "Limpiar empresa",
+    "blacklist": "Blacklist",
+    "label": "Empresa"
+  }
+}

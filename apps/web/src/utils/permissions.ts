@@ -80,7 +80,7 @@ export interface PermissionGroup {
 
 // The resources shown together in the role editor. Ordering is display order.
 const GROUP_DEFS: PermissionGroup[] = [
-  { key: 'workItems', resources: ['work_items', 'initiatives', 'cycles', 'views'] },
+  { key: 'workItems', resources: ['work_items', 'initiatives', 'cycles', 'views', 'companies'] },
   { key: 'dashboards', resources: ['dashboards'] },
   { key: 'documents', resources: ['documents'] },
   { key: 'notes', resources: ['note_boards'] },

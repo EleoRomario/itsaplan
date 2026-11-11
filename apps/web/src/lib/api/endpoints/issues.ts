@@ -37,6 +37,15 @@ export interface Issue {
   // The initiative this issue is linked to, expanded to id + title for rendering,
   // or null. Set through updateIssue by initiativeId.
   initiative: InitiativeRef | null;
+  // The global company linked to this issue, or null.
+  company: {
+    id: number;
+    taxId: string;
+    name: string;
+    isBlacklisted: boolean;
+    blacklistReason: string | null;
+  } | null;
+  companyId: number | null;
   // The cycle this issue is planned into, expanded to id + name for rendering, or
   // null. Set through updateIssue by cycleId.
   cycle: CycleRef | null;
@@ -251,6 +260,7 @@ export interface IssueWithWatchers extends IssueRelations {
 export interface NewIssueInput {
   typeId?: number | null;
   initiativeId?: number | null;
+  companyId?: number | null;
   cycleId?: number | null;
   assigneeUserId?: string | null;
   delegateUserId?: string | null;
@@ -272,6 +282,7 @@ export interface BulkIssuePatch {
   columnId?: number;
   typeId?: number | null;
   initiativeId?: number | null;
+  companyId?: number | null;
   cycleId?: number | null;
   assigneeUserId?: string | null;
   delegateUserId?: string | null;
@@ -288,6 +299,7 @@ export interface IssuePatch {
   typeId?: number | null;
   parentId?: number | null;
   initiativeId?: number | null;
+  companyId?: number | null;
   cycleId?: number | null;
   assigneeUserId?: string | null;
   delegateUserId?: string | null;

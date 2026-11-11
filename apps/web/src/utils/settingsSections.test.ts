@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { Bot } from 'lucide-react';
-import { aiTeamEntries, type SettingsSection } from './settingsSections';
+import { aiTeamEntries, settingsSection, type SettingsSection } from './settingsSections';
 
 const section = (slug: string, menu?: string): SettingsSection => ({
   slug,
@@ -27,5 +27,12 @@ describe('aiTeamEntries', () => {
       ),
       ['schedules', 'flows: flows, flow-runs', 'reports'],
     );
+  });
+
+  it('defines the forms settings section under automation', () => {
+    const forms = settingsSection('forms');
+    assert.equal(forms.slug, 'forms');
+    assert.equal(forms.group, 'automation');
+    assert.equal(forms.resource, 'work_items');
   });
 });

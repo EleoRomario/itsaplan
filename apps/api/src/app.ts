@@ -180,6 +180,7 @@ export const app = new Elysia()
           { name: 'Share', description: 'Public read-only sharing of issues and views' },
           { name: 'Actions', description: 'Project automation actions' },
           { name: 'Webhooks', description: 'Outgoing webhook subscriptions' },
+          { name: 'Forms', description: 'Public forms for creating issues' },
           {
             name: 'Git',
             description:

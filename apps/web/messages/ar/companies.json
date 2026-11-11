@@ -1,0 +1,93 @@
+{
+  "title": "Companies Directory",
+  "description": "Global organizations and client companies participating in competitions, certifications, and projects.",
+  "register": "Register Company",
+  "searchPlaceholder": "Filter by name, RUC / Tax ID...",
+  "filterBlacklisted": "Filter Blacklisted",
+  "showingBlacklisted": "Showing Blacklisted",
+  "loading": "Loading companies...",
+  "noCompanies": "No companies found",
+  "noCompaniesDesc": "Register your first company to start tracking its participation across projects.",
+  "noCompaniesAdjust": "Try adjusting your search criteria",
+  "viewFile": "View file",
+  "commercialName": "Trade Name:",
+  "reason": "Reason:",
+  "status": "Status",
+  "location": "Location",
+  "mainContact": "Main Contact",
+  "notRegistered": "Not registered",
+  "blacklistBannerTitle": "COMPANY IN BLACKLIST",
+  "blacklistBannerDesc": "This company has been marked as ineligible or sanctioned to participate in competitions and projects.",
+  "tabs": {
+    "documents": "Master Documents",
+    "contacts": "Contacts",
+    "activity": "Project History"
+  },
+  "documents": {
+    "description": "Reusable documents: Ficha RUC, Vigencia de Poder, Certificate of Incorporation, etc.",
+    "typePlaceholder": "Type (e.g. Vigencia de Poder)",
+    "yearPlaceholder": "Year",
+    "selectFile": "Select File",
+    "save": "Save Document",
+    "empty": "No master documents uploaded for this company.",
+    "viewDownload": "View / Download"
+  },
+  "contacts": {
+    "description": "Legal representatives, managers and coordination contacts.",
+    "add": "Add Contact",
+    "empty": "No contacts registered for this company.",
+    "nameLabel": "Full Name *",
+    "roleLabel": "Role",
+    "docIdLabel": "DNI / Document ID",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "isPrimary": "Primary Contact",
+    "isLegalRep": "Legal Representative",
+    "principalBadge": "Primary",
+    "legalRepBadge": "Legal Rep."
+  },
+  "activity": {
+    "description": "Participation history of this company across all competitions and projects over time.",
+    "loading": "Loading history...",
+    "empty": "This company has no associated tasks or milestones in any project yet."
+  },
+  "blacklistModal": {
+    "removeTitle": "Remove from Blacklist",
+    "addTitle": "Mark Company as Blacklisted",
+    "removeConfirm": "Are you sure you want to remove {name} from the blacklist? It will be considered eligible in competitions and tasks again.",
+    "addNotice": "Adding this company to the blacklist will display a prominent warning in any task or project where someone tries to select it.",
+    "reasonLabel": "Sanction / Blacklist Reason *",
+    "reasonPlaceholder": "e.g. Non-compliance with milestones in ProInnova 2023 or administrative sanction...",
+    "confirmRemoval": "Confirm Removal",
+    "confirmBlacklist": "Confirm Blacklist"
+  },
+  "newModal": {
+    "title": "Register New Company",
+    "searchSunat": "Fetch SUNAT",
+    "taxIdLabel": "RUC / Tax ID *",
+    "countryLabel": "Country",
+    "nameLabel": "Legal Name *",
+    "tradeNameLabel": "Trade Name",
+    "cityLabel": "City / Region",
+    "addressLabel": "Address",
+    "notesLabel": "Internal Notes",
+    "notesPlaceholder": "Observations about the company...",
+    "submit": "Register Company"
+  },
+  "select": {
+    "placeholder": "Select company",
+    "search": "Search by name or RUC / Tax ID...",
+    "loading": "Loading companies...",
+    "notFound": "No company found.",
+    "clear": "Clear company",
+    "blacklist": "Blacklist",
+    "label": "الشركة"
+  },
+  "myCompanies": "My Companies",
+  "allCompanies": "All Companies",
+  "assignedExecutive": "Assigned Executive",
+  "assignedToYou": "Assigned to you",
+  "selectExecutive": "Select executive",
+  "reassign": "Reassign",
+  "reassignTitle": "Reassign Company Executive"
+}

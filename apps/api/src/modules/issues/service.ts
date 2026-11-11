@@ -18,6 +18,7 @@ import {
   cycle,
   team,
   issueLink,
+  company,
 } from '@repo/db';
 import { alias } from 'drizzle-orm/pg-core';
 import {
@@ -108,6 +109,15 @@ export interface IssueRow {
   // and status for ordering the lanes of a board grouped by initiative, or null.
   // Filled by attachGroupings; mapIssue alone leaves it null.
   initiative: { id: number; title: string; status: string } | null;
+  // The global company linked to this issue, or null.
+  company: {
+    id: number;
+    taxId: string;
+    name: string;
+    isBlacklisted: boolean;
+    blacklistReason: string | null;
+  } | null;
+  companyId: number | null;
   // The cycle this issue is planned into, expanded to id + name for rendering and
   // status for filtering by the running or the upcoming ones, or null. Filled by
   // attachGroupings; mapIssue alone leaves it null.
@@ -168,6 +178,8 @@ function mapIssue(row: typeof issue.$inferSelect, projectKey: string): IssueRow 
     identifier: `${projectKey}-${row.sequenceNumber}`,
     typeId: row.typeId,
     initiative: null,
+    company: null,
+    companyId: row.companyId,
     cycle: null,
     assigneeUserId: row.assigneeUserId,
     delegateUserId: row.delegateUserId,
@@ -748,12 +760,21 @@ async function attachGroupings(issues: IssueRow[], ids: number[] | SQLWrapper): 
       cycleStart: cycle.startDate,
       cycleEnd: cycle.endDate,
       cycleCompletedAt: cycle.completedAt,
+      companyId: company.id,
+      companyTaxId: company.taxId,
+      companyName: company.name,
+      companyIsBlacklisted: company.isBlacklisted,
+      companyBlacklistReason: company.blacklistReason,
     })
     .from(issue)
     .leftJoin(initiative, eq(initiative.id, issue.initiativeId))
     .leftJoin(cycle, eq(cycle.id, issue.cycleId))
+    .leftJoin(company, eq(company.id, issue.companyId))
     .where(
-      and(inArray(issue.id, ids), or(isNotNull(issue.initiativeId), isNotNull(issue.cycleId))),
+      and(
+        inArray(issue.id, ids),
+        or(isNotNull(issue.initiativeId), isNotNull(issue.cycleId), isNotNull(issue.companyId)),
+      ),
     );
   const byIssue = new Map(rows.map((r) => [r.issueId, r]));
   for (const i of issues) {
@@ -768,6 +789,16 @@ async function attachGroupings(issues: IssueRow[], ids: number[] | SQLWrapper): 
             id: r.cycleId,
             name: r.cycleName!,
             status: cycleStatus(r.cycleStart!, r.cycleEnd!, r.cycleCompletedAt),
+          }
+        : null;
+    i.company =
+      r && r.companyId != null
+        ? {
+            id: r.companyId,
+            taxId: r.companyTaxId!,
+            name: r.companyName!,
+            isBlacklisted: r.companyIsBlacklisted ?? false,
+            blacklistReason: r.companyBlacklistReason ?? null,
           }
         : null;
   }
@@ -981,6 +1012,7 @@ export async function getIssueProjectId(id: number): Promise<number | null> {
 export interface NewIssueInput {
   typeId?: number | null;
   initiativeId?: number | null;
+  companyId?: number | null;
   cycleId?: number | null;
   assigneeUserId?: string | null;
   delegateUserId?: string | null;
@@ -1164,6 +1196,7 @@ export async function createIssue(
         sequenceNumber,
         typeId: input.typeId ?? null,
         initiativeId: input.initiativeId ?? null,
+        companyId: input.companyId ?? null,
         cycleId: input.cycleId ?? null,
         assigneeUserId,
         delegateUserId: input.delegateUserId ?? null,
@@ -1276,6 +1309,7 @@ export interface IssuePatch {
   typeId?: number | null;
   parentId?: number | null;
   initiativeId?: number | null;
+  companyId?: number | null;
   cycleId?: number | null;
   assigneeUserId?: string | null;
   delegateUserId?: string | null;
@@ -1340,6 +1374,7 @@ export async function updateIssue(
   if (patch.typeId !== undefined) set.typeId = patch.typeId;
   if (patch.parentId !== undefined) set.parentId = patch.parentId;
   if (patch.initiativeId !== undefined) set.initiativeId = patch.initiativeId;
+  if (patch.companyId !== undefined) set.companyId = patch.companyId;
   if (patch.cycleId !== undefined) set.cycleId = patch.cycleId;
   if (patch.assigneeUserId !== undefined) set.assigneeUserId = patch.assigneeUserId;
   else if (autoAssignee) set.assigneeUserId = autoAssignee;

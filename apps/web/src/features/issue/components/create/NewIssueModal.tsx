@@ -49,6 +49,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Pill } from '@/components/common/fields/Pill';
 import InitiativeSelect from '../fields/InitiativeSelect';
+import CompanySelect from '../fields/CompanySelect';
 import CycleSelect from '../fields/CycleSelect';
 import { useTranslations } from 'next-intl';
 
@@ -78,6 +79,7 @@ export default function NewIssueModal({
       : defaults.typeId,
   );
   const [initiativeId, setInitiativeId] = useState<number | null>(defaults.initiativeId ?? null);
+  const [companyId, setCompanyId] = useState<number | null>(null);
   // A default cycle that is not among the planned ones has finished, and nothing new
   // is planned into it — the issue is created without a cycle instead.
   const [cycle, setCycle] = useState<CycleRef | null>(
@@ -250,6 +252,7 @@ export default function NewIssueModal({
           parentId: defaults.parentId ?? null,
           typeId,
           initiativeId,
+          companyId,
           cycleId: cycle?.id ?? null,
           assigneeUserId,
           delegateUserId,
@@ -421,6 +424,8 @@ export default function NewIssueModal({
               onChange={setInitiativeId}
             />
           )}
+
+          <CompanySelect value={companyId} onChange={setCompanyId} />
 
           {project.project.cyclesEnabled && (
             <CycleSelect projectKey={project.project.ref} value={cycle} onChange={setCycle} />

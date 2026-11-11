@@ -30,7 +30,8 @@ export type PermissionResource =
   | 'repositories'
   | 'note_boards'
   | 'danger_zone'
-  | 'import_export';
+  | 'import_export'
+  | 'companies';
 
 export type ResourcePermissions = Record<PermissionAction, boolean>;
 

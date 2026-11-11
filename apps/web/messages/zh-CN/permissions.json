@@ -26,7 +26,8 @@
     "repositories": "代码仓库",
     "note_boards": "便签板",
     "import_export": "导入/导出",
-    "danger_zone": "危险操作"
+    "danger_zone": "危险操作",
+    "companies": "Companies"
   },
   "actions": {
     "create": "新建",

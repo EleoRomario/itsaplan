@@ -18,6 +18,7 @@ import PrioritySelect from '@/components/common/fields/PrioritySelect';
 import StatusSelect from '@/components/common/fields/StatusSelect';
 import TypeSelect from '@/components/common/fields/TypeSelect';
 import InitiativeSelect from '../fields/InitiativeSelect';
+import CompanySelect from '../fields/CompanySelect';
 import CycleSelect from '../fields/CycleSelect';
 import CycleHistoryBadge from '../fields/CycleHistoryBadge';
 import EstimatePill from '../fields/EstimatePill';
@@ -182,6 +183,16 @@ export default function IssueProperties({
                 onChange={(id) => onPatch({ initiativeId: id })}
               />
             )}
+          </IssuePropertyRow>
+        ),
+
+        (!readOnly || issue.company) && (
+          <IssuePropertyRow key="company" label="Company">
+            <CompanySelect
+              value={issue.company?.id ?? issue.companyId ?? null}
+              onChange={(id) => onPatch({ companyId: id })}
+              readOnly={readOnly}
+            />
           </IssuePropertyRow>
         ),
 

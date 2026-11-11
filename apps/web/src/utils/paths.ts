@@ -67,6 +67,10 @@ export const apiDocsPath = (ref: string) => `${projectPath(ref)}/api`;
 
 export const membersPath = (ref: string) => `${projectPath(ref)}/members`;
 
+export const companiesPath = (ref: string) => `${projectPath(ref)}/companies`;
+export const companyDetailPath = (ref: string, companyId: number) =>
+  `${companiesPath(ref)}/${companyId}`;
+
 // An issue is addressed by its identifier under its team, not under its project:
 // /acme/issue/MKT-42.
 export const issuePath = (ref: string, sequenceNumber: number) => {

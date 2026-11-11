@@ -93,6 +93,18 @@ export const IssueResponse = t.Object({
   // to order the lanes of a board grouped by initiative. Create and update set it
   // through initiativeId.
   initiative: t.Nullable(t.Object({ id: t.Number(), title: t.String(), status: t.String() })),
+  // The linked company, or null. Carries id, taxId, name, and blacklist status.
+  // Create and update set it through companyId.
+  company: t.Nullable(
+    t.Object({
+      id: t.Number(),
+      taxId: t.String(),
+      name: t.String(),
+      isBlacklisted: t.Boolean(),
+      blacklistReason: t.Nullable(t.String()),
+    }),
+  ),
+  companyId: t.Nullable(t.Number()),
   // The cycle this issue is planned into, or null. It carries id + name for rendering,
   // and status to filter by the running or the upcoming ones. Create and update set it
   // through cycleId.
@@ -453,6 +465,13 @@ export const createIssueBody = t.Object({
       }),
     ),
   ),
+  companyId: t.Optional(
+    t.Nullable(
+      t.Integer({
+        description: 'Global company id to link this issue to, or null. From list_companies.',
+      }),
+    ),
+  ),
   cycleId: t.Optional(
     t.Nullable(
       t.Integer({
@@ -511,6 +530,7 @@ export const bulkUpdateIssuesBody = t.Object({
     columnId: t.Optional(t.Integer()),
     typeId: t.Optional(t.Nullable(t.Integer())),
     initiativeId: t.Optional(t.Nullable(t.Integer())),
+    companyId: t.Optional(t.Nullable(t.Integer())),
     cycleId: t.Optional(t.Nullable(t.Integer())),
     assigneeUserId: t.Optional(t.Nullable(t.String())),
     delegateUserId: t.Optional(t.Nullable(t.String())),
@@ -658,6 +678,13 @@ export const updateIssueBody = t.Object({
       t.Integer({
         description:
           'Link this issue to an initiative id, or null to unlink. From list_initiatives.',
+      }),
+    ),
+  ),
+  companyId: t.Optional(
+    t.Nullable(
+      t.Integer({
+        description: 'Link this issue to a company id, or null to unlink.',
       }),
     ),
   ),

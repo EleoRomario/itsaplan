@@ -1513,6 +1513,9 @@ export const issue = pgTable(
     initiativeId: integer('initiative_id').references(() => initiative.id, {
       onDelete: 'set null',
     }),
+    companyId: integer('company_id').references((): AnyPgColumn => company.id, {
+      onDelete: 'set null',
+    }),
     // The cycle this issue is planned into (project-scoped). Nullable; deleting a
     // cycle unlinks its issues rather than deleting them.
     cycleId: integer('cycle_id').references(() => cycle.id, {
@@ -1587,11 +1590,14 @@ export const issue = pgTable(
     index('issue_cycle_idx')
       .on(t.cycleId)
       .where(sql`${t.cycleId} IS NOT NULL`),
-    // Backs the progress counts of the initiatives list and of one initiative, and the
-    // ON DELETE SET NULL an initiative delete runs.
+    // Backs reading an initiative's issues.
     index('issue_initiative_idx')
       .on(t.initiativeId)
       .where(sql`${t.initiativeId} IS NOT NULL`),
+    // Backs querying issues associated with a global company.
+    index('issue_company_idx')
+      .on(t.companyId)
+      .where(sql`${t.companyId} IS NOT NULL`),
   ],
 );
 
@@ -2651,4 +2657,120 @@ export const documentComment = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index('document_comment_document_idx').on(t.documentId, t.createdAt)],
+);
+
+// Global catalog of companies/organizations.
+export const company = pgTable(
+  'company',
+  {
+    id: serial('id').primaryKey(),
+    teamId: integer('team_id').references(() => team.id, { onDelete: 'cascade' }),
+    ownerUserId: text('owner_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    createdByUserId: text('created_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    taxId: text('tax_id').notNull().unique(),
+    name: text('name').notNull(),
+    tradeName: text('trade_name'),
+    status: text('status').notNull().default('active'),
+    isBlacklisted: boolean('is_blacklisted').notNull().default(false),
+    blacklistReason: text('blacklist_reason'),
+    blacklistedAt: timestamp('blacklisted_at', { withTimezone: true }),
+    blacklistedByUserId: text('blacklisted_by_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    email: text('email'),
+    phone: text('phone'),
+    address: text('address'),
+    city: text('city'),
+    country: text('country').default('PE'),
+    website: text('website'),
+    notes: text('notes'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('company_tax_id_idx').on(t.taxId),
+    index('company_name_idx').on(t.name),
+    index('company_team_idx').on(t.teamId),
+    index('company_owner_idx').on(t.ownerUserId),
+    index('company_created_by_idx').on(t.createdByUserId),
+  ],
+);
+
+// Multiple contacts for each company.
+export const companyContact = pgTable(
+  'company_contact',
+  {
+    id: serial('id').primaryKey(),
+    companyId: integer('company_id')
+      .notNull()
+      .references(() => company.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    role: text('role'),
+    email: text('email'),
+    phone: text('phone'),
+    isPrimary: boolean('is_primary').notNull().default(false),
+    isLegalRepresentative: boolean('is_legal_rep').notNull().default(false),
+    documentId: text('document_id'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('company_contact_company_idx').on(t.companyId)],
+);
+
+// Shared/reusable master documents for each company.
+export const companyAttachment = pgTable(
+  'company_attachment',
+  {
+    id: serial('id').primaryKey(),
+    companyId: integer('company_id')
+      .notNull()
+      .references(() => company.id, { onDelete: 'cascade' }),
+    publicId: text('public_id').notNull().unique(),
+    filename: text('filename').notNull(),
+    contentType: text('content_type').notNull(),
+    sizeBytes: integer('size_bytes').notNull(),
+    s3Key: text('s3_key').notNull(),
+    documentType: text('document_type'),
+    year: integer('year'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('company_attachment_company_idx').on(t.companyId)],
+);
+
+export type FormQuestionType = 'text' | 'textarea' | 'select' | 'date';
+
+export type FormQuestion = {
+  id: string;
+  label: string;
+  type: FormQuestionType;
+  required: boolean;
+  placeholder?: string;
+  options?: string[];
+};
+
+export const projectForm = pgTable(
+  'project_form',
+  {
+    id: serial('id').primaryKey(),
+    projectId: integer('project_id')
+      .notNull()
+      .references(() => project.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    description: text('description'),
+    slug: text('slug').notNull(),
+    enabled: boolean('enabled').notNull().default(true),
+    typeId: integer('type_id').references(() => issueType.id, { onDelete: 'set null' }),
+    columnId: integer('column_id').references(() => projectColumn.id, { onDelete: 'set null' }),
+    questions: jsonb('questions').$type<FormQuestion[]>().notNull().default([]),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('project_form_slug_uq').on(t.slug),
+    index('project_form_project_idx').on(t.projectId),
+  ],
 );

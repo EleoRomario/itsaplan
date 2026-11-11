@@ -26,7 +26,8 @@
     "repositories": "Repositorios",
     "note_boards": "Tableros de notas",
     "import_export": "Importar/Exportar",
-    "danger_zone": "Zona de riesgo"
+    "danger_zone": "Zona de riesgo",
+    "companies": "Empresas"
   },
   "actions": {
     "create": "Crear",

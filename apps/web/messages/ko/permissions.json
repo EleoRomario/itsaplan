@@ -26,7 +26,8 @@
     "repositories": "저장소",
     "note_boards": "노트 보드",
     "import_export": "가져오기/내보내기",
-    "danger_zone": "위험 영역"
+    "danger_zone": "위험 영역",
+    "companies": "Companies"
   },
   "actions": {
     "create": "생성",

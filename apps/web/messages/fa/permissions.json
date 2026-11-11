@@ -26,7 +26,8 @@
     "repositories": "مخزن‌ها",
     "note_boards": "تخته‌های یادداشت",
     "import_export": "ورود/خروج",
-    "danger_zone": "منطقه خطر"
+    "danger_zone": "منطقه خطر",
+    "companies": "Companies"
   },
   "actions": {
     "create": "ایجاد",

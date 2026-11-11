@@ -4,6 +4,7 @@ import aiChat from '../../messages/en/aiChat.json';
 import apiKeys from '../../messages/en/apiKeys.json';
 import auth from '../../messages/en/auth.json';
 import common from '../../messages/en/common.json';
+import companies from '../../messages/en/companies.json';
 import cycles from '../../messages/en/cycles.json';
 import dashboards from '../../messages/en/dashboards.json';
 import display from '../../messages/en/display.json';
@@ -61,6 +62,7 @@ const coreMessages = {
   inbox,
   permissions,
   members,
+  companies,
   cycles,
   dashboards,
   initiatives,

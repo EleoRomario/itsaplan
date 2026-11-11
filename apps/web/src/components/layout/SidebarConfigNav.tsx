@@ -1,7 +1,7 @@
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Bell, Settings, Users } from 'lucide-react';
-import { membersPath, notificationsPath } from '@/utils/paths';
+import { Bell, Building2, Settings, Users } from 'lucide-react';
+import { companiesPath, membersPath, notificationsPath } from '@/utils/paths';
 import { useSettingsNavGroups } from '@/hooks/useSettingsNavGroups';
 import { usePermissions } from '@/hooks/usePermissions';
 import {
@@ -33,6 +33,15 @@ export default function SidebarConfigNav({ projectKey }: { projectKey: string | 
               icon={Users}
               label={t('members')}
               active={pathname.includes('/members')}
+              disabled={disabled}
+            />
+          )}
+          {can('companies', 'read') && (
+            <SidebarNavItem
+              href={projectKey ? companiesPath(projectKey) : '#'}
+              icon={Building2}
+              label={t('companies')}
+              active={pathname.includes('/companies')}
               disabled={disabled}
             />
           )}

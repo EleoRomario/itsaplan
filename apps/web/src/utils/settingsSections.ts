@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import {
   Bot,
+  ClipboardList,
   Clock3,
   Columns3,
   FileText,
@@ -105,6 +106,12 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     slug: 'webhooks',
     icon: Webhook,
     resource: 'webhooks',
+    group: 'automation',
+  },
+  {
+    slug: 'forms',
+    icon: ClipboardList,
+    resource: 'work_items',
     group: 'automation',
   },
   {
