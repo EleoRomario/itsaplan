@@ -99,7 +99,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
   {
     slug: 'schedules',
     icon: Clock3,
-    resource: 'ai_agents',
+    resource: 'agent_schedules',
     group: 'ai-team',
   },
   {
