@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'bun:test';
-import { applyMapping, previewTable, validateMapping, type MappingContext } from '../../mapping';
+import {
+  applyMapping,
+  previewTable,
+  suggestMapping,
+  validateMapping,
+  type MappingContext,
+} from '../../mapping';
 
 const ctx: MappingContext = {
   labels: [
@@ -124,5 +130,62 @@ describe('previewTable', () => {
     expect(previewTable(parsed, { title: 'Task', labels: 'Gone' }, new Set()).columns).toEqual([
       { field: 'title', header: 'Task' },
     ]);
+  });
+});
+
+describe('suggestMapping', () => {
+  it('guesses mapping from common spanish and english headers', () => {
+    const headers = [
+      'Título de la tarea',
+      'Descripción detallada',
+      'Prioridad',
+      'Fecha límite',
+      'Estado',
+      'Responsable',
+      'Etiquetas',
+    ];
+    const suggested = suggestMapping(headers);
+    expect(suggested).toEqual({
+      title: 'Título de la tarea',
+      description: 'Descripción detallada',
+      priority: 'Prioridad',
+      dueDate: 'Fecha límite',
+      state: 'Estado',
+      assignee: 'Responsable',
+      labels: 'Etiquetas',
+    });
+  });
+
+  it('falls back to first header for title when no match found', () => {
+    const headers = ['Columna 1', 'Columna 2'];
+    const suggested = suggestMapping(headers);
+    expect(suggested.title).toBe('Columna 1');
+  });
+});
+
+describe('applyMapping with state', () => {
+  it('resolves state to matching column id', () => {
+    const contextWithCols: MappingContext = {
+      ...ctx,
+      columns: [
+        { id: 10, name: 'Backlog' },
+        { id: 20, name: 'En progreso' },
+      ],
+    };
+    const parsed = {
+      headers: ['Tarea', 'Fase'],
+      totalRows: 2,
+      rows: [
+        ['Setup DB', 'Backlog'],
+        ['Build UI', 'En progreso'],
+      ],
+    };
+    const applied = applyMapping(
+      parsed,
+      validateMapping({ title: 'Tarea', state: 'Fase' }),
+      contextWithCols,
+    );
+    expect(applied[0]!.draft?.columnId).toBe(10);
+    expect(applied[1]!.draft?.columnId).toBe(20);
   });
 });

@@ -12,6 +12,7 @@ export const IMPORT_FIELDS = [
   'dueDate',
   'labels',
   'assignee',
+  'state',
 ] as const;
 
 export type ImportField = (typeof IMPORT_FIELDS)[number];
@@ -23,6 +24,7 @@ export type ImportMapping = Partial<Record<ImportField, string>> & { title: stri
 export interface MappingContext {
   labels: { id: number; name: string }[];
   members: { userId: string; name: string | null; email: string }[];
+  columns?: { id: number; name: string }[];
 }
 
 export interface ImportDraft {
@@ -32,6 +34,7 @@ export interface ImportDraft {
   dueDate?: string;
   labelIds?: number[];
   assigneeUserId?: string;
+  columnId?: number;
 }
 
 export interface AppliedRow {
@@ -189,6 +192,46 @@ export function applyMapping(
         if (member) draft.assigneeUserId = member.userId;
       }
     }
+    if (mapping.state && ctx.columns) {
+      const rawState = cellFor(mapping.state, parsed)[index]?.trim().toLowerCase();
+      if (rawState) {
+        const matched = ctx.columns.find((c) => c.name.toLowerCase() === rawState);
+        if (matched) draft.columnId = matched.id;
+      }
+    }
     return { rowNumber, draft };
   });
+}
+
+// Automatically suggests a sensible initial mapping from file headers.
+export function suggestMapping(headers: string[]): ImportMapping {
+  const find = (keywords: string[]) =>
+    headers.find((h) => keywords.some((k) => h.toLowerCase().includes(k)));
+
+  const title =
+    find(['title', 'titulo', 'título', 'name', 'nombre', 'asunto', 'task', 'tarea', 'summary']) ??
+    headers[0] ??
+    '';
+
+  const mapping: Record<string, string> = { title };
+
+  const desc = find(['desc', 'detalle', 'detail', 'body', 'content', 'contenido']);
+  if (desc) mapping.description = desc;
+
+  const prio = find(['prior', 'prio', 'sever', 'urgenc']);
+  if (prio) mapping.priority = prio;
+
+  const due = find(['due', 'venc', 'fecha', 'date', 'deadline', 'limite', 'límite']);
+  if (due) mapping.dueDate = due;
+
+  const state = find(['state', 'estad', 'column', 'columna', 'fase', 'status']);
+  if (state) mapping.state = state;
+
+  const assignee = find(['assign', 'asig', 'respons', 'owner', 'encargad']);
+  if (assignee) mapping.assignee = assignee;
+
+  const labels = find(['label', 'etiquet', 'tag', 'categ']);
+  if (labels) mapping.labels = labels;
+
+  return mapping as ImportMapping;
 }

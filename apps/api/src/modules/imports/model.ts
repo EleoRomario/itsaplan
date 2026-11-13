@@ -1,12 +1,21 @@
 import { t } from 'elysia';
 
 export const importIdParams = t.Object({ importId: t.String() });
+export const projectKeyParams = t.Object({ projectKey: t.String() });
+
+export const uploadImportBody = t.Object({
+  file: t.File(),
+});
+
+export const updateImportMappingBody = t.Object({
+  mapping: t.Record(t.String(), t.String()),
+});
 
 // The draft the UI renders and confirms against. `mapping` passes through as the
-// agent saved it (field -> column header); it is only ever read back, not edited
-// from here.
+// agent or user saved it (field -> column header).
 export const ImportResponse = t.Object({
   id: t.String(),
+  projectId: t.Optional(t.Number()),
   filename: t.String(),
   contentType: t.String(),
   sizeBytes: t.Number(),
@@ -19,6 +28,7 @@ export const ImportResponse = t.Object({
   mapping: t.Any(),
   errorText: t.Nullable(t.String()),
   createdAt: t.String(),
+  headers: t.Optional(t.Array(t.String())),
   // The parsed table narrowed to the mapped columns, so the review card can draw
   // every row and the reason confirm would pass it over, without a second round trip.
   // A file exported from a tracker repeats a column per value it holds and runs into

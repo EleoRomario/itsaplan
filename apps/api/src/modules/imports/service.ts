@@ -12,11 +12,23 @@ import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import { HttpError, iso, num } from '#shared/lib';
 import { createIssue } from '#modules/issues/service';
 import type { ProjectRow } from '#modules/projects/service';
-import { readAttachmentBytes } from '#modules/chat-attachments/service';
-import { parseImportFile, type ParsedSheet } from '#modules/chat-attachments/parse';
+import { readAttachmentBytes, createChatAttachment } from '#modules/chat-attachments/service';
+import {
+  isTableFilename,
+  parseImportFile,
+  type ParsedSheet,
+} from '#modules/chat-attachments/parse';
+import {
+  safeAttachmentFilename,
+  attachmentObjectKey,
+  assertAttachmentUploadAllowed,
+  storeAttachmentObject,
+} from '#modules/attachments/storage';
 import {
   applyMapping,
   duplicateTitle,
+  previewTable,
+  suggestMapping,
   titleKey,
   titleKeys,
   validateMapping,
@@ -181,11 +193,8 @@ export async function confirmImport(
         result.skipped.push({ row: item.rowNumber, reason: duplicate });
         continue;
       }
-      const created = await createIssue(
-        project,
-        { ...item.draft, columnId: ctx.defaultColumnId },
-        actorUserId,
-      );
+      const columnId = item.draft.columnId ?? ctx.defaultColumnId;
+      const created = await createIssue(project, { ...item.draft, columnId }, actorUserId);
       result.imported.push({
         key: `${project.key}-${created.sequenceNumber}`,
         title: created.title,
@@ -229,7 +238,7 @@ async function readStoredFile(s3Key: string, filename: string): Promise<ParsedSh
   return parseImportFile(await readAttachmentBytes(s3Key), filename);
 }
 
-// The labels, members, and first workflow column a mapping resolves values against.
+// The labels, members, and workflow columns a mapping resolves values against.
 async function mappingContext(projectId: number) {
   const [labels, members, columns] = await Promise.all([
     db.select({ id: label.id, name: label.name }).from(label).where(eq(label.projectId, projectId)),
@@ -239,7 +248,7 @@ async function mappingContext(projectId: number) {
       .innerJoin(user, eq(user.id, projectMember.userId))
       .where(eq(projectMember.projectId, projectId)),
     db
-      .select({ id: projectColumn.id })
+      .select({ id: projectColumn.id, name: projectColumn.name })
       .from(projectColumn)
       .where(eq(projectColumn.projectId, projectId))
       .orderBy(asc(projectColumn.position)),
@@ -247,6 +256,112 @@ async function mappingContext(projectId: number) {
   return {
     labels,
     members,
+    columns,
     defaultColumnId: columns[0]?.id ?? null,
+  };
+}
+
+// Direct upload of a spreadsheet file without requiring agent conversation.
+export async function uploadDirectImport(project: ProjectRow, file: File, userId: string) {
+  if (!isTableFilename(file.name)) {
+    throw new HttpError(400, 'Only .xlsx, .csv, and .docx files are supported for import');
+  }
+  const bytes = Buffer.from(await file.arrayBuffer());
+  if (bytes.length === 0) {
+    throw new HttpError(400, 'Uploaded file is empty');
+  }
+  const parsed = await parseImportFile(bytes, file.name);
+  if (parsed.headers.length === 0) {
+    throw new HttpError(400, 'The file has no column headers');
+  }
+  if (parsed.rows.length === 0) {
+    throw new HttpError(400, 'The file has no data rows');
+  }
+
+  const filename = safeAttachmentFilename(file.name);
+  const contentType = file.type || 'application/octet-stream';
+  await assertAttachmentUploadAllowed(project.id, bytes.length, contentType);
+
+  const key = attachmentObjectKey(project.id, 'chat', null, filename);
+  await storeAttachmentObject(key, bytes, contentType);
+
+  const attachment = await createChatAttachment({
+    projectId: project.id,
+    uploadedByUserId: userId,
+    s3Key: key,
+    filename,
+    contentType,
+    sizeBytes: bytes.length,
+  });
+
+  const mapping = suggestMapping(parsed.headers);
+  const [row] = await db
+    .insert(issueImport)
+    .values({
+      projectId: project.id,
+      attachmentId: attachment.id,
+      mapping,
+      status: 'mapped',
+    })
+    .returning();
+
+  const taken = await existingTitles(project.id, titleKeys(parsed, mapping));
+  const preview = {
+    ...previewTable(parsed, mapping, taken),
+    totalRows: parsed.totalRows,
+  };
+
+  return {
+    id: row.publicId,
+    projectId: project.id,
+    filename: attachment.filename,
+    contentType: attachment.contentType,
+    sizeBytes: attachment.sizeBytes,
+    status: row.status as IssueImportStatus,
+    mapping,
+    errorText: row.errorText,
+    createdAt: iso(row.createdAt),
+    headers: parsed.headers,
+    preview,
+  };
+}
+
+// Update the column mapping on an active draft and recalculate preview.
+export async function updateImportMapping(publicId: string, rawMapping: unknown) {
+  const row = await requireImport(publicId);
+  if (row.issue_import.status !== 'mapped') {
+    throw new HttpError(409, 'Only an import waiting for review can update its mapping');
+  }
+  const mapping = validateMapping(rawMapping);
+  const parsed = await readStoredFile(row.chat_attachment.s3Key, row.chat_attachment.filename);
+  for (const field of Object.values(mapping)) {
+    if (!parsed.headers.some((header) => header.toLowerCase() === field.toLowerCase())) {
+      throw new HttpError(400, `Column "${field}" is not in the file`);
+    }
+  }
+
+  await db
+    .update(issueImport)
+    .set({ mapping, updatedAt: new Date() })
+    .where(eq(issueImport.publicId, publicId));
+
+  const taken = await existingTitles(row.issue_import.projectId, titleKeys(parsed, mapping));
+  const preview = {
+    ...previewTable(parsed, mapping, taken),
+    totalRows: parsed.totalRows,
+  };
+
+  return {
+    id: row.issue_import.publicId,
+    projectId: row.issue_import.projectId,
+    filename: row.chat_attachment.filename,
+    contentType: row.chat_attachment.contentType,
+    sizeBytes: num(row.chat_attachment.sizeBytes),
+    status: row.issue_import.status as IssueImportStatus,
+    mapping,
+    errorText: row.issue_import.errorText,
+    createdAt: iso(row.issue_import.createdAt),
+    headers: parsed.headers,
+    preview,
   };
 }

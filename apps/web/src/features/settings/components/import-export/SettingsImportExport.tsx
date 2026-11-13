@@ -6,6 +6,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import SettingsSection from '@/components/common/page/SettingsSection';
 import type { ImportSourceEntry } from '../../types/importSource';
+import SettingsImportExportCsv from './SettingsImportExportCsv';
 import SettingsImportExportPlane from './SettingsImportExportPlane';
 import SettingsImportExportLinear from './SettingsImportExportLinear';
 import SettingsImportExportTrello from './SettingsImportExportTrello';
@@ -14,6 +15,7 @@ import SettingsImportExportJobList from './SettingsImportExportJobList';
 import SettingsImportExportDownloadButton from './SettingsImportExportDownloadButton';
 
 const CORE_SOURCES: ImportSourceEntry[] = [
+  { kind: 'source', key: 'csv', label: 'CSV / Excel', Component: SettingsImportExportCsv },
   { kind: 'source', key: 'plane', label: 'Plane', Component: SettingsImportExportPlane },
   { kind: 'source', key: 'linear', label: 'Linear', Component: SettingsImportExportLinear },
   { kind: 'source', key: 'trello', label: 'Trello', Component: SettingsImportExportTrello },

@@ -7,7 +7,14 @@ import { accessErrors, commonErrors, errors } from '#shared/responses';
 import { requireUser } from '#shared/access';
 import { getProjectById } from '#modules/projects/service';
 import { previewTable, titleKeys, type ImportField } from './mapping';
-import { ConfirmResponse, ImportResponse, importIdParams } from './model';
+import {
+  ConfirmResponse,
+  ImportResponse,
+  importIdParams,
+  projectKeyParams,
+  updateImportMappingBody,
+  uploadImportBody,
+} from './model';
 import {
   cancelImport,
   confirmImport,
@@ -15,6 +22,8 @@ import {
   getImport,
   getImportProjectId,
   readImportTable,
+  updateImportMapping,
+  uploadDirectImport,
 } from './service';
 
 // Imports: a chat attachment an agent mapped into issues. The file is uploaded and
@@ -50,13 +59,47 @@ export const importRoutes = new Elysia({
       const mapping = (row.mapping ?? {}) as Partial<Record<ImportField, string>>;
       const taken = await existingTitles(row.projectId, titleKeys(parsed, mapping));
       const preview = { ...previewTable(parsed, mapping, taken), totalRows: parsed.totalRows };
-      return { ...row, preview };
+      return { ...row, headers: parsed.headers, preview };
     },
     {
       params: importIdParams,
       importFile: 'read',
       response: { 200: ImportResponse, ...accessErrors },
       detail: { summary: 'View an import draft' },
+    },
+  )
+
+  // Direct upload of a spreadsheet file to create an import draft without an agent.
+  .post(
+    '/projects/:projectKey/imports/upload',
+    async ({ project, user, body }) => {
+      const file = body.file;
+      if (!(file instanceof File)) {
+        throw new HttpError(400, 'No file uploaded (form field "file")');
+      }
+      return uploadDirectImport(project, file, requireUser(user).id);
+    },
+    {
+      params: projectKeyParams,
+      permission: ['work_items', 'create'],
+      body: uploadImportBody,
+      response: { 200: ImportResponse, ...commonErrors },
+      detail: { summary: 'Upload a CSV or Excel file for issue import' },
+    },
+  )
+
+  // Updates the column mapping of an import draft and returns the refreshed preview.
+  .put(
+    '/imports/:importId/mapping',
+    async ({ params, body }) => {
+      return updateImportMapping(params.importId, body.mapping);
+    },
+    {
+      params: importIdParams,
+      body: updateImportMappingBody,
+      importFile: 'edit',
+      response: { 200: ImportResponse, ...commonErrors },
+      detail: { summary: 'Update column mapping of an import draft' },
     },
   )
 
