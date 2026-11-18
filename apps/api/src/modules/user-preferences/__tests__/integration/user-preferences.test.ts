@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
+import { eq } from 'drizzle-orm';
+import { db, userPreference } from '@repo/db';
 import { api, authedApi, createProject } from '#tests/helpers/app';
 import { signUpTestUser } from '#tests/helpers/auth';
 import { resetDb } from '#tests/helpers/db';
@@ -6,6 +8,14 @@ import { resetDb } from '#tests/helpers/db';
 // Account preferences are self-scoped: a user only ever reads and writes their own
 // row, so there is no project or permission wiring to cover. A read before any write
 // returns the defaults instead of failing, and a patch leaves omitted fields alone.
+
+// Sign-up saves the browser's language with the release it ran. An account made before
+// that, or by SCIM, has no row.
+async function signUpWithoutPreferences() {
+  const u = await signUpTestUser();
+  await db.delete(userPreference).where(eq(userPreference.userId, u.userId));
+  return u;
+}
 
 describe('user preferences', () => {
   beforeEach(resetDb);
@@ -27,13 +37,14 @@ describe('user preferences', () => {
       issueStatsView: 'compact',
       issueActivityView: 'flat',
       autoWatch: true,
+      onboardingSeen: false,
       lastProjectId: null,
       hotkeys: {},
     });
   });
 
   it('uses the preferred supported browser language when nothing was saved', async () => {
-    const u = await signUpTestUser();
+    const u = await signUpWithoutPreferences();
 
     const res = await authedApi(u.cookie, {
       'accept-language': 'ru;q=0.4,zh-CN;q=0.9,en;q=0.8',
@@ -44,7 +55,7 @@ describe('user preferences', () => {
   });
 
   it('saves the preferred browser language with the first preference update', async () => {
-    const u = await signUpTestUser();
+    const u = await signUpWithoutPreferences();
     const client = authedApi(u.cookie, {
       'accept-language': 'uk-UA,uk;q=0.9,en;q=0.8',
     });
@@ -70,6 +81,7 @@ describe('user preferences', () => {
       issueStatsView: 'timeline',
       issueActivityView: 'grouped',
       autoWatch: false,
+      onboardingSeen: true,
       hotkeys: { 'issue.new': 'i' },
     });
 
@@ -86,6 +98,7 @@ describe('user preferences', () => {
       issueStatsView: 'timeline',
       issueActivityView: 'grouped',
       autoWatch: false,
+      onboardingSeen: true,
       lastProjectId: null,
       hotkeys: { 'issue.new': 'i' },
     });

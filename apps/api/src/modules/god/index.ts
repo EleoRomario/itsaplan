@@ -16,9 +16,11 @@ import {
   setScimSettings,
   rotateScimToken,
   hasConfiguredOidc,
+  composeEmail,
+  emailLocale,
 } from '@repo/auth';
-import { hasConfiguredEmailProvider, getStorageSettings } from '@repo/db';
-import { emailBody, hasEmailProvider, sendEmail } from '@repo/mailer';
+import { hasConfiguredEmailProvider, getJobSettings, getStorageSettings } from '@repo/db';
+import { hasEmailProvider } from '@repo/mailer';
 import { authContext } from '#shared/auth-context';
 import { requireGod } from '#shared/access';
 import { HttpError, rethrowDuplicate } from '#shared/lib';
@@ -59,6 +61,10 @@ import {
   AuthSettingsResponse,
   EmailSettingsBody,
   EmailSettingsResponse,
+  EmailDraftBody,
+  EmailPreviewResponse,
+  EmailTemplatesBody,
+  EmailTemplatesResponse,
   EmailTestResponse,
   GoogleSettingsBody,
   GoogleSettingsResponse,
@@ -84,7 +90,13 @@ import {
   teamParams,
   userParams,
 } from './model';
-import { emailTestError } from './email-test';
+import { deliverTestEmail } from './email-test';
+import {
+  getEmailTemplates,
+  previewEmail,
+  saveEmailTemplates,
+  sendTestEmail,
+} from './email-templates';
 import { getInstanceBotSettings, setInstanceBotSettings } from '#modules/telegram/service';
 import {
   setStorageSettings,
@@ -96,6 +108,11 @@ import {
   setProjectDefaults,
   getAgentSettings,
   setAgentSettings,
+  setJobSettings,
+  getSharingSettings,
+  setSharingSettings,
+  getApiDocsSettings,
+  setApiDocsSettings,
 } from '#modules/settings/service';
 import { getUpdateStatus } from '#modules/settings/updates';
 import { RoleResponse, createRoleBody, updateRoleBody } from '#modules/roles/model';
@@ -110,9 +127,13 @@ import {
 } from '#modules/roles/service';
 import {
   AgentSettingsSchema,
+  ApiDocsSettingsSchema,
   EmbedSitesSchema,
   HotkeyCombosSchema,
+  JobSettingsBody,
+  JobSettingsSchema,
   ProjectDefaultsSchema,
+  SharingSettingsSchema,
   StorageSettingsSchema,
   UpdateStatusSchema,
 } from '#modules/settings/model';
@@ -234,21 +255,10 @@ export const godRoutes = new Elysia({ name: 'god', detail: { tags: ['God'] } })
         throw new HttpError(400, 'Configure an email provider first');
       }
 
-      const body = emailBody(
-        "This test confirms that It's a Plan can send email through the configured provider.",
-      );
-      const result = await sendEmail(
-        { ...config, smtp: { ...config.smtp, timeout: config.smtp.timeout ?? 15 } },
-        {
-          to: current.email,
-          subject: "It's a Plan email test",
-          ...body,
-        },
-      );
-      if (!result.ok) {
-        console.error('[god] test email failed:', result.error);
-        throw new HttpError(502, emailTestError(result.error));
-      }
+      await deliverTestEmail(config, {
+        to: current.email,
+        ...(await composeEmail('test', await emailLocale(current.email))),
+      });
       return { recipient: current.email };
     },
     {
@@ -258,6 +268,51 @@ export const godRoutes = new Elysia({ name: 'god', detail: { tags: ['God'] } })
         summary: 'Send a test email',
         description:
           'Send a test message through the supplied provider settings without saving them.',
+      },
+    },
+  )
+
+  .get('/god/email-templates', () => getEmailTemplates(), {
+    response: { 200: EmailTemplatesResponse, ...errors(401, 403) },
+    detail: {
+      summary: 'Get email templates',
+      description:
+        'Get every email the instance sends, with its built-in texts and what god changed.',
+    },
+  })
+
+  .put('/god/email-templates', ({ body }) => saveEmailTemplates(body), {
+    body: EmailTemplatesBody,
+    response: { 200: EmailTemplatesResponse, ...errors(400, 401, 403) },
+    detail: {
+      summary: 'Update email templates',
+      description:
+        'Replace the changed email texts and the layout. A null layout is the built-in one.',
+    },
+  })
+
+  .post('/god/email-templates/preview', ({ body }) => previewEmail(body), {
+    body: EmailDraftBody,
+    response: { 200: EmailPreviewResponse, ...errors(400, 401, 403) },
+    detail: {
+      summary: 'Preview an email',
+      description: 'Render an email from text and a layout, saved or not, with sample values.',
+    },
+  })
+
+  .post(
+    '/god/email-templates/test',
+    ({ user, body }) => {
+      const current = requireGod(user);
+      if (!current.email) throw new HttpError(400, 'The instance owner has no email address');
+      return sendTestEmail(current.email, body);
+    },
+    {
+      body: EmailDraftBody,
+      response: { 200: EmailTestResponse, ...commonErrors, ...errors(502) },
+      detail: {
+        summary: 'Send a test of an email',
+        description: 'Send an email from text and a layout, saved or not, to the instance owner.',
       },
     },
   )
@@ -472,6 +527,66 @@ export const godRoutes = new Elysia({ name: 'god', detail: { tags: ['God'] } })
       description:
         "Update what applies to every team's agents. A shorter trace retention takes effect " +
         'on the next sweep, which deletes the traces already past it.',
+    },
+  })
+
+  .get('/god/job-settings', () => getJobSettings(), {
+    response: { 200: JobSettingsSchema, ...errors(401, 403) },
+    detail: {
+      summary: 'Get background job settings',
+      description:
+        'Get how the background jobs run: poll intervals, batch sizes, leases, attempts and cleanup intervals.',
+    },
+  })
+
+  .put('/god/job-settings', ({ body }) => setJobSettings(body), {
+    body: JobSettingsBody,
+    response: { 200: JobSettingsSchema, ...errors(400, 401, 403) },
+    detail: {
+      summary: 'Update background job settings',
+      description:
+        'Update how the background jobs run. Fields left out keep their value. Each job reads ' +
+        'the settings on its next pass, so no restart is needed. A lease must be longer than ' +
+        'the timeout of the request it covers.',
+    },
+  })
+
+  .get('/god/sharing-settings', () => getSharingSettings(), {
+    response: { 200: SharingSettingsSchema, ...errors(401, 403) },
+    detail: {
+      summary: 'Get instance sharing settings',
+      description: 'Get whether public links work on this instance.',
+    },
+  })
+
+  .put('/god/sharing-settings', ({ body }) => setSharingSettings(body), {
+    body: SharingSettingsSchema,
+    response: { 200: SharingSettingsSchema, ...errors(400, 401, 403) },
+    detail: {
+      summary: 'Update instance sharing settings',
+      description:
+        'Turn public links on or off for the whole instance. Off closes every link and ' +
+        'refuses a new one; on opens the same links again, as each workspace allows.',
+    },
+  })
+
+  .get('/god/api-docs-settings', () => getApiDocsSettings(), {
+    response: { 200: ApiDocsSettingsSchema, ...errors(401, 403) },
+    detail: {
+      summary: 'Get who may read the API docs',
+      description:
+        'Get who may read the API docs, in the app and at /docs and /api/auth/reference.',
+    },
+  })
+
+  .put('/god/api-docs-settings', ({ body }) => setApiDocsSettings(body), {
+    body: ApiDocsSettingsSchema,
+    response: { 200: ApiDocsSettingsSchema, ...errors(400, 401, 403) },
+    detail: {
+      summary: 'Update who may read the API docs',
+      description:
+        'Set who may read the API docs, in the app and at /docs and /api/auth/reference. The ' +
+        'instance owner may under every audience except `nobody`.',
     },
   })
 

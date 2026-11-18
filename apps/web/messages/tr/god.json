@@ -187,29 +187,42 @@
   "general": {
     "saved": "Proje varsayılanları kaydedildi",
     "projectDefaults": "Proje varsayılanları",
-    "mcpEnabled": "Yeni projelerde MCP'yi etkinleştir",
-    "mcpEnabledHint": "Yeni bir proje oluşturulduğu andan itibaren takımının MCP kapsamına dahil edilir.",
+    "mcpEnabled": "Yeni projeler için MCP erişimi",
+    "mcpEnabledHint": "Takımında MCP açıksa yeni bir proje MCP istemcilerine açık olarak başlar. Mevcut projelerin ayarı değişmez.",
     "workspacesSaved": "Çalışma alanı ayarları kaydedildi",
     "workspaces": "Çalışma Alanları",
-    "personalWorkspaces": "Herkes için bir çalışma alanı",
-    "personalWorkspacesHint": "Her hesaba kullanıcının adını taşıyan kendine ait bir çalışma alanı verilir. Kapalıyken kişiler yalnızca eklendikleri çalışma alanlarında çalışabilir.",
+    "personalWorkspaces": "Kişisel çalışma alanları",
+    "personalWorkspacesHint": "Herkese kendi adını taşıyan bir çalışma alanı verilir. Kapalıyken yeni hesaplara çalışma alanı verilmez ve kişiler yalnızca eklendikleri çalışma alanlarında çalışır. Mevcut çalışma alanları kalır.",
     "invites": "Davetler",
     "inviteSearch": "Davet ederken kişi öner",
-    "inviteSearchHint": "Bir ekip sahibi veya yöneticisi davet penceresine adres yazarken, bu örnekteki tüm çalışma alanlarından eşleşen hesaplar ad ve e-posta ile listelenir. Kapalıyken adresin tamamı yazılmalıdır.",
+    "inviteSearchHint": "Ekip sahipleri ve yöneticileri, tüm çalışma alanlarındaki hesapları ad veya e-posta ile bulabilir. Eşleşmeler, davet penceresine yazarken görünür. Kapalıyken adresin tamamı yazılmalıdır.",
     "invitesSaved": "Davet ayarları kaydedildi",
+    "sharing": "Herkese açık bağlantılar",
+    "sharingEnabled": "Herkese açık bağlantılara izin ver",
+    "sharingEnabledHint": "Kapalıyken mevcut bağlantılar yeniden açılana kadar çalışmaz ve kimse paylaşamaz. Açıkken her çalışma alanı, belgelerinin, işlerinin ve görünümlerinin bağlantıyla paylaşılıp paylaşılamayacağına kendisi karar verir.",
+    "sharingSaved": "Herkese açık bağlantı ayarları kaydedildi",
+    "apiDocs": "API belgeleri",
+    "apiDocsAudience": "API belgelerini kimler okuyabilir",
+    "apiDocsAudienceHint": "Uygulamada ve API'nin /docs adresinde.",
+    "apiDocsAudiences": {
+      "nobody": "Hiç kimse",
+      "god": "Örneklem sahibi",
+      "everyone": "Herkes"
+    },
+    "apiDocsSaved": "API belgeleri ayarları kaydedildi",
     "agents": "Ajanlar",
     "agentsSaved": "Ajan ayarları kaydedildi",
     "embedding": "Yerleştirme",
     "embedSites": "Güvenilir siteler",
-    "embedSitesHint": "Herkese açık paylaşılan işler ve panolar yalnızca bu sitelerde bir çerçevede açılır. Siteleri virgülle ayırın.",
+    "embedSitesHint": "Herkese açık bağlantıyla paylaşılan belgeleri, işleri ve görünümleri yalnızca bu siteler yerleştirebilir. Liste boşsa hiçbir site yerleştiremez. Her siteyi https://example.com biçiminde, virgülle ayırarak girin.",
     "embedSitesInvalid": "Her siteyi yol olmadan https://example.com biçiminde girin.",
-    "embedSaved": "Güvenilir siteler kaydedildi",
+    "embedSaved": "Güvenilir siteler kaydedildi. Bir dakika içinde geçerli olur.",
     "traceRetention": "Çalıştırma izlerini saklama süresi",
-    "traceRetentionHint": "Her ajan çalıştırması model ve araç çağrılarını kaydeder. Kullanım panoları yalnızca saklanan çalıştırmaları sayar.",
+    "traceRetentionHint": "Çalıştırma izi, bir ajan çalıştırmasının model ve araç çağrılarını tutar. Bu süreden sonra silinir ve kullanım panoları o çalıştırmayı artık saymaz.",
     "traceDays": "{days, plural, one {# gün} other {# gün}}",
     "traceForever": "Süresiz",
-    "maxRunTime": "Azami çalışma süresi",
-    "maxRunTimeHint": "Bir ajan çalışmasının durdurulup başarısız olarak kaydedilmeden önce ne kadar sürebileceği. Bir ajanın kendi sınırı bunu aşamaz.",
+    "maxRunTime": "Çalışma süresi sınırı",
+    "maxRunTimeHint": "Daha uzun süren bir çalıştırma durdurulur ve başarısız olarak kaydedilir. Bir ajanın kendi sınırı yalnızca daha kısa olabilir. Sohbetlerde sınır yoktur.",
     "runMinutes": "{minutes, plural, one {# dakika} other {# dakika}}",
     "runSeconds": "{seconds} sn",
     "concurrentRuns": "Aynı anda çalıştırma",
@@ -276,6 +289,101 @@
     "quotaMb": "Proje başına depolama (MB)",
     "quotaNote": "Bir proje kotasına ulaştığında, ekler silinene kadar yeni yüklemeler reddedilir."
   },
+  "jobs": {
+    "saved": "Arka plan görevi ayarları kaydedildi",
+    "range": "{min, number} ile {max, number} arasında bir tam sayı girin.",
+    "withRange": "{hint} {min, number} ile {max, number} arası.",
+    "webhookLeaseNote": "Lease süresini zaman aşımından uzun ayarlayın. Lease süreleri saniye, zaman aşımları milisaniye cinsindendir.",
+    "webhookTimeoutNote": "Zaman aşımını lease süresinden kısa ayarlayın. Lease süreleri saniye, zaman aşımları milisaniye cinsindendir.",
+    "agentLeaseNote": "Lease süresini Endpoint URL'si olan ajanlar bölümündeki zaman aşımından uzun ayarlayın. Lease süreleri saniye, zaman aşımları milisaniye cinsindendir.",
+    "invocationTimeoutNote": "Zaman aşımını Ajan çalıştırmaları ve Ajan sohbeti bölümlerindeki lease sürelerinden kısa ayarlayın. Lease süreleri saniye, zaman aşımları milisaniye cinsindendir.",
+    "webhooks": {
+      "title": "Webhook'lar",
+      "description": "Teslimlerin nasıl gönderilip yeniden denendiği, sürekli başarısız olan bir webhook'un ne zaman kapatıldığı ve günlüğün ne kadar saklandığı.",
+      "pollIntervalMs": "Kontrol aralığı (ms)",
+      "pollIntervalMsHint": "Kuyruktaki teslimlerin ve bildirimlerin ne sıklıkla gönderildiği.",
+      "batchSize": "Grup boyutu",
+      "batchSizeHint": "Her kontrolde kaç teslimin gönderildiği.",
+      "timeoutMs": "Zaman aşımı (ms)",
+      "timeoutMsHint": "Deneme başarısız sayılmadan önce alıcı sunucunun yanıt vermek için ne kadar süresi olduğu.",
+      "maxAttempts": "En fazla deneme",
+      "maxAttemptsHint": "Bir teslimin başarısız olarak kaydedilmeden önce kaç kez gönderildiği.",
+      "disableThreshold": "Art arda hata",
+      "disableThresholdHint": "Yeniden denemeler dahil bu kadar deneme art arda başarısız olursa webhook kapatılır.",
+      "leaseSeconds": "Lease süresi (sn)",
+      "leaseSecondsHint": "Yarıda kalan bir teslim bu sürenin ardından yeniden gönderilir.",
+      "retentionDays": "Teslim günlüğünü saklama süresi (gün)",
+      "retentionDaysHint": "Başarılı teslimler bu sürenin ardından günlükten silinir. Başarısız olanlar kalır.",
+      "cleanupIntervalMinutes": "Temizlik aralığı (dk)",
+      "cleanupIntervalMinutesHint": "Eski kayıtların teslim günlüğünden ne sıklıkla silindiği."
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "description": "E-posta ve Telegram bildirimleri. Webhook'lar bölümündeki Kontrol aralığı ile gönderilir.",
+      "batchSize": "Grup boyutu",
+      "batchSizeHint": "Her kontrolde kaç bildirimin gönderildiği.",
+      "maxAttempts": "En fazla deneme",
+      "maxAttemptsHint": "Bir bildirimin başarısız olarak kaydedilmeden önce kaç kez gönderildiği.",
+      "leaseSeconds": "Lease süresi (sn)",
+      "leaseSecondsHint": "Yarıda kalan bir bildirim bu sürenin ardından yeniden gönderilir."
+    },
+    "imports": {
+      "title": "İçe aktarmalar",
+      "description": "Diğer takip araçlarından içe aktarmalar.",
+      "pollIntervalMs": "Kontrol aralığı (ms)",
+      "pollIntervalMsHint": "Kuyruktaki içe aktarmaların ne sıklıkla başlatıldığı."
+    },
+    "agentRuns": {
+      "title": "Ajan çalıştırmaları",
+      "description": "Kuyruktaki ve zamanlanmış ajan çalıştırmalarının nasıl başladığı ve yeniden denendiği.",
+      "pollIntervalMs": "Kontrol aralığı (ms)",
+      "pollIntervalMsHint": "Çalıştırmaların kuyruktan ne sıklıkla alındığı ve zamanı gelen zamanlamaların kuyruğa eklendiği.",
+      "maxAttempts": "En fazla deneme",
+      "maxAttemptsHint": "Bir çalıştırmanın başarısız olarak kaydedilmeden önce kaç kez başlatıldığı.",
+      "leaseSeconds": "Lease süresi (sn)",
+      "leaseSecondsHint": "Yarıda kalan bir çalıştırma bu sürenin ardından yeniden başlar. Dahili ajanlar için bu süre hiçbir zaman Genel bölümündeki Çalışma süresi sınırından kısa olmaz."
+    },
+    "agentChat": {
+      "title": "Ajan sohbeti",
+      "description": "Harici ajanlarla bir runner veya endpoint URL'si üzerinden yapılan sohbetler.",
+      "leaseSeconds": "Lease süresi (sn)",
+      "leaseSecondsHint": "Yarıda kalan bir yanıt bu sürenin ardından yeniden başlar.",
+      "maxAttempts": "En fazla deneme",
+      "maxAttemptsHint": "Yanıt başarısız olarak kaydedilmeden önce ajanın bir mesajı kaç kez aldığı.",
+      "claimWaitMs": "Runner bekleme süresi (ms)",
+      "claimWaitMsHint": "Bir runner isteğinin yeni bir sohbet mesajı için ne kadar beklediği.",
+      "claimPollMs": "Runner kontrol aralığı (ms)",
+      "claimPollMsHint": "Yeni bir sohbet mesajı bekleyen runner'a en geç bu sürede ulaşır.",
+      "streamPollMs": "Yanıt kontrol aralığı (ms)",
+      "streamPollMsHint": "Açık bir sohbetin yanıtın yeni bölümlerini ne sıklıkla gösterdiği.",
+      "historyMessages": "Sohbet geçmişi (mesaj)",
+      "historyMessagesHint": "Ajanın her yeni mesajla birlikte sohbetin önceki kaç mesajını aldığı."
+    },
+    "agentInvocations": {
+      "title": "Endpoint URL'si olan ajanlar",
+      "description": "Bir ajanın endpoint URL'sine gönderilen görevler ve sohbet mesajları.",
+      "pollIntervalMs": "Kontrol aralığı (ms)",
+      "pollIntervalMsHint": "Kuyruktaki görevlerin ve sohbet mesajlarının bu ajanlara ne sıklıkla gönderildiği.",
+      "timeoutMs": "Zaman aşımı (ms)",
+      "timeoutMsHint": "Endpoint'in yanıt vermek için ne kadar süresi olduğu. Geç kalırsa görev veya mesaj, lease süresi bittiğinde yeniden gönderilir."
+    },
+    "sweeps": {
+      "title": "Arşivleme ve temizlik",
+      "description": "Uzun süre işlem görmeyen kapalı işlerin ne sıklıkla arşivlendiği, eski çalıştırma izlerinin ve süresi dolan herkese açık bağlantıların ne sıklıkla silindiği.",
+      "autoArchiveMinutes": "Arşivleme aralığı (dk)",
+      "autoArchiveMinutesHint": "Arşivleme açık olan projelerde uzun süre işlem görmeyen kapalı işlerin ne sıklıkla arşivlendiği.",
+      "tracePruneMinutes": "İz temizleme aralığı (dk)",
+      "tracePruneMinutesHint": "Genel bölümündeki Çalıştırma izlerini saklama süresinden eski çalıştırma izlerinin ne sıklıkla silindiği.",
+      "shareExpiryMinutes": "Bağlantı temizleme aralığı (dk)",
+      "shareExpiryMinutesHint": "Süresi dolan herkese açık bağlantıların ne sıklıkla silindiği. Bir bağlantı, bu değer ne olursa olsun süresi dolduğunda açılmaz."
+    },
+    "bot": {
+      "title": "Telegram botu",
+      "description": "Botun ayarlarındaki bir değişikliği ne kadar hızlı aldığı.",
+      "configPollIntervalMs": "Ayar kontrol aralığı (ms)",
+      "configPollIntervalMsHint": "Telegram bölümündeki bir değişiklik bota en geç bu sürede ulaşır."
+    }
+  },
   "telegram": {
     "saved": "Telegram ayarları kaydedildi",
     "bot": "Bot",
@@ -323,6 +431,117 @@
     "clientSecret": "İstemci Parolası (Client Secret)",
     "clientSecretPlaceholder": "Uygulama kayıt parolası",
     "microsoft365Hint": "Posta kutusu şifresi yerine Entra ID içindeki bir uygulama kaydı olarak oturum açar, böylece posta kutusunda çok faktörlü kimlik doğrulama (MFA) açık kalabilir. Uygulama; yönetici onayıyla Office 365 Exchange Online SMTP.SendAsApp iznine, Exchange içinde bu posta kutusuna erişim yetkisine ve posta kutusu için SMTP AUTH özelliğinin açık olmasına ihtiyaç duyar."
+  },
+  "emailTemplates": {
+    "saved": "E-posta şablonları kaydedildi",
+    "unsaved": "Kaydedilmemiş değişiklikler",
+    "blankText": "Kaydetmek için eksik konuyu veya metni doldurun",
+    "emails": "E-postalar",
+    "layout": "Düzen",
+    "edited": "Düzenlendi",
+    "subject": "Konu",
+    "text": "Metin",
+    "button": "Düğme",
+    "formatting": "Biçimlendirme",
+    "heading1": "Başlık 1",
+    "heading2": "Başlık 2",
+    "bold": "Kalın",
+    "italic": "İtalik",
+    "strikethrough": "Üstü çizili",
+    "link": "Bağlantı",
+    "bulletedList": "Madde işaretli liste",
+    "numberedList": "Numaralı liste",
+    "quote": "Alıntı",
+    "boldSample": "kalın",
+    "italicSample": "italik",
+    "strikeSample": "metin",
+    "linkSample": "bağlantı metni",
+    "unknownVariables": "Bilinmeyen değişken: {names}",
+    "removeUnknownVariables": "Kaydetmek için bilinmeyen değişkenleri kaldırın",
+    "reset": "Varsayılana dön",
+    "test": "Test gönder",
+    "testing": "Gönderiliyor…",
+    "testSent": "{email} adresine gönderildi",
+    "testNeedsProvider": "Önce e-posta sağlayıcısını ayarlayın",
+    "layoutHtml": "Düzen HTML'i",
+    "layoutCss": "Düzen CSS'i",
+    "placeholders": "Yer tutucular",
+    "variables": "Değişkenler",
+    "required": "Zorunlu",
+    "requiredPlaceholders": "Kaydetmek için düzene {names} ekleyin",
+    "preview": "Önizleme",
+    "previewEmail": "E-posta",
+    "previewText": "Düz metin",
+    "previewFailed": "Önizleme yüklenmedi. Yeniden denemek için sayfayı yenileyin.",
+    "from": "Kimden",
+    "to": "Kime",
+    "groups": {
+      "signIn": "Giriş",
+      "invitations": "Davetler",
+      "notifications": "Bildirimler",
+      "service": "Diğer"
+    },
+    "templates": {
+      "reset": {
+        "name": "Şifre sıfırlama"
+      },
+      "verify": {
+        "name": "E-posta adresi onayı"
+      },
+      "magic": {
+        "name": "Giriş bağlantısı"
+      },
+      "inviteProject": {
+        "name": "Proje daveti"
+      },
+      "inviteTeam": {
+        "name": "Ekip daveti"
+      },
+      "assigned": {
+        "name": "İş atandı"
+      },
+      "mentioned": {
+        "name": "İşte bahsedildi"
+      },
+      "commented": {
+        "name": "Yeni yorum"
+      },
+      "stateChanged": {
+        "name": "Durum değişti"
+      },
+      "documentMentioned": {
+        "name": "Belgede bahsedildi"
+      },
+      "documentCommentMentioned": {
+        "name": "Belge yorumunda bahsedildi"
+      },
+      "test": {
+        "name": "Test e-postası",
+        "hint": "E-posta Sağlayıcısı sayfasındaki test düğmesiyle gönderilir."
+      }
+    },
+    "placeholderText": {
+      "content": "E-posta metni",
+      "button": "Bağlantılı düğme",
+      "subject": "Konu",
+      "lang": "Dil kodu",
+      "dir": "Metin yönü",
+      "site_name": "Örneklem adı",
+      "site_url": "Örneklem adresi",
+      "logo_url": "Logo adresi"
+    },
+    "variableText": {
+      "actor": "İşlemi yapan",
+      "ref": "İş numarası",
+      "title": "İş başlığı",
+      "from": "Önceki durum",
+      "to": "Yeni durum",
+      "document": "Belge başlığı",
+      "inviter": "Daveti gönderen",
+      "project": "Proje adı",
+      "team": "Ekip adı",
+      "role": "Katılım sonrası rol"
+    }
   },
   "authProvider": {
     "saved": "Giriş sağlayıcısı kaydedildi",

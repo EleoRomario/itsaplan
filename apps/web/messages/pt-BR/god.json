@@ -187,29 +187,42 @@
   "general": {
     "saved": "Padrões de projeto salvos",
     "projectDefaults": "Padrões de projeto",
-    "mcpEnabled": "Ativar MCP em novos projetos",
-    "mcpEnabledHint": "Um novo projeto está no alcance de MCP do seu time desde o momento em que é criado.",
+    "mcpEnabled": "Acesso MCP em novos projetos",
+    "mcpEnabledHint": "Um novo projeto começa aberto a clientes MCP se o time dele estiver com o MCP ativado. Os projetos existentes mantêm a configuração.",
     "workspacesSaved": "Configurações de workspace salvas",
     "workspaces": "Workspaces",
-    "personalWorkspaces": "Um workspace para cada pessoa",
-    "personalWorkspacesHint": "Cada conta recebe um workspace próprio com o nome da pessoa. Desativado, as pessoas trabalham apenas nos workspaces aos quais foram adicionadas.",
+    "personalWorkspaces": "Workspaces pessoais",
+    "personalWorkspacesHint": "Cada pessoa recebe um workspace próprio com o nome dela. Desativado, contas novas não recebem nenhum e as pessoas trabalham apenas nos workspaces aos quais foram adicionadas. Os workspaces existentes continuam.",
     "invites": "Convites",
     "inviteSearch": "Sugerir pessoas ao convidar",
-    "inviteSearchHint": "Quando um proprietário ou gerente de equipe digita um endereço na janela de convite, as contas correspondentes de todos os workspaces desta instância aparecem com nome e email. Desativado, é preciso digitar o endereço completo.",
+    "inviteSearchHint": "Proprietários e gerentes de equipe podem encontrar contas de todos os workspaces por nome ou email. Os resultados aparecem enquanto digitam na janela de convite. Desativado, é preciso digitar o endereço completo.",
     "invitesSaved": "Configurações de convites salvas",
+    "sharing": "Links públicos",
+    "sharingEnabled": "Permitir links públicos",
+    "sharingEnabledHint": "Desativado, os links existentes deixam de abrir até ser ativado de novo e ninguém pode compartilhar. Ativado, cada workspace decide se seus documentos, issues e visualizações podem ser compartilhados por link.",
+    "sharingSaved": "Configurações de links públicos salvas",
+    "apiDocs": "Docs da API",
+    "apiDocsAudience": "Quem pode ler os docs da API",
+    "apiDocsAudienceHint": "No app e no endereço /docs da API.",
+    "apiDocsAudiences": {
+      "nobody": "Ninguém",
+      "god": "Dono da instância",
+      "everyone": "Todos"
+    },
+    "apiDocsSaved": "Configurações dos docs da API salvas",
     "agents": "Agentes",
     "agentsSaved": "Configurações de agentes salvas",
     "embedding": "Incorporação",
     "embedSites": "Sites confiáveis",
-    "embedSitesHint": "Issues e quadros compartilhados publicamente abrem em um frame só nesses sites. Separe os sites com vírgulas.",
+    "embedSitesHint": "Só estes sites podem incorporar documentos, issues e visualizações compartilhados por link público. Se a lista estiver vazia, nenhum site pode. Digite cada site como https://example.com, separados por vírgulas.",
     "embedSitesInvalid": "Digite cada site como https://example.com, sem caminho.",
-    "embedSaved": "Sites confiáveis salvos",
+    "embedSaved": "Sites confiáveis salvos. Passam a valer em até um minuto.",
     "traceRetention": "Manter rastros de execução",
-    "traceRetentionHint": "Cada execução de agente registra as chamadas ao modelo e às ferramentas. Os painéis de consumo contam só as execuções mantidas.",
+    "traceRetentionHint": "Um rastro registra as chamadas ao modelo e às ferramentas de uma execução de agente. Depois desse prazo ele é excluído e os painéis de consumo deixam de contar essa execução.",
     "traceDays": "{days, plural, one {# dia} other {# dias}}",
     "traceForever": "Sempre",
-    "maxRunTime": "Tempo máximo de execução",
-    "maxRunTimeHint": "Quanto tempo uma execução de agente pode levar antes de ser interrompida e salva como falha. O limite próprio de um agente não pode ultrapassá-lo.",
+    "maxRunTime": "Limite de tempo de execução",
+    "maxRunTimeHint": "Uma execução que demora mais é interrompida e salva como falha. O limite próprio de um agente só pode ser menor. Chats não têm limite.",
     "runMinutes": "{minutes, plural, one {# minuto} other {# minutos}}",
     "runSeconds": "{seconds} s",
     "concurrentRuns": "Execuções simultâneas",
@@ -276,6 +289,101 @@
     "quotaMb": "Armazenamento por projeto (MB)",
     "quotaNote": "Quando um projeto atinge a cota, novos envios são recusados até alguém excluir anexos."
   },
+  "jobs": {
+    "saved": "Configurações das tarefas em segundo plano salvas",
+    "range": "Digite um número inteiro de {min, number} a {max, number}.",
+    "withRange": "{hint} De {min, number} a {max, number}.",
+    "webhookLeaseNote": "Defina um tempo de reserva maior que o timeout. Tempos de reserva são em segundos, timeouts em milissegundos.",
+    "webhookTimeoutNote": "Defina um timeout menor que o tempo de reserva. Tempos de reserva são em segundos, timeouts em milissegundos.",
+    "agentLeaseNote": "Defina um tempo de reserva maior que o timeout de Agentes com URL do endpoint. Tempos de reserva são em segundos, timeouts em milissegundos.",
+    "invocationTimeoutNote": "Defina um timeout menor que os tempos de reserva de Execuções de agentes e Chat com agentes. Tempos de reserva são em segundos, timeouts em milissegundos.",
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "Como as entregas são enviadas e repetidas, quando um webhook com falhas é desativado e por quanto tempo o registro é mantido.",
+      "pollIntervalMs": "Intervalo de verificação (ms)",
+      "pollIntervalMsHint": "Com que frequência as entregas e notificações na fila são enviadas.",
+      "batchSize": "Tamanho do lote",
+      "batchSizeHint": "Quantas entregas são enviadas a cada verificação.",
+      "timeoutMs": "Timeout (ms)",
+      "timeoutMsHint": "Quanto tempo o servidor de destino tem para responder antes de a tentativa falhar.",
+      "maxAttempts": "Máximo de tentativas",
+      "maxAttemptsHint": "Quantas vezes uma entrega é enviada antes de ser salva como falha.",
+      "disableThreshold": "Falhas seguidas",
+      "disableThresholdHint": "O webhook é desativado depois dessa quantidade de tentativas com falha seguidas, incluindo as repetições.",
+      "leaseSeconds": "Tempo de reserva (s)",
+      "leaseSecondsHint": "Uma entrega interrompida é enviada de novo depois desse tempo.",
+      "retentionDays": "Manter registro de entregas (dias)",
+      "retentionDaysHint": "Depois desse tempo, as entregas bem-sucedidas são excluídas do registro. As que falharam ficam.",
+      "cleanupIntervalMinutes": "Intervalo de limpeza (min)",
+      "cleanupIntervalMinutesHint": "Com que frequência as entradas antigas são excluídas do registro de entregas."
+    },
+    "notifications": {
+      "title": "Notificações",
+      "description": "Notificações por e-mail e Telegram. Elas são enviadas no Intervalo de verificação definido em Webhooks.",
+      "batchSize": "Tamanho do lote",
+      "batchSizeHint": "Quantas notificações são enviadas a cada verificação.",
+      "maxAttempts": "Máximo de tentativas",
+      "maxAttemptsHint": "Quantas vezes uma notificação é enviada antes de ser salva como falha.",
+      "leaseSeconds": "Tempo de reserva (s)",
+      "leaseSecondsHint": "Uma notificação interrompida é enviada de novo depois desse tempo."
+    },
+    "imports": {
+      "title": "Importações",
+      "description": "Importações de outras ferramentas de acompanhamento.",
+      "pollIntervalMs": "Intervalo de verificação (ms)",
+      "pollIntervalMsHint": "Com que frequência as importações na fila são iniciadas."
+    },
+    "agentRuns": {
+      "title": "Execuções de agentes",
+      "description": "Como as execuções de agentes na fila e agendadas começam e são repetidas.",
+      "pollIntervalMs": "Intervalo de verificação (ms)",
+      "pollIntervalMsHint": "Com que frequência as execuções são tiradas da fila e os agendamentos que chegaram na hora entram na fila.",
+      "maxAttempts": "Máximo de tentativas",
+      "maxAttemptsHint": "Quantas vezes uma execução é iniciada antes de ser salva como falha.",
+      "leaseSeconds": "Tempo de reserva (s)",
+      "leaseSecondsHint": "Uma execução interrompida começa de novo depois desse tempo. Para agentes internos, esse tempo nunca é menor que o Limite de tempo de execução em Geral."
+    },
+    "agentChat": {
+      "title": "Chat com agentes",
+      "description": "Chats com agentes externos, por um runner ou por uma URL do endpoint.",
+      "leaseSeconds": "Tempo de reserva (s)",
+      "leaseSecondsHint": "Uma resposta interrompida começa de novo depois desse tempo.",
+      "maxAttempts": "Máximo de tentativas",
+      "maxAttemptsHint": "Quantas vezes o agente recebe uma mensagem antes de a resposta ser salva como falha.",
+      "claimWaitMs": "Espera do runner (ms)",
+      "claimWaitMsHint": "Quanto tempo uma requisição do runner espera por uma nova mensagem do chat.",
+      "claimPollMs": "Intervalo de verificação do runner (ms)",
+      "claimPollMsHint": "Uma nova mensagem do chat chega a um runner em espera dentro desse tempo.",
+      "streamPollMs": "Intervalo de verificação da resposta (ms)",
+      "streamPollMsHint": "Com que frequência um chat aberto mostra novas partes da resposta.",
+      "historyMessages": "Histórico do chat (mensagens)",
+      "historyMessagesHint": "Quantas mensagens anteriores do chat o agente recebe com cada mensagem nova."
+    },
+    "agentInvocations": {
+      "title": "Agentes com URL do endpoint",
+      "description": "Tarefas e mensagens de chat enviadas para a URL do endpoint de um agente.",
+      "pollIntervalMs": "Intervalo de verificação (ms)",
+      "pollIntervalMsHint": "Com que frequência as tarefas e mensagens de chat na fila são enviadas a esses agentes.",
+      "timeoutMs": "Timeout (ms)",
+      "timeoutMsHint": "Quanto tempo o endpoint tem para responder. Se ele demorar, a tarefa ou a mensagem é enviada de novo quando o tempo de reserva terminar."
+    },
+    "sweeps": {
+      "title": "Arquivamento e limpeza",
+      "description": "Com que frequência as issues fechadas e paradas são arquivadas e os rastros de execução antigos e links públicos expirados são excluídos.",
+      "autoArchiveMinutes": "Intervalo de arquivamento (min)",
+      "autoArchiveMinutesHint": "Com que frequência as issues fechadas e paradas são arquivadas nos projetos com Arquivo ativado.",
+      "tracePruneMinutes": "Intervalo de limpeza de rastros (min)",
+      "tracePruneMinutesHint": "Com que frequência os rastros de execução mais antigos que Manter rastros de execução em Geral são excluídos.",
+      "shareExpiryMinutes": "Intervalo de limpeza de links (min)",
+      "shareExpiryMinutesHint": "Com que frequência os links públicos expirados são excluídos. Um link para de abrir quando expira, seja qual for esse valor."
+    },
+    "bot": {
+      "title": "Bot do Telegram",
+      "description": "Quão rápido o bot percebe uma mudança nas suas configurações.",
+      "configPollIntervalMs": "Intervalo de verificação das configurações (ms)",
+      "configPollIntervalMsHint": "Uma mudança em Telegram chega ao bot dentro desse tempo."
+    }
+  },
   "telegram": {
     "saved": "Configurações do Telegram salvas",
     "bot": "Bot",
@@ -323,6 +431,117 @@
     "clientSecret": "Segredo do cliente",
     "clientSecretPlaceholder": "Segredo do registro de aplicativo",
     "microsoft365Hint": "Entra como um registro de aplicativo do Entra ID em vez da senha da caixa de correio, que pode manter o MFA. O aplicativo precisa da permissão de aplicativo SMTP.SendAsApp do Office 365 Exchange Online com consentimento de administrador, acesso a esta caixa no Exchange e SMTP AUTH ativado na caixa."
+  },
+  "emailTemplates": {
+    "saved": "Modelos de e-mail salvos",
+    "unsaved": "Alterações não salvas",
+    "blankText": "Preencha o assunto ou o texto que falta para salvar",
+    "emails": "E-mails",
+    "layout": "Layout",
+    "edited": "Editado",
+    "subject": "Assunto",
+    "text": "Texto",
+    "button": "Botão",
+    "formatting": "Formatação",
+    "heading1": "Título 1",
+    "heading2": "Título 2",
+    "bold": "Negrito",
+    "italic": "Itálico",
+    "strikethrough": "Tachado",
+    "link": "Link",
+    "bulletedList": "Lista com marcadores",
+    "numberedList": "Lista numerada",
+    "quote": "Citação",
+    "boldSample": "negrito",
+    "italicSample": "itálico",
+    "strikeSample": "texto",
+    "linkSample": "texto do link",
+    "unknownVariables": "{count, plural, one {Variável desconhecida: {names}} other {Variáveis desconhecidas: {names}}}",
+    "removeUnknownVariables": "Remova as variáveis desconhecidas para salvar",
+    "reset": "Voltar ao padrão",
+    "test": "Enviar teste",
+    "testing": "Enviando…",
+    "testSent": "Enviado para {email}",
+    "testNeedsProvider": "Configure o provedor de e-mail primeiro",
+    "layoutHtml": "HTML do layout",
+    "layoutCss": "CSS do layout",
+    "placeholders": "Marcadores",
+    "variables": "Variáveis",
+    "required": "Obrigatório",
+    "requiredPlaceholders": "Adicione {names} ao layout para salvar",
+    "preview": "Pré-visualização",
+    "previewEmail": "E-mail",
+    "previewText": "Texto simples",
+    "previewFailed": "A pré-visualização não carregou. Recarregue a página para tentar de novo.",
+    "from": "De",
+    "to": "Para",
+    "groups": {
+      "signIn": "Login",
+      "invitations": "Convites",
+      "notifications": "Notificações",
+      "service": "Outros"
+    },
+    "templates": {
+      "reset": {
+        "name": "Redefinição de senha"
+      },
+      "verify": {
+        "name": "Confirmação de endereço"
+      },
+      "magic": {
+        "name": "Link de login"
+      },
+      "inviteProject": {
+        "name": "Convite para projeto"
+      },
+      "inviteTeam": {
+        "name": "Convite para equipe"
+      },
+      "assigned": {
+        "name": "Issue atribuída"
+      },
+      "mentioned": {
+        "name": "Menção em issue"
+      },
+      "commented": {
+        "name": "Novo comentário"
+      },
+      "stateChanged": {
+        "name": "Status alterado"
+      },
+      "documentMentioned": {
+        "name": "Menção em documento"
+      },
+      "documentCommentMentioned": {
+        "name": "Menção em comentário de documento"
+      },
+      "test": {
+        "name": "E-mail de teste",
+        "hint": "Enviado pelo botão de teste da página do provedor de e-mail."
+      }
+    },
+    "placeholderText": {
+      "content": "Texto do e-mail",
+      "button": "Botão com o link",
+      "subject": "Assunto",
+      "lang": "Código do idioma",
+      "dir": "Direção do texto",
+      "site_name": "Nome da instância",
+      "site_url": "Endereço da instância",
+      "logo_url": "Endereço do logo"
+    },
+    "variableText": {
+      "actor": "Quem fez a ação",
+      "ref": "Número da issue",
+      "title": "Título da issue",
+      "from": "Status anterior",
+      "to": "Novo status",
+      "document": "Título do documento",
+      "inviter": "Quem enviou o convite",
+      "project": "Nome do projeto",
+      "team": "Nome da equipe",
+      "role": "Papel ao entrar"
+    }
   },
   "authProvider": {
     "saved": "Provedor de autenticação salvo",

@@ -84,6 +84,7 @@ export const qk = {
   archivedIssues: (projectKey: string) => ['archivedIssues', projectKey] as const,
   // Command-palette issue search, scoped to a project and the search term.
   issueSearch: (projectKey: string, q: string) => ['issueSearch', projectKey, q] as const,
+  issueSubtree: (projectKey: string, ids: number[]) => ['issueSubtree', projectKey, ids] as const,
   issueSearchAll: (q: string, excludeProjectId: number | null) =>
     ['issueSearchAll', q, excludeProjectId] as const,
   // The project's auto-archive thresholds and subtask automations (the
@@ -101,6 +102,7 @@ export const qk = {
   actions: (projectKey: string) => ['actions', projectKey] as const,
   webhooks: (projectKey: string) => ['webhooks', projectKey] as const,
   forms: (projectKey: string) => ['forms', projectKey] as const,
+  webhookEventTypes: (projectKey: string) => ['webhookEventTypes', projectKey] as const,
   webhookDeliveries: (webhookId: number) => ['webhookDeliveries', webhookId] as const,
   // The project's import jobs (the Import/Export settings section).
   importJobs: (projectKey: string) => ['importJobs', projectKey] as const,
@@ -157,8 +159,8 @@ export const qk = {
     ['noteBoards', projectKey, 'board', boardId] as const,
   noteBoardAccessCandidates: (projectKey: string) =>
     ['noteBoards', projectKey, 'accessCandidates'] as const,
-  agentAnalytics: (teamId: number, days: number, projectId: number | null) =>
-    ['agentAnalytics', teamId, days, projectId] as const,
+  agentAnalytics: (teamId: number, days: number, projectIds: number[]) =>
+    ['agentAnalytics', teamId, days, projectIds] as const,
   workspaceAgentAnalytics: (workspaceId: number, days: number) =>
     ['workspaceAgentAnalytics', workspaceId, days] as const,
   // The model prices of a workspace: the models it uses, and pages of the built-in table.
@@ -330,6 +332,8 @@ export const qk = {
   notificationsUnread: (projectKey: string) => ['notificationsUnread', projectKey] as const,
   // The unread count across every project (the app icon badge).
   notificationsUnreadTotal: ['notificationsUnreadTotal'] as const,
+  // The newest notifications across every project, read or not (desktop notifications).
+  notificationsLatest: ['notificationsLatest'] as const,
   // The signed-in user's WebAuthn passkeys (account security page).
   passkeys: ['passkeys'] as const,
   // The OAuth applications the signed-in user authorized (account security page).
@@ -338,6 +342,11 @@ export const qk = {
   // Telegram account, and the auth providers better-auth reports.
   telegramAccount: ['telegramAccount'] as const,
   linkedAccounts: ['linkedAccounts'] as const,
+  // Whether the instance sends Web Push, the browsers the signed-in user turned it on in,
+  // and this browser's own subscription and permission.
+  pushConfig: ['pushConfig'] as const,
+  pushDevices: ['pushDevices'] as const,
+  pushBrowser: ['pushBrowser'] as const,
   // The instance sign-in policy, including which social providers are configured.
   authConfig: ['authConfig'] as const,
   // The name an MCP client registered with, shown on the OAuth consent page.
@@ -356,8 +365,15 @@ export const qk = {
   instanceTelegramSettings: ['instanceTelegramSettings'] as const,
   instanceProjectDefaults: ['instanceProjectDefaults'] as const,
   instanceAgentSettings: ['instanceAgentSettings'] as const,
+  instanceSharingSettings: ['instanceSharingSettings'] as const,
+  instanceApiDocsSettings: ['instanceApiDocsSettings'] as const,
+  apiDocsVisibility: ['apiDocsVisibility'] as const,
+  apiSpec: ['apiSpec'] as const,
   instanceEmbedSites: ['instanceEmbedSites'] as const,
+  instanceEmailTemplates: ['instanceEmailTemplates'] as const,
+  instanceEmailPreview: (draft: unknown) => ['instanceEmailPreview', draft] as const,
   instanceStorageSettings: ['instanceStorageSettings'] as const,
+  instanceJobSettings: ['instanceJobSettings'] as const,
   systemRoles: ['systemRoles'] as const,
   // The upload limits as read by the upload UI (open to any signed-in user).
   storageSettings: ['storageSettings'] as const,

@@ -19,6 +19,11 @@ import {
   type InstanceOidcSettingsPatch,
   type InstanceTelegramSettingsPatch,
   type InstanceUserKind,
+  type EmailDraft,
+  type EmailTemplatesBody,
+  type SharingSettings,
+  type ApiDocsSettings,
+  type JobSettingsPatch,
   getInstanceAuthSettings,
   updateInstanceAuthSettings,
   getInstanceEmailSettings,
@@ -34,10 +39,20 @@ import {
   updateInstanceProjectDefaults,
   getInstanceAgentSettings,
   updateInstanceAgentSettings,
+  getEmailTemplates,
+  previewEmailDraft,
+  testEmailDraft,
+  updateEmailTemplates,
+  getInstanceSharingSettings,
+  updateInstanceSharingSettings,
+  getInstanceApiDocsSettings,
+  updateInstanceApiDocsSettings,
   getInstanceEmbedSites,
   updateInstanceEmbedSites,
   getInstanceStorageSettings,
   updateInstanceStorageSettings,
+  getInstanceJobSettings,
+  updateInstanceJobSettings,
   listInstanceUsers,
   setInstanceUserActive,
   getInstanceUser,
@@ -183,6 +198,65 @@ export function useUpdateInstanceProjectDefaults() {
   });
 }
 
+export function useInstanceSharingSettingsQuery() {
+  return useQuery({
+    queryKey: qk.instanceSharingSettings,
+    queryFn: () => getInstanceSharingSettings(),
+  });
+}
+
+export function useUpdateInstanceSharingSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: SharingSettings) => updateInstanceSharingSettings(body),
+    onSuccess: (data) => qc.setQueryData(qk.instanceSharingSettings, data),
+  });
+}
+
+export function useInstanceApiDocsSettingsQuery() {
+  return useQuery({
+    queryKey: qk.instanceApiDocsSettings,
+    queryFn: () => getInstanceApiDocsSettings(),
+  });
+}
+
+export function useUpdateInstanceApiDocsSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ApiDocsSettings) => updateInstanceApiDocsSettings(body),
+    onSuccess: (data) => qc.setQueryData(qk.instanceApiDocsSettings, data),
+  });
+}
+
+export function useEmailTemplatesQuery() {
+  return useQuery({
+    queryKey: qk.instanceEmailTemplates,
+    queryFn: () => getEmailTemplates(),
+  });
+}
+
+export function useUpdateEmailTemplates() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: EmailTemplatesBody) => updateEmailTemplates(body),
+    onSuccess: (data) => qc.setQueryData(qk.instanceEmailTemplates, data),
+  });
+}
+
+// The email as the api renders it, so the preview is what goes out.
+export function useEmailPreviewQuery(draft: EmailDraft) {
+  return useQuery({
+    queryKey: qk.instanceEmailPreview(draft),
+    queryFn: () => previewEmailDraft(draft),
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+}
+
+export function useTestEmailDraft() {
+  return useMutation({ mutationFn: (draft: EmailDraft) => testEmailDraft(draft) });
+}
+
 // What applies to every team's agents: how long their run traces are kept.
 export function useInstanceAgentSettingsQuery() {
   return useQuery({
@@ -233,6 +307,22 @@ export function useUpdateInstanceStorageSettings() {
       // The upload UI reads the same limits through the open endpoint.
       qc.setQueryData(qk.storageSettings, data);
     },
+  });
+}
+
+// How the background jobs run: poll intervals, batch sizes, leases and attempts.
+export function useInstanceJobSettingsQuery() {
+  return useQuery({
+    queryKey: qk.instanceJobSettings,
+    queryFn: () => getInstanceJobSettings(),
+  });
+}
+
+export function useUpdateInstanceJobSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: JobSettingsPatch) => updateInstanceJobSettings(patch),
+    onSuccess: (data) => qc.setQueryData(qk.instanceJobSettings, data),
   });
 }
 

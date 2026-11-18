@@ -4,10 +4,12 @@ import { authContext } from '#shared/auth-context';
 import { errors } from '#shared/responses';
 import { getStorageSettings } from '@repo/db';
 import { getAuthSettings } from '@repo/auth';
-import { getHotkeySettings } from './service';
+import { localeFromAcceptLanguage } from '@repo/mailer';
+import { apiDocsVisible, getHotkeySettings } from './service';
 import { getAppVersion } from './updates';
 import { getWhatsNew, markWhatsNewSeen } from './whats-new';
 import {
+  ApiDocsVisibilitySchema,
   HotkeyCombosSchema,
   InviteSearchSchema,
   StorageSettingsSchema,
@@ -55,6 +57,20 @@ export const settingsRoutes = new Elysia({
     },
   )
 
+  .get(
+    '/settings/api-docs',
+    async ({ user }) => ({ visible: await apiDocsVisible(requireUser(user)) }),
+    {
+      response: { 200: ApiDocsVisibilitySchema, ...errors(401) },
+      detail: {
+        summary: 'Get whether you may read the API docs',
+        description:
+          'Get whether god mode lets you read the API docs, in the app and at /docs and ' +
+          '/api/auth/reference.',
+      },
+    },
+  )
+
   // The running version, shown in the sidebar to everyone. Whether a newer one
   // exists is god mode (/god/updates), and so is the release history. A session is
   // required: the version tells an anonymous visitor which release to look up
@@ -82,8 +98,11 @@ export const settingsRoutes = new Elysia({
 
   .post(
     '/settings/whats-new/seen',
-    async ({ user }) => {
-      await markWhatsNewSeen(requireUser(user).id);
+    async ({ user, request }) => {
+      await markWhatsNewSeen(
+        requireUser(user).id,
+        localeFromAcceptLanguage(request.headers.get('accept-language')),
+      );
       return { version: getAppVersion() };
     },
     {

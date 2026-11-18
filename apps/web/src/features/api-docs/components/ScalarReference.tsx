@@ -3,21 +3,22 @@
 import { ApiReferenceReact } from '@scalar/api-reference-react';
 import '@scalar/api-reference-react/style.css';
 import './scalar-theme.css';
-import { API_URL } from '@/lib/api/core/client';
-
-// /docs/json is gated to the instance owner, so Scalar's fetch must include
-// the session cookie.
-const SPEC_URL = `${API_URL}/docs/json`;
 
 // The app owns the light/dark switch (next-themes), so Scalar's mode is forced to
 // match and its own toggle is hidden. Theming: scalar-theme.css.
-export default function ScalarReference({ dark }: { dark: boolean }) {
+export default function ScalarReference({
+  spec,
+  dark,
+}: {
+  spec: Record<string, unknown>;
+  dark: boolean;
+}) {
   return (
     <div className="itp-scalar min-h-0 flex-1 overflow-y-auto">
       <ApiReferenceReact
         configuration={{
-          url: SPEC_URL,
-          fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
+          // The api serves the spec only with a session, so the page loads it itself.
+          content: spec,
           forceDarkModeState: dark ? 'dark' : 'light',
           hideDarkModeToggle: true,
           // Scalar's default fonts are loaded from fonts.scalar.com, which the

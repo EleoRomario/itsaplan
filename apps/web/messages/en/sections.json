@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "General",
-      "description": "Personal workspaces, defaults for new projects, agent traces, and the agent run time limit."
+      "description": "Settings that apply to every workspace on this instance."
     },
     "authentication": {
       "label": "Authentication",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "Storage",
       "description": "How much people may upload: the size of a single file, the attachment types accepted, and the storage each project gets."
+    },
+    "jobs": {
+      "label": "Background jobs",
+      "description": "How often background jobs run and retry. Changes apply without a restart."
+    },
+    "email-templates": {
+      "label": "Email templates",
+      "description": "Manage system email templates."
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "Schedules",
       "description": "Run agent tasks on a recurring schedule."
     },
+    "workflows": {
+      "label": "Workflows",
+      "description": "Agents that hand work to each other."
+    },
     "webhooks": {
       "label": "Webhooks",
       "description": "Send project events to external URLs, signed with a per-webhook secret."
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "Import/Export",
-      "description": "Bring issues, comments, and labels in from a self-hosted Plane instance, or export this project's data as JSON."
+      "description": "Import issues from another tracker, or export this project's data as JSON."
     },
     "ai-agents": {
       "label": "AI Agents",
@@ -214,6 +226,26 @@
       "preview": "Preview",
       "name": "Your name",
       "email": "Email"
+    },
+    "workflows": {
+      "steps": "Steps",
+      "sendBack": "Send back",
+      "runs": "Run history",
+      "runningNow": "Running now",
+      "history": "History",
+      "costSoFar": "Cost so far",
+      "tokensSoFar": "Tokens so far",
+      "agentRuns": "Agent runs",
+      "tokens": "Tokens",
+      "cost": "Cost",
+      "took": "Took",
+      "got": "What it got",
+      "returned": "What it returned",
+      "task": "Task",
+      "notes": "Send back notes",
+      "done": "Done",
+      "round": "Round",
+      "fullLog": "Full log"
     },
     "portal": {
       "title": "Portal",

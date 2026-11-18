@@ -23,7 +23,7 @@ export function getDisplayLocale(): string {
 // calendar grids and the date picker are Gregorian, so a date written in one and
 // picked in the other would not match; pin Persian to the Gregorian calendar.
 export function getIntlLocale(): string {
-  return displayLocale === 'fa' ? 'fa-u-ca-gregory' : displayLocale;
+  return displayLocale === 'fa' ? 'fa-IR-u-ca-persian' : displayLocale;
 }
 
 // The zone timestamps are rendered in, from the user's account preferences. The API
@@ -117,7 +117,7 @@ export function formatDateTime(value: string): string {
 }
 
 // The display zone's offset at a given moment, in ms (zone time minus UTC).
-function zoneOffsetMs(date: Date): number {
+export function zoneOffsetMs(date: Date): number {
   const parts = new Intl.DateTimeFormat('en-US', {
     hourCycle: 'h23',
     year: 'numeric',

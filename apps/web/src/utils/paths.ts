@@ -28,6 +28,7 @@ export const dashboardsPath = (ref: string) => `${projectPath(ref)}/dashboards`;
 export const shareIssuePath = (token: string) => `/share/issue/${token}`;
 export const shareViewPath = (token: string) => `/share/view/${token}`;
 export const shareViewCalendarPath = (token: string) => `/share/view/${token}/calendar.ics`;
+export const shareDocumentPath = (token: string) => `/share/document/${token}`;
 
 // The absolute share URL to copy, built from the current origin at call time.
 export const shareUrl = (path: string) =>
@@ -70,6 +71,8 @@ export const membersPath = (ref: string) => `${projectPath(ref)}/members`;
 export const companiesPath = (ref: string) => `${projectPath(ref)}/companies`;
 export const companyDetailPath = (ref: string, companyId: number) =>
   `${companiesPath(ref)}/${companyId}`;
+
+export const publicSharesPath = (ref: string) => `${projectPath(ref)}/public`;
 
 // An issue is addressed by its identifier under its team, not under its project:
 // /acme/issue/MKT-42.

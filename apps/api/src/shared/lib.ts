@@ -24,7 +24,7 @@ export class HttpError extends Error {
 export const iso = (value: Date): string => value.toISOString();
 
 // Whether a share link with this expiry still works: no expiry, or one still ahead.
-// Issues, views and the share module all read a link's state through it.
+// Issues, views, documents and the share module all read a link's state through it.
 export const shareLive = (expiresAt: Date | null): boolean =>
   expiresAt === null || expiresAt.getTime() > Date.now();
 
@@ -109,13 +109,4 @@ export function errorAnswer(
   // drizzle puts the failed statement and its parameters in the message, and the public
   // routes would hand that to anyone.
   return { status: 500, body: { error: 'Internal server error' } };
-}
-
-// Reads a positive integer from an environment variable, falling back to the default
-// when unset, empty, or not a positive finite number.
-export function intEnv(name: string, fallback: number): number {
-  const raw = process.env[name];
-  if (raw == null || raw === '') return fallback;
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? n : fallback;
 }

@@ -54,10 +54,10 @@ export interface NotificationFilters {
 export type NotificationDeleteScope = 'all' | 'read' | 'read-completed' | 'completed';
 
 // Inbox notifications. The list is the session user's own; projectId scopes it to
-// one project (the per-project inbox). cursor is the JSON-encoded keyset from the
-// previous page.
+// one project (the per-project inbox), and without it the list covers every project
+// (desktop notifications). cursor is the JSON-encoded keyset from the previous page.
 export const listNotifications = (
-  projectId: number,
+  projectId?: number,
   params: {
     cursor?: NotificationCursor | null;
     limit?: number;
@@ -65,7 +65,7 @@ export const listNotifications = (
   } = {},
 ) => {
   const q = new URLSearchParams();
-  q.set('projectId', String(projectId));
+  if (projectId != null) q.set('projectId', String(projectId));
   if (params.limit) q.set('limit', String(params.limit));
   if (params.cursor) q.set('cursor', JSON.stringify(params.cursor));
   const f = params.filters ?? {};

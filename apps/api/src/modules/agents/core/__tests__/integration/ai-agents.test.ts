@@ -598,8 +598,8 @@ describe('ai agents', () => {
     ).toBeNull();
   });
 
-  it("hands an 'owner'-scoped agent to the member who chose the scope", async () => {
-    const { asOwner, teamId } = await setup();
+  it("keeps the creator as owner when another member chooses the 'owner' scope", async () => {
+    const { asOwner, owner, teamId } = await setup();
     const created = await createAgent(asOwner, 'MKT', {
       name: 'Ext',
       username: 'ext',
@@ -618,7 +618,11 @@ describe('ai agents', () => {
     )({ agentId: created.data!.agent.id }).patch({
       runnerScope: 'owner',
     });
-    expect(res.data).toMatchObject({ runnerScope: 'owner', ownerUserId: second.userId });
+    expect(res.data).toMatchObject({
+      runnerScope: 'owner',
+      ownerUserId: owner.userId,
+      ownerName: 'Owner',
+    });
   });
 
   it('regenerates the key with a new secret', async () => {
@@ -633,6 +637,26 @@ describe('ai agents', () => {
     expect(res.status).toBe(200);
     expect(res.data?.apiKey).toBeTruthy();
     expect(res.data?.apiKey).not.toBe(created.data?.apiKey);
+  });
+
+  it('issues keys for agents whose name is over 32 characters', async () => {
+    const { asOwner, teamId } = await setup();
+    const name = 'Inside Architecture Guardian of the Backlog';
+    const internal = await createAgent(asOwner, 'MKT', {
+      name,
+      username: 'guardian',
+      kind: 'internal',
+    });
+    expect(internal.status).toBe(201);
+    const external = await createAgent(asOwner, 'MKT', {
+      name,
+      username: 'guardian-ext',
+      kind: 'external',
+    });
+    expect(external.status).toBe(201);
+    expect((await apiKeyApi(external.data!.apiKey!).teams({ teamId }).get()).status).toBe(200);
+    const agentId = external.data!.agent.id;
+    expect((await agents(asOwner, teamId)({ agentId })['regenerate-key'].post()).status).toBe(200);
   });
 
   // A personal key expires; an agent replays its key with nothing that would renew

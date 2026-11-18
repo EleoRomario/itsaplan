@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "通用",
-      "description": "个人工作区、新建项目的默认设置，以及代理追踪和运行时长。"
+      "description": "适用于本实例所有工作区的设置。"
     },
     "authentication": {
       "label": "身份验证",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "存储",
       "description": "设置单个文件大小、允许的附件类型和每个项目的存储配额。"
+    },
+    "jobs": {
+      "label": "后台任务",
+      "description": "后台任务的运行频率与重试。更改无需重启即可生效。"
+    },
+    "email-templates": {
+      "label": "邮件模板",
+      "description": "管理系统邮件模板。"
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "定时任务",
       "description": "按固定时间重复运行代理任务。"
     },
+    "workflows": {
+      "label": "工作流",
+      "description": "智能体之间互相交接工作。"
+    },
     "webhooks": {
       "label": "Webhook",
       "description": "将项目事件发送到外部 URL，并使用每个 Webhook 独立的密钥签名。"
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "导入/导出",
-      "description": "从自托管的 Plane 实例导入工作项、评论和标签，或将该项目的数据导出为 JSON。"
+      "description": "从其他项目管理工具导入工作项，或将该项目的数据导出为 JSON。"
     },
     "ai-agents": {
       "label": "AI 代理",
@@ -214,6 +226,26 @@
       "preview": "预览",
       "name": "你的姓名",
       "email": "邮箱"
+    },
+    "workflows": {
+      "steps": "步骤",
+      "sendBack": "退回",
+      "runs": "运行记录",
+      "runningNow": "正在运行",
+      "history": "历史",
+      "costSoFar": "目前费用",
+      "tokensSoFar": "目前 Token",
+      "agentRuns": "代理运行",
+      "tokens": "Token",
+      "cost": "费用",
+      "took": "用时",
+      "got": "收到的内容",
+      "returned": "返回的内容",
+      "task": "任务",
+      "notes": "退回意见",
+      "done": "完成",
+      "round": "轮次",
+      "fullLog": "完整日志"
     },
     "portal": {
       "title": "门户",

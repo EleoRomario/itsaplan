@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "Général",
-      "description": "Les espaces de travail personnels, les valeurs par défaut des nouveaux projets, ainsi que les traces et la durée d'exécution des agents."
+      "description": "Les paramètres qui s'appliquent à tous les espaces de travail de cette instance."
     },
     "authentication": {
       "label": "Authentification",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "Stockage",
       "description": "Ce que les utilisateurs peuvent envoyer : la taille maximale d'un fichier, les types de pièces jointes acceptés, et l'espace de stockage alloué à chaque projet."
+    },
+    "jobs": {
+      "label": "Tâches en arrière-plan",
+      "description": "À quelle fréquence les tâches en arrière-plan s'exécutent et sont retentées. Les modifications s'appliquent sans redémarrage."
+    },
+    "email-templates": {
+      "label": "Modèles d'e-mails",
+      "description": "Gérez les modèles des e-mails système."
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "Planifications",
       "description": "Exécutez des tâches d'agent selon une planification récurrente."
     },
+    "workflows": {
+      "label": "Flux",
+      "description": "Des agents qui se passent le travail."
+    },
     "webhooks": {
       "label": "Webhooks",
       "description": "Envoyez les événements du projet vers des URL externes, signés avec un secret propre à chaque webhook."
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "Import/Export",
-      "description": "Importez les tickets, commentaires et étiquettes depuis une instance Plane auto-hébergée, ou exportez les données du projet au format JSON."
+      "description": "Importez des tickets depuis un autre outil de suivi, ou exportez les données de ce projet en JSON."
     },
     "ai-agents": {
       "label": "Agents",
@@ -214,6 +226,26 @@
       "preview": "Aperçu",
       "name": "Votre nom",
       "email": "E-mail"
+    },
+    "workflows": {
+      "steps": "Étapes",
+      "sendBack": "Renvoyer",
+      "runs": "Historique des exécutions",
+      "runningNow": "En cours",
+      "history": "Historique",
+      "costSoFar": "Coût à ce stade",
+      "tokensSoFar": "Tokens à ce stade",
+      "agentRuns": "Exécutions d'agents",
+      "tokens": "Tokens",
+      "cost": "Coût",
+      "took": "Durée",
+      "got": "Ce qu'elle a reçu",
+      "returned": "Ce qu'elle a rendu",
+      "task": "Tâche",
+      "notes": "Notes du renvoi",
+      "done": "Terminé",
+      "round": "Tour",
+      "fullLog": "Journal complet"
     },
     "portal": {
       "title": "Portail",

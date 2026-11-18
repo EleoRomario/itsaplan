@@ -63,6 +63,10 @@ export const workspace = pgTable(
     teamCreation: text('team_creation').notNull().default('owner'),
     // Runs of its internal agents in flight at once; 0 sets no limit of its own.
     maxConcurrentRuns: integer('max_concurrent_runs').notNull().default(0),
+    // Whether its projects may have public links. Its owner and admins set it.
+    sharingEnabled: boolean('sharing_enabled').notNull().default(true),
+    // Whether only the teams with team.sharing_selected may. Its owner sets it.
+    sharingTeamsOnly: boolean('sharing_teams_only').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -115,6 +119,9 @@ export const team = pgTable(
     // team's own resources (agents, skills, tools, roles, integrations) and every
     // project it owns, whatever each project's own flag says.
     mcpEnabled: boolean('mcp_enabled').notNull().default(true),
+    // Whether the workspace owner chose this team for sharing. Read only while
+    // workspace.sharing_teams_only is on.
+    sharingSelected: boolean('sharing_selected').notNull().default(false),
     defaultAgentIds: jsonb('default_agent_ids').$type<number[]>().notNull().default([]),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -297,6 +304,11 @@ export const projectSetting = pgTable(
 // not stored — it lasts as long as that issue stays open. auto_watch is whether the
 // user is subscribed to the issues they create, are assigned, comment on or are
 // mentioned in (see issue_watcher); off means they only ever subscribe by hand.
+//
+// TODO(andrew): store the settings in one jsonb column, so a new one needs no migration.
+// The migration copies the current values into it and drops their columns;
+// last_project_id stays a column for its FK. Defaults and allowed values then live in
+// the api's defaults() and model.ts.
 export const userPreference = pgTable(
   'user_preference',
   {
@@ -313,6 +325,9 @@ export const userPreference = pgTable(
     issueStatsView: text('issue_stats_view').notNull().default('compact'),
     issueActivityView: text('issue_activity_view').notNull().default('flat'),
     autoWatch: boolean('auto_watch').notNull().default(true),
+    // Whether the user closed the tour of the product. Every account starts without it,
+    // so one made before the tour existed sees it once too.
+    onboardingSeen: boolean('onboarding_seen').notNull().default(false),
     // The user's own keyboard shortcut overrides, as { hotkeyId: combo }. Only the
     // bindings they changed are stored; the rest come from the instance defaults
     // (app_setting key 'hotkeys') and then the built-in ones.
@@ -1077,12 +1092,13 @@ export const teamNotificationSetting = pgTable('team_notification_setting', {
 });
 
 // A member's own notification preferences for one project: for each issue event
-// type, whether they want it by email and/or Telegram. One row per (user, project);
-// absent means the member has not opted in and receives nothing.
-// email_events/telegram_events are EventToggles jsonb keyed by the four inbox
-// notification types (assigned/mentioned/commented/state_changed). Email is sent to
-// the member's account address; Telegram to the chat of the account they linked in
-// user_telegram_account, which is instance-wide rather than per project.
+// type, whether they want it by email, Telegram and/or Web Push. One row per (user,
+// project); absent means the member has not opted in and receives nothing.
+// email_events/telegram_events/push_events are EventToggles jsonb keyed by the four
+// inbox notification types (assigned/mentioned/commented/state_changed). Email is sent
+// to the member's account address; Telegram to the chat of the account they linked in
+// user_telegram_account, and push to every browser in push_subscription. Both are
+// instance-wide rather than per project.
 export const userNotificationPreference = pgTable(
   'user_notification_preference',
   {
@@ -1095,6 +1111,7 @@ export const userNotificationPreference = pgTable(
       .references(() => project.id, { onDelete: 'cascade' }),
     emailEvents: jsonb('email_events').notNull().default({}),
     telegramEvents: jsonb('telegram_events').notNull().default({}),
+    pushEvents: jsonb('push_events').notNull().default({}),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -1133,27 +1150,56 @@ export const userTelegramAccount = pgTable(
   ],
 );
 
+// A browser a user turned push notifications on in, instance-wide like the Telegram
+// link. The endpoint is the URL the browser's push service issued for it; p256dh and
+// auth are the browser's keys the payload is encrypted to (RFC 8291). vapid_public_key
+// is the instance key the browser subscribed with: once the instance has other keys, the
+// push service refuses this instance's token for it, so nothing is queued for it. A user
+// keeps at most 10 rows, the oldest dropped first, and a push service that answers 404 or
+// 410 for an endpoint has its row deleted.
+export const pushSubscription = pgTable(
+  'push_subscription',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    endpoint: text('endpoint').notNull(),
+    p256dh: text('p256dh').notNull(),
+    auth: text('auth').notNull(),
+    vapidPublicKey: text('vapid_public_key').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique('push_subscription_endpoint_unique').on(t.endpoint),
+    index('push_subscription_user_idx').on(t.userId, t.createdAt),
+  ],
+);
+
 // Outbox for outbound notification delivery. One row per (recipient, channel,
-// message) to send for an issue event: an email or a Telegram message to one member.
-// Rows are enqueued when inbox notifications are created (see
+// message) to send for an issue event: an email, a Telegram message or a push
+// message to one member. Rows are enqueued when inbox notifications are created (see
 // apps/api/src/modules/notifications/outbound.ts) and drained by the worker
 // following the same claim/retry pattern as webhook_delivery. The message text is
 // composed at enqueue time and stored in `payload`; the channel credentials are read
-// from team_notification_setting at send time. channel is 'email' | 'telegram'
-// ('email' picks SMTP or Resend from the team config). recipient is the member's
-// email address for email rows, or their Telegram chat id for telegram rows.
+// from team_notification_setting at send time, and the push keys from the instance
+// environment. channel is 'email' | 'telegram' | 'push' ('email' picks SMTP or Resend
+// from the team config). recipient is the member's email address for email rows,
+// their Telegram chat id for telegram rows, or a push_subscription id for push rows.
 // The stored message on a notification_delivery row, composed at enqueue time by the
-// api and read by the worker that sends it. `subject`/`html` are channel-specific:
-// email uses `subject` and builds its own HTML from `text`; Telegram sends `html`
-// (parse_mode HTML) and falls back to `text`. The sender appends `url` to plain-text
-// bodies. `dedupeKey` is what the enqueue side matches to avoid queuing the same
-// message twice; `projectInviteId` ties an invite email to its invite, so a delivery
-// whose invite is no longer pending is dropped instead of sent.
+// api and read by the worker that sends it. Email uses `subject` and sends `html` as composed;
+// for a row without `html` the sender appends `url` to `text` and wraps it. Telegram sends
+// `html` (parse_mode HTML) and falls back to `text`. Push sends `{ title, body: text, url,
+// tag }` to the service worker. `dedupeKey` is what the enqueue side
+// matches to avoid queuing the same message twice; `projectInviteId` ties an invite email to
+// its invite, so a delivery whose invite is no longer pending is dropped instead of sent.
 export interface DeliveryPayload {
   subject?: string;
   text: string;
   html?: string;
   url?: string;
+  title?: string;
+  tag?: string;
   emailSource?: 'project' | 'instance';
   idempotencyKey?: string;
   dedupeKey?: string;
@@ -1177,7 +1223,10 @@ export const notificationDelivery = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    check('notification_delivery_channel_check', sql`${t.channel} IN ('email', 'telegram')`),
+    check(
+      'notification_delivery_channel_check',
+      sql`${t.channel} IN ('email', 'telegram', 'push')`,
+    ),
     // Backs the worker's claim query: due pending rows ordered by next_attempt_at.
     index('notification_delivery_due_idx')
       .on(t.nextAttemptAt)
@@ -1524,8 +1573,8 @@ export const issue = pgTable(
     columnId: integer('column_id')
       .notNull()
       .references(() => projectColumn.id),
-    // The issue this one is a subtask of (same project). One level deep: an issue
-    // with a parent cannot itself be a parent, which the API enforces. Deleting or
+    // The issue this one is a subtask of (same project). Nesting stops at
+    // MAX_SUBTASK_DEPTH levels (issue-tree.ts). Deleting or
     // archiving a parent asks what to do with its subtasks, so the ON DELETE here
     // only covers the paths that bypass that choice (a deleted project).
     parentId: integer('parent_id').references((): AnyPgColumn => issue.id, {
@@ -2189,6 +2238,15 @@ export const projectDocument = pgTable(
     updatedByUserId: text('updated_by_user_id').references(() => user.id, {
       onDelete: 'set null',
     }),
+    // Unguessable token for the public read-only share link of this page. NULL
+    // means not shared; setting it enables the link, clearing it revokes access.
+    shareToken: uuid('share_token').unique(),
+    // When the share link stops working; NULL means never. See issue.shareExpiresAt.
+    shareExpiresAt: timestamp('share_expires_at', { withTimezone: true }),
+    // Whether the share link also opens the page's subpages.
+    shareIncludeChildren: boolean('share_include_children').notNull().default(false),
+    // Whether the shared pages show the title and state of the issues they name.
+    shareIncludeIssues: boolean('share_include_issues').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -2303,8 +2361,9 @@ export const projectDocumentInitiative = pgTable(
 );
 
 // Files embedded in Docs pages. Bytes use the same S3-compatible object store as
-// issue/chat attachments; only authenticated document routes expose them, so a
-// private page's unguessable asset id never acts as a public capability URL.
+// issue/chat attachments; only authenticated document routes and the live share link
+// of a page expose them, so an unguessable asset id alone never acts as a public
+// capability URL.
 export const documentAsset = pgTable(
   'document_asset',
   {
@@ -2463,6 +2522,10 @@ export const importJob = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     source: text('source').notNull(),
+    // The board, team or project the job reads and the address that opens it in the
+    // source, as its reader names them once Discover starts; null until then.
+    sourceProjectName: text('source_project_name'),
+    sourceProjectUrl: text('source_project_url'),
     phase: text('phase').notNull().default('discover'),
     status: text('status').notNull().default('pending'),
     config: jsonb('config').notNull().default({}),
@@ -2518,11 +2581,11 @@ export const importRecord = pgTable(
   (t) => [
     check(
       'import_record_source_entity_type_check',
-      sql`${t.sourceEntityType} IN ('issue', 'comment', 'label', 'state', 'cycle', 'attachment', 'checklist', 'custom_field')`,
+      sql`${t.sourceEntityType} IN ('issue', 'comment', 'label', 'state', 'cycle', 'attachment', 'checklist', 'custom_field', 'issue_type', 'initiative', 'worklog')`,
     ),
     check(
       'import_record_local_entity_type_check',
-      sql`${t.localEntityType} IS NULL OR ${t.localEntityType} IN ('issue', 'comment', 'label', 'state', 'cycle', 'attachment', 'checklist', 'custom_field')`,
+      sql`${t.localEntityType} IS NULL OR ${t.localEntityType} IN ('issue', 'comment', 'label', 'state', 'cycle', 'attachment', 'checklist', 'custom_field', 'issue_type', 'initiative', 'worklog', 'initiative_attachment')`,
     ),
     uniqueIndex('import_record_job_source_uq').on(t.importJobId, t.sourceEntityType, t.sourceId),
     index('import_record_job_local_idx').on(t.importJobId, t.localEntityType, t.localId),

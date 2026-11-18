@@ -15,6 +15,7 @@ import { useShellProject } from '@/hooks/useShellProject';
 import { useShellRoute } from '@/hooks/useShellRoute';
 import { useShellTitle } from '@/hooks/useShellTitle';
 import { useAppBadge } from '@/hooks/useAppBadge';
+import { useDesktopNotifications } from '@/hooks/useDesktopNotifications';
 import { useProjectRouteSync } from '@/hooks/useProjectRouteSync';
 import { projectPath, issuePath } from '@/utils/paths';
 import { defaultsFromFilters, type NewIssueDefaults } from '@/utils/project';
@@ -24,6 +25,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/AppSidebar';
 import AppHeader from '@/components/layout/AppHeader';
 import CommandLayer from '@/components/layout/CommandLayer';
+import DesktopNotificationsPrompt from '@/components/layout/DesktopNotificationsPrompt';
 import ShellBody from '@/components/layout/ShellBody';
 import ShellHeaderTitle from '@/components/layout/ShellHeaderTitle';
 import ShellOverlays from '@/components/layout/ShellOverlays';
@@ -62,6 +64,7 @@ export default function Shell({
     forbidden,
   } = useShellProject(projectKey, route.activeViewId);
   useAppBadge();
+  useDesktopNotifications();
   const projectName = project?.project.name ?? t('project');
   // A failed read keeps the last data, so a project that became unreadable is named
   // generically.
@@ -172,6 +175,7 @@ export default function Shell({
     customFields,
     onOpenIssue: openIssue,
     onAddIssue: addIssue,
+    newIssueDefaults: filterDefaults,
     onChatWithAgent: (agentId: number) => {
       setChatAgentId(agentId);
       chatPanel.openPanel();
@@ -194,7 +198,7 @@ export default function Shell({
                   route={route}
                   projectName={projectName}
                   issueIdentifier={issueQuery.data?.identifier ?? null}
-                  issueParent={issueQuery.data?.parent ?? null}
+                  issueAncestors={issueQuery.data?.ancestors ?? []}
                 />
               }
               hasProject={!!project}
@@ -204,6 +208,7 @@ export default function Shell({
               onToggleChat={chatPanel.toggle}
             />
             <ShellNotice />
+            <DesktopNotificationsPrompt />
 
             {errorMsg && !forbidden && (
               <div className="border-b border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">

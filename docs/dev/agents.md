@@ -8,6 +8,21 @@ Agents, the skill library, the configured tools and the integration credentials 
 team. Their routes are under `:teamId` and use the `teamPermission` guard. The integration
 catalog, the provider models and the credential options take `teamMember` only.
 
+Saving a credential, new or with changed fields, first asks its service whether it accepts it
+(`integrations/credential-check.ts`), with one request that spends nothing. The api refuses only a
+credential the service refused, so an outage never blocks a save through MCP. The dialog validates
+first, on edit too (the stored secrets fill the fields left blank), and also holds back a credential the service gave no answer for (`unavailable`: an outage, a
+timeout, a bot wall); one that cannot be checked from here (`unknown`: no such request, an address
+the SSRF guard refuses) can be saved. A tool integration
+checks itself (`verify` in its folder of `@repo/agent-tools`). An AI provider is asked for
+`/models` at the address in Mastra's registry, or at the credential's base URL; the providers whose
+address only their SDK holds, and the few with another request or refusal status, are listed by
+hand in `integrations/provider-check.ts`.
+
+A configured tool is bound to one credential of its integration, or to none when the integration
+has no credential fields (PDF). An integration marked `credentialOptional` (Keenable) takes both: a
+team can add its tools with no key, on the service's keyless tier, and again on a key.
+
 What acts in one project stays under `:projectKey`: an agent's chat, its schedules and starting
 a run. A run is read from the agent's history and traces under `:teamId`, the queue at each
 scope, and `/agent-runs/:runId`.
@@ -16,10 +31,15 @@ Three decisions a reader would otherwise propose again:
 
 - **The team is the boundary.** There is no instance-level agent and no non-human flag on `user`.
 - **`ai_agents` `create` and `edit` are administrative.** `create` makes an agent, attaches it to
-  the caller's projects and returns an external agent's key once. That key reaches those projects
+  the supplied projects and returns an external agent's key once. An omitted or empty list
+  attaches it to none. Its stored owner can still list and read it. That key reaches those projects
   on the default role. `edit` attaches an existing agent to the caller's projects
   (`PUT /teams/:teamId/ai-agents/:agentId/projects`). The caller's projects are the ones they are
   a member of, or every project of the team for whoever runs it.
+
+  `owner_user_id` is the creator and no edit changes it. The `owner` runner scope limits who may
+  give the agent work to this owner, whoever chooses the scope. The owner always sees the agent;
+  it grants no management bypass.
 
   An action that reaches every project the agent works in also takes running the team or being a
   member of all of them (`assertFullAgentAccess`): rotating the key, editing or deleting the
@@ -54,6 +74,13 @@ what its requests in that project are checked against, so one agent can hold dif
 two projects. An internal agent's rights in a project are the intersection of that role and its
 actions: the keys in `ai_agent.tools` plus the always-on actions (`ALWAYS_ON_KEYS`). An external
 agent has no such list, so its key is checked against the role alone.
+
+A configured tool (`agent_tool`) is a catalog tool from `@repo/agent-tools` bound to a credential,
+or a tool an extension of the api defines: its key is `<source>:...`, and the source set with
+`setToolSource` (`agents/tools/extension.ts`) names it and runs it. A tool the instance does not
+have, its integration or its source gone, stays listed with `supported: false` and no agent gets
+it. An internal agent gets its enabled tools in its runs and chat answers, an external one over
+MCP; a tool named as a core tool of the agent is left out.
 
 `ai_agent_team_username_uq` makes the mention handle unique per team, ignoring case.
 `assertUsernameFree` also refuses a handle a person holds.
@@ -116,7 +143,7 @@ The team's owner and managers read every project of the team, and so does anyone
 role grants `agent_usage` `read`, which covers a workspace owner and admin. Anyone else reads the
 projects where their project role grants it (`projectsWithPermission` in `shared/access.ts`), since
 a role is set per project and a team-wide figure would show the others. The response names those
-projects (`readableProjects`), and `projectId` narrows the dashboard to one of them.
+projects (`readableProjects`), and `projectIds` narrows the dashboard to some of them.
 `GET /workspaces/:workspaceId/agent-analytics` reads it over every team of a workspace, with the
 teams compared, for its owner and its admins.
 
@@ -176,9 +203,12 @@ messages, tool inputs and results, and a local Codex session link. Transcripts f
 trace retention window after the run finishes. Pending runs and final results are retained.
 
 `POST /agent-runs/:runId/events` accepts only the calling agent's current executing, unexpired
-attempt. Event offsets deduplicate retries and reject gaps with 409. An attempt's transcript stops
-recording after 2,000 events or 1 MB. Acknowledgements continue, so the runner can still report its
-final result. A Codex UUID forms the local `codex://threads/` link, and no supplied URL is accepted.
+attempt. Event offsets deduplicate retries: a fully accepted batch is acknowledged without changes,
+and a batch overlapping the accepted prefix appends only its unseen suffix. An offset beyond the
+next expected offset is a gap and returns 409. A different session ID is rejected even for a
+replayed batch. An attempt's transcript stops recording after 2,000 events or 1 MB. Acknowledgements
+continue, so the runner can still report its final result. A Codex UUID forms the local
+`codex://threads/` link, and no supplied URL is accepted.
 
 The runner sends the attempt number on heartbeat and result calls. The api answers 404 to the
 process of a reclaimed attempt, and its command keeps running until it ends. `attempt` is optional

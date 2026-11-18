@@ -259,6 +259,73 @@ export const testInstanceEmailSettings = (patch: InstanceEmailSettingsPatch) =>
     body: JSON.stringify(patch),
   });
 
+export interface EmailText {
+  subject: string;
+  body: string;
+  button: string;
+}
+
+export interface EmailLayout {
+  html: string;
+  css: string;
+}
+
+export interface EmailTemplateEntry {
+  key: string;
+  group: string;
+  variables: string[];
+  hasLink: boolean;
+  defaults: Record<string, EmailText>;
+  edits: Record<string, EmailText>;
+}
+
+export interface EmailTemplatesSettings {
+  templates: EmailTemplateEntry[];
+  layout: EmailLayout;
+  defaultLayout: EmailLayout;
+  placeholders: { name: string; required: boolean }[];
+  canSend: boolean;
+}
+
+export interface EmailTemplatesBody {
+  edits: Record<string, Record<string, EmailText>>;
+  layout: EmailLayout | null;
+}
+
+export interface EmailDraft {
+  key: string;
+  locale: string;
+  text: EmailText;
+  layout: EmailLayout;
+}
+
+export interface EmailPreview {
+  subject: string;
+  text: string;
+  html: string;
+  from: string | null;
+}
+
+export const getEmailTemplates = () => request<EmailTemplatesSettings>('/god/email-templates');
+
+export const updateEmailTemplates = (body: EmailTemplatesBody) =>
+  request<EmailTemplatesSettings>('/god/email-templates', {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
+export const previewEmailDraft = (draft: EmailDraft) =>
+  request<EmailPreview>('/god/email-templates/preview', {
+    method: 'POST',
+    body: JSON.stringify(draft),
+  });
+
+export const testEmailDraft = (draft: EmailDraft) =>
+  request<InstanceEmailTestResult>('/god/email-templates/test', {
+    method: 'POST',
+    body: JSON.stringify(draft),
+  });
+
 export const getInstanceTelegramSettings = () =>
   request<InstanceTelegramSettings>('/god/telegram-settings');
 
@@ -302,6 +369,34 @@ export const updateInstanceAgentSettings = (body: Partial<AgentSettings>) =>
     body: JSON.stringify(body),
   });
 
+// Whether public links work on this instance.
+export interface SharingSettings {
+  enabled: boolean;
+}
+
+export const getInstanceSharingSettings = () => request<SharingSettings>('/god/sharing-settings');
+
+export const updateInstanceSharingSettings = (body: SharingSettings) =>
+  request<SharingSettings>('/god/sharing-settings', {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
+// Who may read the API docs, in the app and at the api's /docs and /api/auth/reference.
+export type ApiDocsAudience = 'nobody' | 'god' | 'everyone';
+
+export interface ApiDocsSettings {
+  audience: ApiDocsAudience;
+}
+
+export const getInstanceApiDocsSettings = () => request<ApiDocsSettings>('/god/api-docs-settings');
+
+export const updateInstanceApiDocsSettings = (body: ApiDocsSettings) =>
+  request<ApiDocsSettings>('/god/api-docs-settings', {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
 // The sites that may show the shared work items and views, and the public pages, in a frame.
 export interface EmbedSites {
   origins: string[];
@@ -319,6 +414,46 @@ export const getInstanceStorageSettings = () => request<StorageSettings>('/god/s
 
 export const updateInstanceStorageSettings = (patch: StorageSettingsPatch) =>
   request<StorageSettings>('/god/storage-settings', {
+    method: 'PUT',
+    body: JSON.stringify(patch),
+  });
+
+// How the background jobs of the api, the worker and the bot run. Each job reads them on
+// its next pass, so a change applies without a restart.
+export interface JobSettings {
+  webhooks: {
+    // Also paces notification deliveries: the worker sends both on one pass.
+    pollIntervalMs: number;
+    batchSize: number;
+    timeoutMs: number;
+    maxAttempts: number;
+    disableThreshold: number;
+    leaseSeconds: number;
+    retentionDays: number;
+    cleanupIntervalMinutes: number;
+  };
+  notifications: { batchSize: number; maxAttempts: number; leaseSeconds: number };
+  imports: { pollIntervalMs: number };
+  agentRuns: { pollIntervalMs: number; maxAttempts: number; leaseSeconds: number };
+  agentChat: {
+    leaseSeconds: number;
+    maxAttempts: number;
+    claimWaitMs: number;
+    claimPollMs: number;
+    streamPollMs: number;
+    historyMessages: number;
+  };
+  agentInvocations: { pollIntervalMs: number; timeoutMs: number };
+  sweeps: { autoArchiveMinutes: number; tracePruneMinutes: number; shareExpiryMinutes: number };
+  bot: { configPollIntervalMs: number };
+}
+
+export type JobSettingsPatch = { [G in keyof JobSettings]?: Partial<JobSettings[G]> };
+
+export const getInstanceJobSettings = () => request<JobSettings>('/god/job-settings');
+
+export const updateInstanceJobSettings = (patch: JobSettingsPatch) =>
+  request<JobSettings>('/god/job-settings', {
     method: 'PUT',
     body: JSON.stringify(patch),
   });

@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "Geral",
-      "description": "Workspaces pessoais, padrões para novos projetos, e rastros e tempo de execução de agentes."
+      "description": "Configurações que valem para todos os workspaces desta instância."
     },
     "authentication": {
       "label": "Autenticação",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "Armazenamento",
       "description": "Quanto as pessoas podem enviar: o tamanho de um único arquivo, os tipos de anexo aceitos e o armazenamento que cada projeto recebe."
+    },
+    "jobs": {
+      "label": "Tarefas em segundo plano",
+      "description": "Com que frequência as tarefas em segundo plano rodam e são repetidas. As mudanças valem sem reiniciar."
+    },
+    "email-templates": {
+      "label": "Modelos de e-mail",
+      "description": "Gerencie os modelos de e-mails do sistema."
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "Agendamentos",
       "description": "Execute tarefas de agente em um horário recorrente."
     },
+    "workflows": {
+      "label": "Fluxos",
+      "description": "Agentes que passam o trabalho uns para os outros."
+    },
     "webhooks": {
       "label": "Webhooks",
       "description": "Envie eventos do projeto para URLs externas, assinados com um segredo por webhook."
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "Importar/Exportar",
-      "description": "Importe issues, comentários e etiquetas de uma instância Plane auto-hospedada, ou exporte os dados deste projeto como JSON."
+      "description": "Importe issues de outra ferramenta de acompanhamento ou exporte os dados deste projeto como JSON."
     },
     "ai-agents": {
       "label": "Agentes de IA",
@@ -214,6 +226,26 @@
       "preview": "Pré-visualização",
       "name": "Seu nome",
       "email": "E-mail"
+    },
+    "workflows": {
+      "steps": "Etapas",
+      "sendBack": "Devolver",
+      "runs": "Histórico de execuções",
+      "runningNow": "Em andamento",
+      "history": "Histórico",
+      "costSoFar": "Custo até agora",
+      "tokensSoFar": "Tokens até agora",
+      "agentRuns": "Execuções de agentes",
+      "tokens": "Tokens",
+      "cost": "Custo",
+      "took": "Duração",
+      "got": "O que recebeu",
+      "returned": "O que devolveu",
+      "task": "Tarefa",
+      "notes": "Notas da devolução",
+      "done": "Concluído",
+      "round": "Rodada",
+      "fullLog": "Log completo"
     },
     "portal": {
       "title": "Portal",

@@ -65,7 +65,8 @@ import { getAgentTrace, listAgentTraces } from './runtime/traces';
 import {
   analyticsProjects,
   getAgentAnalytics,
-  onlyProject,
+  onlyProjects,
+  queryProjectIds,
   workspaceScope,
 } from './runtime/analytics';
 import {
@@ -272,16 +273,11 @@ export const aiAgentRoutes = new Elysia({ name: 'ai-agents', detail: { tags: ['A
 
   .patch(
     '/teams/:teamId/ai-agents/:agentId',
-    async ({ params, membership, body, user }) => {
+    async ({ params, membership, body }) => {
       const current = await requireVisibleAgent(params.agentId, membership);
       await assertFullAgentAccess(membership, params.agentId);
       const projectIds = await resolveAgentProjects(membership, body.projectIds, current.projects);
-      const agent = await updateAgent(
-        params.agentId,
-        membership.teamId,
-        { ...body, projectIds },
-        requireUser(user).id,
-      );
+      const agent = await updateAgent(params.agentId, membership.teamId, { ...body, projectIds });
       if (!agent) throw new HttpError(404, 'Agent not found');
       const [withAccess] = await withCanManage(membership, [agent]);
       return withAccess;
@@ -303,15 +299,10 @@ export const aiAgentRoutes = new Elysia({ name: 'ai-agents', detail: { tags: ['A
   // a project, so this is both the attach and the detach: the set is replaced.
   .put(
     '/teams/:teamId/ai-agents/:agentId/projects',
-    async ({ params, membership, body, user }) => {
+    async ({ params, membership, body }) => {
       const current = await requireVisibleAgent(params.agentId, membership);
       const projectIds = await resolveAgentProjects(membership, body.projectIds, current.projects);
-      const agent = await updateAgent(
-        params.agentId,
-        membership.teamId,
-        { projectIds },
-        requireUser(user).id,
-      );
+      const agent = await updateAgent(params.agentId, membership.teamId, { projectIds });
       if (!agent) throw new HttpError(404, 'Agent not found');
       const [withAccess] = await withCanManage(membership, [agent]);
       return withAccess;
@@ -450,7 +441,7 @@ export const aiAgentRoutes = new Elysia({ name: 'ai-agents', detail: { tags: ['A
       };
       const [analytics, readableProjects] = await Promise.all([
         getAgentAnalytics(
-          onlyProject(scope, query.projectId),
+          onlyProjects(scope, queryProjectIds(query.projectIds)),
           query.days ?? DEFAULT_ANALYTICS_DAYS,
         ),
         analyticsProjects(scope),
@@ -468,7 +459,7 @@ export const aiAgentRoutes = new Elysia({ name: 'ai-agents', detail: { tags: ['A
           'Runs, tokens and model cost of the agents of the team, over the last `days` days ' +
           'beside the same span before it. An owner or a manager of the team reads every ' +
           'project; anyone else the projects where their role grants agent_usage read. ' +
-          '`projectId` narrows it to one of them.',
+          '`projectIds` narrows it to some of them.',
       },
     },
   )

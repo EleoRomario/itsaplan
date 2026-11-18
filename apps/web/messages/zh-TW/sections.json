@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "一般",
-      "description": "個人工作區、新建專案的預設設定，以及代理追蹤和執行時長。"
+      "description": "適用於本執行個體所有工作區的設定。"
     },
     "authentication": {
       "label": "身分驗證",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "儲存",
       "description": "設定單個檔案大小、允許的附件類型和每個專案的儲存配額。"
+    },
+    "jobs": {
+      "label": "背景任務",
+      "description": "背景任務的執行頻率與重試。變更無需重新啟動即可生效。"
+    },
+    "email-templates": {
+      "label": "電子郵件範本",
+      "description": "管理系統電子郵件範本。"
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "排程",
       "description": "按固定時間重複執行代理任務。"
     },
+    "workflows": {
+      "label": "工作流程",
+      "description": "代理之間互相交接工作。"
+    },
     "webhooks": {
       "label": "Webhook",
       "description": "將專案事件傳送到外部 URL，並使用每個 Webhook 獨立的金鑰簽章。"
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "匯入/匯出",
-      "description": "從自託管的 Plane 執行個體匯入工作項目、留言和標籤，或將該專案的資料匯出為 JSON。"
+      "description": "從其他專案管理工具匯入工作項目，或將該專案的資料匯出為 JSON。"
     },
     "ai-agents": {
       "label": "AI 代理",
@@ -214,6 +226,26 @@
       "preview": "預覽",
       "name": "你的姓名",
       "email": "電子郵件"
+    },
+    "workflows": {
+      "steps": "步驟",
+      "sendBack": "退回",
+      "runs": "執行紀錄",
+      "runningNow": "正在執行",
+      "history": "歷史",
+      "costSoFar": "目前費用",
+      "tokensSoFar": "目前 Token",
+      "agentRuns": "代理執行",
+      "tokens": "Token",
+      "cost": "費用",
+      "took": "用時",
+      "got": "收到的內容",
+      "returned": "回傳的內容",
+      "task": "任務",
+      "notes": "退回意見",
+      "done": "完成",
+      "round": "輪次",
+      "fullLog": "完整記錄"
     },
     "portal": {
       "title": "入口網站",

@@ -2,8 +2,11 @@ export type {
   ConfigField,
   ConfigFieldType,
   ToolConfig,
+  CredentialCheck,
+  IntegrationIcon,
   CustomToolEntry,
   Integration,
+  IntegrationKind,
   ToolDescriptor,
   IntegrationDescriptor,
 } from './types';

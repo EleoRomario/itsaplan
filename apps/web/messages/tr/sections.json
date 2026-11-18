@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "Genel",
-      "description": "Kişisel çalışma alanları, yeni projeler için varsayılanlar, ajan izleme kayıtları ve çalışma süresi."
+      "description": "Bu örneklemdeki tüm çalışma alanları için geçerli ayarlar."
     },
     "authentication": {
       "label": "Kimlik Doğrulama",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "Depolama",
       "description": "Yükleme limitleri: tek dosya boyutu, kabul edilen ek türleri ve projelere tanınan depolama alanı."
+    },
+    "jobs": {
+      "label": "Arka plan görevleri",
+      "description": "Arka plan görevlerinin ne sıklıkla çalıştığı ve yeniden denendiği. Değişiklikler yeniden başlatma gerekmeden uygulanır."
+    },
+    "email-templates": {
+      "label": "E-posta şablonları",
+      "description": "Sistem e-postası şablonlarını yönetin."
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "Zamanlamalar",
       "description": "Ajan görevlerini yinelenen bir zaman çizelgesine göre çalıştırın."
     },
+    "workflows": {
+      "label": "Akışlar",
+      "description": "İşi birbirine devreden ajanlar."
+    },
     "webhooks": {
       "label": "Webhook'lar",
       "description": "Proje olaylarını harici URL'lere gönderin (her webhook özel bir anahtarla imzalanır)."
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "İçe/Dışa Aktarma",
-      "description": "Kendi barındırdığınız bir Plane örnekleminden işleri, yorumları ve etiketleri içe aktarın veya bu projenin verilerini JSON olarak dışa aktarın."
+      "description": "Başka bir takip aracından işleri içe aktarın veya bu projenin verilerini JSON olarak dışa aktarın."
     },
     "ai-agents": {
       "label": "Yapay Zekâ Ajanları",
@@ -214,6 +226,26 @@
       "preview": "Önizleme",
       "name": "Adınız",
       "email": "E-posta"
+    },
+    "workflows": {
+      "steps": "Adımlar",
+      "sendBack": "Geri gönder",
+      "runs": "Çalıştırma geçmişi",
+      "runningNow": "Şu anda çalışanlar",
+      "history": "Geçmiş",
+      "costSoFar": "Şu ana kadar maliyet",
+      "tokensSoFar": "Şu ana kadar token",
+      "agentRuns": "Ajan çalıştırmaları",
+      "tokens": "Token",
+      "cost": "Maliyet",
+      "took": "Süre",
+      "got": "Aldığı",
+      "returned": "Döndürdüğü",
+      "task": "Görev",
+      "notes": "Geri gönderme notları",
+      "done": "Tamamlandı",
+      "round": "Tur",
+      "fullLog": "Tam kayıt"
     },
     "portal": {
       "title": "Portal",

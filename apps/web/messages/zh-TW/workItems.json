@@ -1,5 +1,6 @@
 {
   "newIssue": "新建工作項目",
+  "addWorkItem": "新增工作項目",
   "pin": "固定",
   "unpin": "取消固定",
   "collapse": "摺疊",
@@ -44,6 +45,12 @@
   "calendar": {
     "previousMonth": "上個月",
     "nextMonth": "下個月",
+    "previousWeek": "上週",
+    "nextWeek": "下週",
+    "previousDays": "{count, plural, other {前 # 天}}",
+    "nextDays": "{count, plural, other {後 # 天}}",
+    "weekNumber": "第 {number} 週",
+    "range": "{from} – {to}",
     "today": "今天",
     "moreIssues": "另有 {count} 個",
     "issueCount": "{count, plural, other {# 個工作項目}}",
@@ -97,14 +104,14 @@
   },
   "removal": {
     "archive": {
-      "title": "{count, plural, other {封存工作項目}}",
+      "title": "{count, plural, other {封存 # 個工作項目？}}",
       "confirm": "{count, plural, other {封存 # 個工作項目}}",
-      "description": "{count, plural, other {封存選中的 # 個工作項目？它們將離開看板，之後可以恢復。}}"
+      "description": "它們將離開看板，之後可以恢復。"
     },
     "delete": {
-      "title": "{count, plural, other {刪除工作項目}}",
+      "title": "{count, plural, other {刪除 # 個工作項目？}}",
       "confirm": "{count, plural, other {刪除 # 個工作項目}}",
-      "description": "{count, plural, other {刪除選中的 # 個工作項目？}}這還會刪除留言、活動記錄和附件。此操作無法復原。"
+      "description": "其留言、活動記錄和附件也會被刪除。此操作無法復原。"
     }
   },
   "share": {

@@ -1,21 +1,10 @@
 import { t } from 'elysia';
+import { LOCALES } from '@repo/mailer';
 import { HotkeyCombosSchema } from '#modules/settings/model';
 
-const Locale = t.Union([
-  t.Literal('en'),
-  t.Literal('uk'),
-  t.Literal('ru'),
-  t.Literal('zh-CN'),
-  t.Literal('zh-TW'),
-  t.Literal('ar'),
-  t.Literal('fa'),
-  t.Literal('fr'),
-  t.Literal('pt-BR'),
-  t.Literal('id'),
-  t.Literal('es-ES'),
-  t.Literal('ko'),
-  t.Literal('tr'),
-]);
+// t.UnionEnum defaults to its first value, which would reset the language on a patch that
+// leaves it out.
+const Locale = t.UnionEnum([...LOCALES], { default: undefined });
 const Theme = t.Union([t.Literal('light'), t.Literal('dark'), t.Literal('system')]);
 const IssueOpenMode = t.Union([t.Literal('panel'), t.Literal('page')]);
 const StartPage = t.Union([
@@ -38,6 +27,7 @@ export const PreferenceResponse = t.Object({
   issueStatsView: IssueStatsView,
   issueActivityView: IssueActivityView,
   autoWatch: t.Boolean(),
+  onboardingSeen: t.Boolean(),
   lastProjectId: t.Nullable(t.Number()),
   hotkeys: HotkeyCombosSchema,
 });
@@ -53,6 +43,7 @@ export const PreferencePatch = t.Object({
   issueStatsView: t.Optional(IssueStatsView),
   issueActivityView: t.Optional(IssueActivityView),
   autoWatch: t.Optional(t.Boolean()),
+  onboardingSeen: t.Optional(t.Boolean()),
   lastProjectId: t.Optional(t.Nullable(t.Number())),
   hotkeys: t.Optional(HotkeyCombosSchema),
 });

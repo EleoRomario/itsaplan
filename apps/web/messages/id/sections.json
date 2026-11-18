@@ -31,7 +31,7 @@
     },
     "general": {
       "label": "Umum",
-      "description": "Workspace pribadi, pengaturan bawaan untuk proyek baru, serta trace dan waktu jalan agen."
+      "description": "Pengaturan yang berlaku untuk semua workspace di instance ini."
     },
     "authentication": {
       "label": "Autentikasi",
@@ -44,6 +44,14 @@
     "storage": {
       "label": "Penyimpanan",
       "description": "Batas unggahan pengguna: ukuran file tunggal, jenis lampiran yang diterima, dan ruang penyimpanan untuk setiap proyek."
+    },
+    "jobs": {
+      "label": "Tugas latar belakang",
+      "description": "Seberapa sering tugas latar belakang berjalan dan dicoba ulang. Perubahan berlaku tanpa restart."
+    },
+    "email-templates": {
+      "label": "Template email",
+      "description": "Kelola template email sistem."
     },
     "telegram": {
       "label": "Telegram",
@@ -103,6 +111,10 @@
       "label": "Jadwal",
       "description": "Jalankan tugas agen dengan jadwal berulang."
     },
+    "workflows": {
+      "label": "Alur",
+      "description": "Agen yang saling meneruskan pekerjaan."
+    },
     "webhooks": {
       "label": "Webhook",
       "description": "Kirim peristiwa proyek ke URL eksternal, ditandatangani dengan rahasia per-webhook."
@@ -117,7 +129,7 @@
     },
     "import-export": {
       "label": "Impor/Ekspor",
-      "description": "Impor issue, komentar, dan label dari instans Plane self-hosted, atau ekspor data proyek ini sebagai JSON."
+      "description": "Impor issue dari tracker lain, atau ekspor data proyek ini sebagai JSON."
     },
     "ai-agents": {
       "label": "Agen AI",
@@ -214,6 +226,26 @@
       "preview": "Pratinjau",
       "name": "Nama Anda",
       "email": "Email"
+    },
+    "workflows": {
+      "steps": "Langkah",
+      "sendBack": "Kembalikan",
+      "runs": "Riwayat jalan",
+      "runningNow": "Sedang berjalan",
+      "history": "Riwayat",
+      "costSoFar": "Biaya sejauh ini",
+      "tokensSoFar": "Token sejauh ini",
+      "agentRuns": "Jalan agen",
+      "tokens": "Token",
+      "cost": "Biaya",
+      "took": "Durasi",
+      "got": "Yang diterima",
+      "returned": "Yang dikembalikan",
+      "task": "Tugas",
+      "notes": "Catatan pengembalian",
+      "done": "Selesai",
+      "round": "Putaran",
+      "fullLog": "Log lengkap"
     },
     "portal": {
       "title": "Portal",

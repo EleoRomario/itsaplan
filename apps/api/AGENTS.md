@@ -97,8 +97,9 @@ Enforced through macros in the route options.
 - Whether _the caller_ may reach something goes through `getProjectAccess` / `getTeamAccess`.
   Whether _someone else_ is a member (assignees, mentions, recipients, seats, last-owner) reads
   the rows, so a workspace manager is in no member list.
-- Member routes use `memberAdmin` or `memberSelfOrAdmin`. Granting `owner`, or a role with a
-  `roleId`, is capped: `assertProjectAdmin`, `mayGrantInviteRanks`, `assertGrantablePermissions`.
+- Member routes use `memberAdmin` or `memberSelfOrAdmin`. Granting `owner`, or a member role (a
+  `roleId` or the default role), is capped: `assertProjectAdmin`, `mayGrantInviteRanks`,
+  `assertGrantablePermissions`.
 - An invite is checked against its sender when made and again when accepted.
 - An agent is never a project owner. An action on an agent that reaches every project it works in
   takes `assertFullAgentAccess`. There is no instance-level agent and no non-human flag on `user`.
@@ -108,6 +109,9 @@ Enforced through macros in the route options.
   role is `member`. Its rank can be changed, and the sync then leaves the row alone.
 - `GET /attachments/:publicId/raw` is public. Keep `X-Content-Type-Options: nosniff`, forced
   download outside a strict media allowlist, and the locked-down CSP.
+- `GET /share/document/:token/assets/:publicId/raw` serves a Docs asset without a session, only
+  while the token is a live link to the page that holds it or to an ancestor that shares its
+  subpages. It sends the same response as the route above.
 
 ## Tests
 

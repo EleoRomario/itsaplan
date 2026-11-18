@@ -94,12 +94,17 @@ export function integrationDescriptors(): IntegrationDescriptor[] {
   return integrations.map((i) => ({
     key: i.key,
     label: i.label,
+    icon: i.icon,
+    website: i.website,
+    kind: i.kind ?? 'tool',
     credentialSchema: i.credentialSchema,
+    credentialOptional: i.credentialOptional,
     tools: i.tools.map((t) => ({
       key: t.key,
       label: t.label,
       description: t.description,
       scopes: t.scopes,
+      group: t.group,
     })),
   }));
 }
