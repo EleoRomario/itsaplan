@@ -130,7 +130,9 @@ export function useNavigationCommands(projectKey: string | null): CommandSection
         });
       }
     }
-    add('nav.api', t('apiDocs'), <Braces />, apiDocsPath(key), 'rest openapi');
+    if (isGod) {
+      add('nav.api', t('apiDocs'), <Braces />, apiDocsPath(key), 'rest openapi');
+    }
     add('nav.mcp', t('mcpServer'), <Server />, mcpServerPath(key), 'model context protocol');
   }
 

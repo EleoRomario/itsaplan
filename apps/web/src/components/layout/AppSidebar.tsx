@@ -85,29 +85,31 @@ export default function AppSidebar({
           <>
             <SidebarMenu>
               <SidebarNavItem
-                href={currentProjectKey ? apiDocsPath(currentProjectKey) : '#'}
-                icon={Braces}
-                label={t('apiDocs')}
-                active={onApiDocs}
-                disabled={disabled}
-              />
-              <SidebarNavItem
                 href={currentProjectKey ? mcpServerPath(currentProjectKey) : '#'}
                 icon={Server}
                 label={t('mcpServer')}
                 active={onMcp}
                 disabled={disabled}
               />
-              {/* Instance administration, only for the owner account. The API
-                  enforces the same, so hiding it here is about noise, not access. */}
+              {/* Instance administration and API docs, only for the owner account.
+                  The API enforces the same, so hiding them here is about noise, not access. */}
               {isGod && (
-                <SidebarNavItem
-                  href={godPath(GOD_SECTIONS[0]!.slug)}
-                  icon={Shield}
-                  label={t('godMode')}
-                  active={false}
-                  disabled={false}
-                />
+                <>
+                  <SidebarNavItem
+                    href={currentProjectKey ? apiDocsPath(currentProjectKey) : '#'}
+                    icon={Braces}
+                    label={t('apiDocs')}
+                    active={onApiDocs}
+                    disabled={disabled}
+                  />
+                  <SidebarNavItem
+                    href={godPath(GOD_SECTIONS[0]!.slug)}
+                    icon={Shield}
+                    label={t('godMode')}
+                    active={false}
+                    disabled={false}
+                  />
+                </>
               )}
             </SidebarMenu>
 

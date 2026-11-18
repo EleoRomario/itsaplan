@@ -5,8 +5,8 @@ import '@scalar/api-reference-react/style.css';
 import './scalar-theme.css';
 import { API_URL } from '@/lib/api/core/client';
 
-// The API mounts /docs/json outside the session guard, so the browser fetches it
-// directly.
+// /docs/json is gated to the instance owner, so Scalar's fetch must include
+// the session cookie.
 const SPEC_URL = `${API_URL}/docs/json`;
 
 // The app owns the light/dark switch (next-themes), so Scalar's mode is forced to
@@ -17,6 +17,7 @@ export default function ScalarReference({ dark }: { dark: boolean }) {
       <ApiReferenceReact
         configuration={{
           url: SPEC_URL,
+          fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
           forceDarkModeState: dark ? 'dark' : 'light',
           hideDarkModeToggle: true,
           // Scalar's default fonts are loaded from fonts.scalar.com, which the

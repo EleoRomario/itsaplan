@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'bun:test';
+import { beforeEach, describe, expect, it } from 'bun:test';
 import pkg from '../../../../../package.json';
 import { app } from '../helpers/app';
+import { signUpTestUser } from '../helpers/auth';
+import { resetDb } from '../helpers/db';
 
 type Operation = {
   description?: string;
@@ -16,13 +18,37 @@ type Document = {
   paths: Record<string, Record<string, Operation>>;
 };
 
+beforeEach(resetDb);
+
 async function document(): Promise<Document> {
-  const response = await app.handle(new Request('http://localhost/docs/json'));
+  const god = await signUpTestUser({ team: false });
+  const response = await app.handle(
+    new Request('http://localhost/docs/json', {
+      headers: { cookie: god.cookie },
+    }),
+  );
   expect(response.status).toBe(200);
   return (await response.json()) as Document;
 }
 
 describe('OpenAPI document', () => {
+  it('requires the instance owner (god) for /docs and /docs/json', async () => {
+    const anonDocs = await app.handle(new Request('http://localhost/docs'));
+    expect(anonDocs.status).toBe(401);
+    const anonSpec = await app.handle(new Request('http://localhost/docs/json'));
+    expect(anonSpec.status).toBe(401);
+
+    await signUpTestUser({ team: false });
+    const member = await signUpTestUser({ team: false });
+    const memberDocs = await app.handle(
+      new Request('http://localhost/docs', { headers: { cookie: member.cookie } }),
+    );
+    expect(memberDocs.status).toBe(403);
+    const memberSpec = await app.handle(
+      new Request('http://localhost/docs/json', { headers: { cookie: member.cookie } }),
+    );
+    expect(memberSpec.status).toBe(403);
+  });
   it('uses the configured public origin and current product version', async () => {
     const doc = await document();
 

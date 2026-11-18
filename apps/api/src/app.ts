@@ -24,6 +24,7 @@ import { EmbedSitesSchema } from './modules/settings/model';
 import { getEmbedSites } from './modules/settings/service';
 import { syncOidcGroupsAfterCallback } from './modules/scim/oidc-sync';
 import { normalizeOpenApiResponse } from './openapi';
+import { requestUser } from './shared/auth-context';
 import { requestTracking } from './shared/request-tracker';
 import pkg from '../../../package.json';
 
@@ -93,18 +94,30 @@ export const app = new Elysia()
   )
   // Before the routes: a hook applies only to the routes registered after it.
   .use(requestTracking)
-  .onRequest(({ request, set }) => {
+  .onRequest(async ({ request, set }) => {
     if (isCrossSiteCookieRequest(request)) {
       set.status = 403;
       return { error: 'Cross-site request refused', code: 'CSRF_ORIGIN_REJECTED' };
+    }
+    const { pathname } = new URL(request.url);
+    if (pathname === '/docs' || pathname.startsWith('/docs/')) {
+      const caller = await requestUser(request);
+      if (!caller) {
+        set.status = 401;
+        return { error: 'Authentication required' };
+      }
+      if (caller.role !== 'god') {
+        set.status = 403;
+        return { error: 'Instance administration is owner-only' };
+      }
     }
   })
   .onAfterHandle({ as: 'global' }, ({ request, response }) =>
     normalizeOpenApiResponse(request, response),
   )
-  // OpenAPI docs. Mounted on the main app (outside the planner's session guard)
-  // so the UI at /docs and the spec at /docs/json are reachable without a
-  // session. The spec is generated from the `t` schemas on every route.
+  // OpenAPI docs. Mounted on the main app (outside the planner's route tree),
+  // gated above to the instance owner ("god"). The spec is generated from the
+  // `t` schemas on every route.
   .use(
     swagger({
       path: '/docs',
