@@ -53,5 +53,6 @@
   "create": "ایجاد پروژه",
   "copyAction": "کپی پروژه",
   "defaultAgents": "ایجنت‌هایی که به این پروژه می‌پیوندند: {names}",
-  "copyName": "کپی {name}"
+  "copyName": "کپی {name}",
+  "team": "Team"
 }

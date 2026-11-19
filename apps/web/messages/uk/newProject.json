@@ -53,5 +53,6 @@
   "create": "Створити проєкт",
   "copyAction": "Копіювати проєкт",
   "defaultAgents": "До цього проєкту долучаться агенти: {names}",
-  "copyName": "{name} — копія"
+  "copyName": "{name} — копія",
+  "team": "Team"
 }

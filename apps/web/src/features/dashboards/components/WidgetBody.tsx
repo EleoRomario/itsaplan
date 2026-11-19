@@ -1,6 +1,12 @@
 import type { ProjectDetail } from '@/lib/api/endpoints/projects';
 import type { WidgetInstance } from '@/utils/dashboardWidgets';
 import StatWidget from './widgets/StatWidget';
+import ProjectProgressWidget from './widgets/ProjectProgressWidget';
+import AssigneeWorkloadWidget from './widgets/AssigneeWorkloadWidget';
+import ScheduleComplianceWidget from './widgets/ScheduleComplianceWidget';
+import StatusAgingWidget from './widgets/StatusAgingWidget';
+import BurndownWidget from './widgets/BurndownWidget';
+import TimeTrackingWidget from './widgets/TimeTrackingWidget';
 import BreakdownWidget from './widgets/BreakdownWidget';
 import ThroughputWidget from './widgets/ThroughputWidget';
 import BurnupWidget from './widgets/BurnupWidget';
@@ -27,6 +33,18 @@ export default function WidgetBody({
   switch (widget.type) {
     case 'stat':
       return <StatWidget config={config} />;
+    case 'project_progress':
+      return <ProjectProgressWidget />;
+    case 'assignee_workload':
+      return <AssigneeWorkloadWidget />;
+    case 'schedule_compliance':
+      return <ScheduleComplianceWidget />;
+    case 'status_aging':
+      return <StatusAgingWidget />;
+    case 'burndown':
+      return <BurndownWidget projectKey={projectKey} config={config} />;
+    case 'time_tracking':
+      return <TimeTrackingWidget />;
     case 'breakdown':
       return <BreakdownWidget projectKey={projectKey} config={config} />;
     case 'throughput':

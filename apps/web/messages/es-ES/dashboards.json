@@ -72,6 +72,30 @@
     "agent_workload": {
       "label": "Carga del agente",
       "description": "Tickets delegados y resultados de las ejecuciones por agente"
+    },
+    "project_progress": {
+      "label": "Avance del proyecto",
+      "description": "Porcentaje de progreso de tareas y evolución por estado en el tiempo"
+    },
+    "assignee_workload": {
+      "label": "Carga por responsable",
+      "description": "Tareas completadas, en progreso, abiertas y vencidas por persona"
+    },
+    "schedule_compliance": {
+      "label": "Cumplimiento de fechas",
+      "description": "Tareas completadas a tiempo vs. con retraso y vencidas"
+    },
+    "status_aging": {
+      "label": "Antigüedad por estado",
+      "description": "Días promedio que llevan las tareas activas en cada columna"
+    },
+    "burndown": {
+      "label": "Burndown",
+      "description": "Trabajo pendiente por cerrar frente a la línea ideal"
+    },
+    "time_tracking": {
+      "label": "Tiempo estimado vs. registrado",
+      "description": "Horas estimadas frente a horas registradas por responsable"
     }
   },
   "breakdown": {
@@ -233,5 +257,53 @@
     "inProgress": "En curso",
     "backlog": "Pila de trabajo",
     "unassigned": "Sin asignar"
+  },
+  "projectProgress": {
+    "taskProgress": "Progreso de tareas",
+    "completed": "Completadas",
+    "inProgress": "En progreso",
+    "open": "Abiertas",
+    "completedOfTotal": "{completed} de {total} completadas",
+    "inProgressCount": "{count} en progreso",
+    "openCount": "{count} abiertas",
+    "empty": "Todavía no hay datos.",
+    "planned": "Vencimiento (planificado)",
+    "approved": "Aprobado / completado",
+    "overdue": "Atrasadas"
+  },
+  "assigneeWorkload": {
+    "unassigned": "Sin asignar",
+    "completed": "Completadas",
+    "inProgress": "En progreso",
+    "open": "Abiertas",
+    "overdue": "Vencidas",
+    "empty": "Todavía no hay tickets."
+  },
+  "scheduleCompliance": {
+    "onTimeRate": "Cumplimiento a tiempo",
+    "onTime": "A tiempo",
+    "completedLate": "Con retraso",
+    "overdue": "Vencidas",
+    "upcoming": "En plazo",
+    "issues": "Tickets",
+    "empty": "No hay tickets con fecha de vencimiento."
+  },
+  "statusAging": {
+    "caption": "Días promedio en el estado actual",
+    "avgDays": "Días promedio",
+    "empty": "No hay tickets activos."
+  },
+  "burndown": {
+    "remaining": "Pendientes",
+    "ideal": "Ideal",
+    "empty": "Todavía no hay datos."
+  },
+  "timeTracking": {
+    "unassigned": "Sin asignar",
+    "estimated": "Estimado (h)",
+    "logged": "Registrado (h)",
+    "totalEstimated": "{hours} h estimadas",
+    "totalLogged": "{hours} h registradas",
+    "empty": "No hay horas estimadas ni registradas."
   }
 }

@@ -11,7 +11,14 @@ import WidgetDaysSettings from './widgets/WidgetDaysSettings';
 
 // Widget types with nothing to configure. The header hides its settings button for
 // them, so the popover is never empty.
-const WITHOUT_SETTINGS: WidgetType[] = ['agent_workload'];
+const WITHOUT_SETTINGS: WidgetType[] = [
+  'agent_workload',
+  'project_progress',
+  'assignee_workload',
+  'schedule_compliance',
+  'status_aging',
+  'time_tracking',
+];
 
 export function hasWidgetSettings(type: WidgetType): boolean {
   return !WITHOUT_SETTINGS.includes(type);
@@ -45,6 +52,7 @@ export default function WidgetSettings({
       return <ActivityFeedWidgetSettings config={config} onConfigChange={onConfigChange} />;
     case 'agent_runs':
       return <AgentRunsWidgetSettings config={config} onConfigChange={onConfigChange} />;
+    case 'burndown':
     case 'agent_health':
     case 'webhook_health':
       return <WidgetDaysSettings config={config} onConfigChange={onConfigChange} />;

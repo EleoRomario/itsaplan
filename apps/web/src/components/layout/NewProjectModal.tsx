@@ -52,6 +52,7 @@ export default function NewProjectModal({
   // applies only when creating from scratch.
   const [preset, setPreset] = useState<PresetKey>('general');
   const [templateId, setTemplateId] = useState<number | null>(null);
+  const [targetTeamId, setTargetTeamId] = useState(teamId);
   const [step, setStep] = useState<'start' | 'details'>('start');
   const templatesQuery = useTeamProjectTemplatesQuery(copyFrom ? null : teamId);
   // The list is for the team's owners and managers; anyone it is refused to starts
@@ -63,7 +64,8 @@ export default function NewProjectModal({
   const createProject = useCreateProject();
   // Names the team in the header, so the dialog says where the project lands.
   const teams = useTeamsQuery().data;
-  const team = teams?.find((one) => one.id === teamId);
+  const destinationTeamId = copyFrom ? targetTeamId : teamId;
+  const team = teams?.find((one) => one.id === destinationTeamId);
   const defaults = useTeamProjectDefaultsQuery(copyFrom ? null : teamId).data;
   const agents = useAiAgentsQuery(copyFrom ? null : teamId).data ?? [];
   const defaultAgentNames = agents
@@ -93,7 +95,7 @@ export default function NewProjectModal({
           : { preset }),
     };
     createProject.mutate(
-      { teamId, copyFromId: copyFrom?.id, input },
+      { teamId: destinationTeamId, copyFromId: copyFrom?.id, input },
       { onSuccess: (project) => onCreated(project.ref) },
     );
   }
@@ -117,11 +119,14 @@ export default function NewProjectModal({
         name={name}
         projectKey={key}
         description={description}
+        teamId={targetTeamId}
+        teams={teams ?? []}
         columns={copyColumns}
         include={include}
         onNameChange={onNameChange}
         onKeyChange={onKeyChange}
         onDescriptionChange={setDescription}
+        onTeamChange={setTargetTeamId}
         onIncludeChange={setInclude}
       />
     );

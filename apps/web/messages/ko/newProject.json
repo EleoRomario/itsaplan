@@ -53,5 +53,6 @@
   "create": "프로젝트 생성",
   "copyAction": "프로젝트 복사",
   "defaultAgents": "이 프로젝트에 참여할 AI 에이전트: {names}",
-  "copyName": "{name} 복사본"
+  "copyName": "{name} 복사본",
+  "team": "Team"
 }

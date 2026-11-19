@@ -53,5 +53,6 @@
   "create": "新建專案",
   "copyAction": "複製專案",
   "defaultAgents": "將加入此專案的代理：{names}",
-  "copyName": "{name} 副本"
+  "copyName": "{name} 副本",
+  "team": "Team"
 }

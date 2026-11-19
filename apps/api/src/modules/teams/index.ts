@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { assertProjectWritable, requireUser } from '#shared/access';
+import { assertProjectWritable, getProjectAccess, requireUser } from '#shared/access';
 import { authContext } from '#shared/auth-context';
 import { guards } from '#shared/guards';
 import { noContent } from '#shared/http';
@@ -364,7 +364,9 @@ export const teamRoutes = new Elysia({ name: 'teams', detail: { tags: ['Teams'] 
   .post(
     '/teams/:teamId/projects/:projectId/copy',
     async ({ body, membership, params, set }) => {
-      await requireTeamProject(membership.teamId, params.projectId);
+      if (!(await getProjectAccess(params.projectId, membership.userId))) {
+        throw new HttpError(404, 'Project not found');
+      }
       const { include, ...meta } = body;
       set.status = 201;
       return copyProject(params.projectId, meta, membership.userId, membership.teamId, include);

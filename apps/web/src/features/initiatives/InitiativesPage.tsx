@@ -16,6 +16,10 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList } from '@/components/ui/tabs';
 import InitiativesList from './components/list/InitiativesList';
 import InitiativesPagination from './components/list/InitiativesPagination';
+import InitiativesTimeline from './components/list/InitiativesTimeline';
+import InitiativesViewToggle, {
+  type InitiativesView,
+} from './components/list/InitiativesViewToggle';
 import InitiativeDialog from '@/components/common/overlay/InitiativeDialog';
 import InitiativeTabTrigger from './components/list/InitiativeTabTrigger';
 import { useInitiativeTabOrder } from './hooks/useInitiativeTabOrder';
@@ -45,6 +49,7 @@ export default function InitiativesPage({ tab }: { tab: InitiativesTab }) {
 
   const pageParam = Number(searchParams.get('page'));
   const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
+  const view: InitiativesView = searchParams.get('view') === 'timeline' ? 'timeline' : 'table';
   // A sort the server does not support is no sort at all, and a direction on its own
   // means nothing.
   const sort = INITIATIVE_SORTS.find((key) => key === searchParams.get('sort'));
@@ -73,9 +78,17 @@ export default function InitiativesPage({ tab }: { tab: InitiativesTab }) {
   };
 
   // A tab is its own route and carries no query, so switching one drops the page and
-  // the sorting of the tab left behind.
+  // the sorting of the tab left behind, while preserving the active layout view.
   const changeTab = (next: InitiativesTab) => {
-    router.push(initiativesTabPath(project.project.ref, next));
+    const nextPath = initiativesTabPath(project.project.ref, next);
+    router.push(view === 'timeline' ? `${nextPath}?view=timeline` : nextPath);
+  };
+
+  const changeView = (next: InitiativesView) => {
+    const params = new URLSearchParams(searchParams);
+    if (next === 'timeline') params.set('view', 'timeline');
+    else params.delete('view');
+    pushQuery(params);
   };
 
   const changePage = (next: number) => {
@@ -101,15 +114,24 @@ export default function InitiativesPage({ tab }: { tab: InitiativesTab }) {
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto">
-      <div className="flex items-center justify-between px-4 py-3">
+    <div
+      className={
+        view === 'timeline'
+          ? 'flex flex-1 flex-col overflow-hidden'
+          : 'flex flex-1 flex-col overflow-y-auto'
+      }
+    >
+      <div className="flex items-center justify-between gap-2 px-4 py-3">
         <h1 className="text-lg font-semibold">{t('title')}</h1>
-        {can('initiatives', 'create') && (
-          <Button size="sm" className="h-8 gap-1.5" onClick={() => setCreating(true)}>
-            <Plus className="size-3.5" />
-            {t('newInitiative')}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <InitiativesViewToggle view={view} onChange={changeView} />
+          {can('initiatives', 'create') && (
+            <Button size="sm" className="h-8 gap-1.5" onClick={() => setCreating(true)}>
+              <Plus className="size-3.5" />
+              {t('newInitiative')}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="min-w-0 px-4 pb-2">
@@ -139,19 +161,37 @@ export default function InitiativesPage({ tab }: { tab: InitiativesTab }) {
         </Tabs>
       </div>
 
-      <InitiativesList
-        initiatives={items}
-        project={project}
-        isLoading={query.isLoading}
-        canCreate={can('initiatives', 'create')}
-        onCreate={() => setCreating(true)}
-        statusTab={activeTab.value === 'all' ? undefined : activeTab.value}
-        sort={sort}
-        dir={dir}
-        onSort={changeSort}
-      />
+      {view === 'timeline' ? (
+        <InitiativesTimeline
+          initiatives={items}
+          projectKey={project.project.ref}
+          isLoading={query.isLoading}
+          canCreate={can('initiatives', 'create')}
+          onCreate={() => setCreating(true)}
+          statusTab={activeTab.value === 'all' ? undefined : activeTab.value}
+        />
+      ) : (
+        <>
+          <InitiativesList
+            initiatives={items}
+            project={project}
+            isLoading={query.isLoading}
+            canCreate={can('initiatives', 'create')}
+            onCreate={() => setCreating(true)}
+            statusTab={activeTab.value === 'all' ? undefined : activeTab.value}
+            sort={sort}
+            dir={dir}
+            onSort={changeSort}
+          />
 
-      <InitiativesPagination page={page} pageSize={PAGE_SIZE} total={total} onPage={changePage} />
+          <InitiativesPagination
+            page={page}
+            pageSize={PAGE_SIZE}
+            total={total}
+            onPage={changePage}
+          />
+        </>
+      )}
 
       {creating && projectKey && (
         <InitiativeDialog projectKey={projectKey} onClose={() => setCreating(false)} />

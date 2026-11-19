@@ -1,7 +1,15 @@
 import { useTranslations } from 'next-intl';
+import type { Team } from '@/lib/api/endpoints/teams';
 import { KEY_MAX_LENGTH } from '@/utils/projectKey';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { CopyGroup, CopyInclude } from '@/utils/copyOptions';
 import CopyProjectOptions from '@/components/layout/CopyProjectOptions';
@@ -13,21 +21,27 @@ export default function CopyProjectForm({
   name,
   projectKey,
   description,
+  teamId,
+  teams,
   columns,
   include,
   onNameChange,
   onKeyChange,
   onDescriptionChange,
+  onTeamChange,
   onIncludeChange,
 }: {
   name: string;
   projectKey: string;
   description: string;
+  teamId: number;
+  teams: Team[];
   columns: CopyGroup[][];
   include: CopyInclude;
   onNameChange: (value: string) => void;
   onKeyChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
+  onTeamChange: (teamId: number) => void;
   onIncludeChange: (value: CopyInclude) => void;
 }) {
   const t = useTranslations('newProject');
@@ -48,6 +62,23 @@ export default function CopyProjectForm({
           />
         </div>
       </div>
+      {teams.length > 1 && (
+        <div className="space-y-1.5">
+          <Label>{t('team')}</Label>
+          <Select value={String(teamId)} onValueChange={(v) => onTeamChange(Number(v))}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {teams.map((one) => (
+                <SelectItem key={one.id} value={String(one.id)}>
+                  {one.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       <div className="space-y-1.5">
         <Label>{t('description')}</Label>
         <Textarea

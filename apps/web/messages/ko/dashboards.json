@@ -72,6 +72,30 @@
     "agent_workload": {
       "label": "AI 에이전트 작업량",
       "description": "AI 에이전트별 위임된 이슈 및 실행 결과"
+    },
+    "project_progress": {
+      "label": "Project progress",
+      "description": "Task completion percentage and state breakdown over time"
+    },
+    "assignee_workload": {
+      "label": "Assignee workload",
+      "description": "Completed, in-progress, open and overdue issues per person"
+    },
+    "schedule_compliance": {
+      "label": "Schedule compliance",
+      "description": "Issues completed on time vs. late and overdue"
+    },
+    "status_aging": {
+      "label": "Status aging",
+      "description": "Average days active issues have spent in each column"
+    },
+    "burndown": {
+      "label": "Burndown",
+      "description": "Remaining open work against an ideal burndown line"
+    },
+    "time_tracking": {
+      "label": "Estimated vs. logged time",
+      "description": "Estimated hours vs. logged hours per assignee"
     }
   },
   "breakdown": {
@@ -233,5 +257,53 @@
     "inProgress": "진행 중",
     "backlog": "백로그",
     "unassigned": "담당자 없음"
+  },
+  "projectProgress": {
+    "taskProgress": "Task progress",
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "open": "Open",
+    "completedOfTotal": "{completed} of {total} completed",
+    "inProgressCount": "{count} in progress",
+    "openCount": "{count} open",
+    "empty": "No data yet.",
+    "planned": "Due date (planned)",
+    "approved": "Approved / completed",
+    "overdue": "Overdue"
+  },
+  "assigneeWorkload": {
+    "unassigned": "Unassigned",
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "open": "Open",
+    "overdue": "Overdue",
+    "empty": "No issues yet."
+  },
+  "scheduleCompliance": {
+    "onTimeRate": "On-time rate",
+    "onTime": "On time",
+    "completedLate": "Completed late",
+    "overdue": "Overdue",
+    "upcoming": "On track",
+    "issues": "Issues",
+    "empty": "No issues with a due date."
+  },
+  "statusAging": {
+    "caption": "Average days in current state",
+    "avgDays": "Average days",
+    "empty": "No active issues."
+  },
+  "burndown": {
+    "remaining": "Remaining",
+    "ideal": "Ideal",
+    "empty": "No data yet."
+  },
+  "timeTracking": {
+    "unassigned": "Unassigned",
+    "estimated": "Estimated (h)",
+    "logged": "Logged (h)",
+    "totalEstimated": "{hours} h estimated",
+    "totalLogged": "{hours} h logged",
+    "empty": "No estimated or logged hours yet."
   }
 }

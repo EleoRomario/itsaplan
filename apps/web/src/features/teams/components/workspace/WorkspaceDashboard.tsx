@@ -20,11 +20,11 @@ import SectionPageView from '@/components/common/page/SectionPageView';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWorkspaceDashboardQuery } from '@/services/workspaces.service';
 import { formatDate } from '@/utils/dates';
 import { formatSize } from '@/utils/fileSize';
+import { progressColor } from '@/utils/progress';
 
 export default function WorkspaceDashboard({ workspaceId }: { workspaceId: number }) {
   const t = useTranslations('sections.previews.dashboard');
@@ -229,7 +229,21 @@ export default function WorkspaceDashboard({ workspaceId }: { workspaceId: numbe
                         <span className="text-muted-foreground">Progreso de tareas</span>
                         <span className="font-semibold">{p.progressPercentage}%</span>
                       </div>
-                      <Progress value={p.progressPercentage} className="h-2" />
+                      <div
+                        className="h-2 w-full overflow-hidden rounded-full bg-muted"
+                        role="progressbar"
+                        aria-valuenow={p.progressPercentage}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                      >
+                        <div
+                          className="h-full rounded-full transition-all duration-300"
+                          style={{
+                            width: `${p.progressPercentage}%`,
+                            backgroundColor: progressColor(p.progressPercentage),
+                          }}
+                        />
+                      </div>
                       <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-muted-foreground">
                         <span>
                           <strong className="text-foreground">{p.completedIssues}</strong> de{' '}
@@ -262,7 +276,21 @@ export default function WorkspaceDashboard({ workspaceId }: { workspaceId: numbe
                   <span className="text-muted-foreground">Total completado</span>
                   <span className="font-semibold">{globalCompletionRate}%</span>
                 </div>
-                <Progress value={globalCompletionRate} className="h-2" />
+                <div
+                  className="h-2 w-full overflow-hidden rounded-full bg-muted"
+                  role="progressbar"
+                  aria-valuenow={globalCompletionRate}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${globalCompletionRate}%`,
+                      backgroundColor: progressColor(globalCompletionRate),
+                    }}
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {data?.totals.completedIssues ?? 0} de {data?.totals.totalIssues ?? 0} tickets
                   resueltos en todos los proyectos.

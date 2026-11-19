@@ -14,3 +14,14 @@ export function progressPercent(progress: Progress): number {
 export function unfinishedCount(progress: Progress): number {
   return progress.total - progress.completed - progress.canceled;
 }
+
+// Interpolates progress bar color from red (0%) -> orange (50%) -> green (100%).
+export function progressColor(pct: number): string {
+  const clamped = Math.max(0, Math.min(100, pct));
+  if (clamped <= 50) {
+    const hue = (clamped / 50) * 32;
+    return `hsl(${Math.round(hue)}, 88%, 50%)`;
+  }
+  const hue = 32 + ((clamped - 50) / 50) * 110;
+  return `hsl(${Math.round(hue)}, 74%, 45%)`;
+}

@@ -9,6 +9,12 @@ import { uuid } from '@/utils/uuid';
 
 export type WidgetType =
   | 'stat'
+  | 'project_progress'
+  | 'assignee_workload'
+  | 'schedule_compliance'
+  | 'status_aging'
+  | 'burndown'
+  | 'time_tracking'
   | 'recent_issues'
   | 'activity_feed'
   | 'pulse'
@@ -92,6 +98,12 @@ export const WIDGET_DEFAULTS: Record<
   { w: number; h: number; minH: number; config: WidgetConfig }
 > = {
   stat: { w: 3, h: 3, minH: 2, config: {} },
+  project_progress: { w: 6, h: 7, minH: 5, config: { days: 30 } },
+  assignee_workload: { w: 6, h: 6, minH: 5, config: {} },
+  schedule_compliance: { w: 6, h: 6, minH: 5, config: {} },
+  status_aging: { w: 6, h: 6, minH: 5, config: {} },
+  burndown: { w: 6, h: 6, minH: 5, config: { days: 30 } },
+  time_tracking: { w: 6, h: 6, minH: 5, config: {} },
   recent_issues: { w: 6, h: 7, minH: 3, config: { sort: 'created', limit: 10 } },
   activity_feed: { w: 6, h: 7, minH: 3, config: { limit: 20 } },
   pulse: { w: 12, h: 5, minH: 5, config: { granularity: 'day' } },

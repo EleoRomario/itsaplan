@@ -53,5 +53,6 @@
   "create": "Proje oluştur",
   "copyAction": "Projeyi kopyala",
   "defaultAgents": "Bu projeye katılacak ajanlar: {names}",
-  "copyName": "{name} kopyası"
+  "copyName": "{name} kopyası",
+  "team": "Team"
 }
