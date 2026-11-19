@@ -44,3 +44,7 @@ coverage
 
 # agent scratch space (test docs, drafts)
 .workspace/
+
+# backups csv
+import-csv/
+*.csv
