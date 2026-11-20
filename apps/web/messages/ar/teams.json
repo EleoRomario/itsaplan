@@ -2,11 +2,10 @@
   "archived": "مؤرشف",
   "create": {
     "title": "فريق جديد",
-    "namePlaceholder": "اسم الفريق",
+    "name": "اسم الفريق",
     "slug": "URL",
-    "slugHint": "تبدأ روابط مشاريع الفريق به، مثل ‎/acme.",
     "slugInvalid": "استخدم من 2 إلى 40 حرفًا لاتينيًا صغيرًا أو رقمًا أو شرطة، على أن يبدأ بحرف.",
-    "hint": "ستكون مالك هذا الفريق.",
+    "nameRequired": "أدخل اسم الفريق.",
     "submit": "إنشاء فريق"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "تتطلب Cloud أو Pro",
     "lockedHint": "أُنشئت في Cloud أو Pro. تبقى كما هي، لكن لا يحصل عليها أي وكيل هنا.",
     "ownTool": "إنشاء أداة HTTP",
-    "ownToolUnavailableTitle": "أدوات لأي API",
-    "ownToolUnavailableHint": "أنشئ أدوات تخلّي وكلاءك يستدعوا أي خدمة لها API، حتى خدماتك. متاح في Cloud وفي نسخة Pro للاستضافة الذاتية.",
+    "ownToolUnavailableTitle": "اجعل وكلاءك يستدعون أي API",
+    "ownToolUnavailableHint": "يمكن لوكلائك استدعاء خدماتك أيضًا، بالعنوان ومفتاح API اللذين تحددهما. متاح في Cloud وفي نسخة Pro للاستضافة الذاتية.",
+    "ownToolPreview": {
+      "heading": "أداة HTTP جديدة",
+      "title": "العنوان",
+      "titleValue": "نشر منشور",
+      "connection": "الاتصال",
+      "connectionValue": "واجهة API للمدونة",
+      "path": "المسار",
+      "params": "المعلمات"
+    },
     "group": "المجموعة",
     "ownTools": "أدواتك الخاصة",
     "noGroupMatches": "لا توجد أدوات في المجموعات المختارة."
@@ -692,6 +700,7 @@
     "loadMore": "تحميل 25 إضافية",
     "endOfHistory": "لا توجد تشغيلات أقدم",
     "manualTask": "مهمة يدوية",
+    "apiTask": "مهمة عبر API",
     "scheduledTask": "مهمة مجدولة",
     "documentTask": "تعليق في مستند",
     "failed": "فشل",

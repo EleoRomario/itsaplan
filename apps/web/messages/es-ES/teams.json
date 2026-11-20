@@ -2,11 +2,10 @@
   "archived": "Archivado",
   "create": {
     "title": "Nuevo equipo",
-    "namePlaceholder": "Nombre del equipo",
+    "name": "Nombre del equipo",
     "slug": "URL",
-    "slugHint": "Los enlaces a los proyectos del equipo empiezan por él, p. ej. /acme.",
     "slugInvalid": "Usa de 2 a 40 letras minúsculas, números o guiones, empezando por una letra.",
-    "hint": "Serás el propietario de este equipo.",
+    "nameRequired": "Escribe el nombre del equipo.",
     "submit": "Crear equipo"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "Requiere Cloud o Pro",
     "lockedHint": "Creada con Cloud o Pro. Se conserva tal cual, pero aquí ningún agente la recibe.",
     "ownTool": "Crear herramienta HTTP",
-    "ownToolUnavailableTitle": "Herramientas para cualquier API",
-    "ownToolUnavailableHint": "Crea herramientas para que tus agentes llamen a cualquier servicio con API, incluido el tuyo. Disponible en Cloud y en Pro autoalojado.",
+    "ownToolUnavailableTitle": "Deja que tus agentes llamen a cualquier API",
+    "ownToolUnavailableHint": "Tus agentes también pueden llamar a tus propios servicios, con la dirección y la clave de API que indiques. Disponible en Cloud y en Pro autoalojado.",
+    "ownToolPreview": {
+      "heading": "Nueva herramienta HTTP",
+      "title": "Título",
+      "titleValue": "Publicar una entrada",
+      "connection": "Conexión",
+      "connectionValue": "API del blog",
+      "path": "Ruta",
+      "params": "Parámetros"
+    },
     "group": "Grupo",
     "ownTools": "Herramientas propias",
     "noGroupMatches": "No hay herramientas en los grupos elegidos."
@@ -692,6 +700,7 @@
     "loadMore": "Cargar 25 más",
     "endOfHistory": "No hay ejecuciones anteriores",
     "manualTask": "Tarea manual",
+    "apiTask": "Tarea por API",
     "scheduledTask": "Tarea programada",
     "documentTask": "Comentario en un documento",
     "failed": "Fallida",

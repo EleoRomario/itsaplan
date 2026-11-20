@@ -97,3 +97,15 @@ are omitted; the API remains responsible for validating its responses.
 This uses the existing SDK's support for
 [structured content and output schemas](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#structured-content).
 It does not change protocol negotiation or the SDK version.
+
+## Catalog mode
+
+With `/mcp?tools=catalog` ([Coding agent setup](runner.md#a-shorter-tool-list)), no tool
+advertises an `outputSchema`. `execute_read`, `execute_write` and `execute_destructive`
+return the result of the tool they run, unchanged. `discover` returns the success envelope
+with `data: { total, tools: [{ name, description, execute, annotations, inputSchema }] }`,
+where `total` counts every match and `tools` holds the best of them. When the query found
+nothing, or some of its words are in no tool, `data` also carries `unmatched`, those words,
+and `resources`, the words the tools are named after with the number of tools for each. A
+refused call, such as a tool run through the execute tool of another tier, returns the
+error envelope with status 400.

@@ -2,11 +2,10 @@
   "archived": "已归档",
   "create": {
     "title": "新建团队",
-    "namePlaceholder": "团队名称",
+    "name": "团队名称",
     "slug": "URL",
-    "slugHint": "团队项目的链接以它开头，例如 /acme。",
     "slugInvalid": "请使用 2–40 个小写字母、数字或连字符，并以字母开头。",
-    "hint": "你将成为该团队的所有者。",
+    "nameRequired": "请输入团队名称。",
     "submit": "创建团队"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "需要 Cloud 或 Pro",
     "lockedHint": "使用 Cloud 或 Pro 创建。按原样保留，但在这里不会提供给任何代理。",
     "ownTool": "创建 HTTP 工具",
-    "ownToolUnavailableTitle": "适用于任何 API 的工具",
-    "ownToolUnavailableHint": "创建工具，让 AI 代理调用任何有 API 的服务，包括你自己的服务。可在 Cloud 和自托管 Pro 版中使用。",
+    "ownToolUnavailableTitle": "让 AI 代理调用任何 API",
+    "ownToolUnavailableHint": "AI 代理也能调用你自己的服务，使用你设置的地址和 API 密钥。可在 Cloud 和自托管 Pro 版中使用。",
+    "ownToolPreview": {
+      "heading": "新建 HTTP 工具",
+      "title": "标题",
+      "titleValue": "发布文章",
+      "connection": "连接",
+      "connectionValue": "博客 API",
+      "path": "路径",
+      "params": "参数"
+    },
     "group": "分组",
     "ownTools": "自定义工具",
     "noGroupMatches": "所选分组中没有工具。"
@@ -692,6 +700,7 @@
     "loadMore": "再加载 25 条",
     "endOfHistory": "没有更早的运行记录",
     "manualTask": "手动任务",
+    "apiTask": "API 任务",
     "scheduledTask": "定时任务",
     "documentTask": "文档评论",
     "failed": "失败",

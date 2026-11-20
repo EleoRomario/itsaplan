@@ -2,11 +2,10 @@
   "archived": "بایگانی‌شده",
   "create": {
     "title": "تیم جدید",
-    "namePlaceholder": "نام تیم",
+    "name": "نام تیم",
     "slug": "URL",
-    "slugHint": "لینک‌های پروژه‌های تیم با آن شروع می‌شوند، مثلاً /acme.",
     "slugInvalid": "از ۲ تا ۴۰ حرف کوچک، عدد یا خط تیره استفاده کنید و با حرف شروع کنید.",
-    "hint": "شما مالک این تیم خواهید بود.",
+    "nameRequired": "نام تیم را وارد کنید.",
     "submit": "ایجاد تیم"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "نیاز به Cloud یا Pro",
     "lockedHint": "با Cloud یا Pro ساخته شده است. همان‌طور که هست می‌ماند، اما اینجا هیچ ایجنتی آن را نمی‌گیرد.",
     "ownTool": "ساخت ابزار HTTP",
-    "ownToolUnavailableTitle": "ابزار برای هر API",
-    "ownToolUnavailableHint": "ابزارهایی بسازید که ایجنت‌هایتان با آن‌ها هر سرویسی را که API دارد صدا بزنند، از جمله سرویس‌های خودتان. در Cloud و نسخه Pro خودمیزبان در دسترس است.",
+    "ownToolUnavailableTitle": "بگذارید ایجنت‌ها هر API را صدا بزنند",
+    "ownToolUnavailableHint": "ایجنت‌ها می‌توانند سرویس‌های خودتان را هم با آدرس و کلید API که تعیین می‌کنید صدا بزنند. در Cloud و نسخه Pro خودمیزبان در دسترس است.",
+    "ownToolPreview": {
+      "heading": "ابزار HTTP جدید",
+      "title": "عنوان",
+      "titleValue": "انتشار پست",
+      "connection": "اتصال",
+      "connectionValue": "API وبلاگ",
+      "path": "مسیر",
+      "params": "پارامترها"
+    },
     "group": "گروه",
     "ownTools": "ابزارهای خودتان",
     "noGroupMatches": "در گروه‌های انتخاب‌شده ابزاری نیست."
@@ -692,6 +700,7 @@
     "loadMore": "بارگذاری ۲۵ مورد بیشتر",
     "endOfHistory": "اجرای قدیمی‌تری نیست",
     "manualTask": "وظیفه دستی",
+    "apiTask": "وظیفه از API",
     "scheduledTask": "وظیفه زمان‌بندی‌شده",
     "documentTask": "نظر در سند",
     "failed": "ناموفق",

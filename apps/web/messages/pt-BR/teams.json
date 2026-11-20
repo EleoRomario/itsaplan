@@ -2,11 +2,10 @@
   "archived": "Arquivado",
   "create": {
     "title": "Novo time",
-    "namePlaceholder": "Nome do time",
+    "name": "Nome do time",
     "slug": "URL",
-    "slugHint": "Os links para os projetos da equipe começam com ele, por exemplo /acme.",
     "slugInvalid": "Use de 2 a 40 letras minúsculas, números ou hifens, começando com uma letra.",
-    "hint": "Você será o dono deste time.",
+    "nameRequired": "Informe o nome do time.",
     "submit": "Criar time"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "Requer Cloud ou Pro",
     "lockedHint": "Criada no Cloud ou no Pro. Fica como está, mas aqui nenhum agente a recebe.",
     "ownTool": "Criar ferramenta HTTP",
-    "ownToolUnavailableTitle": "Ferramentas para qualquer API",
-    "ownToolUnavailableHint": "Crie ferramentas para seus agentes chamarem qualquer serviço com API, inclusive o seu. Disponível no Cloud e no Pro auto-hospedado.",
+    "ownToolUnavailableTitle": "Deixe seus agentes chamarem qualquer API",
+    "ownToolUnavailableHint": "Seus agentes também podem chamar seus próprios serviços, com o endereço e a chave de API que você definir. Disponível no Cloud e no Pro auto-hospedado.",
+    "ownToolPreview": {
+      "heading": "Nova ferramenta HTTP",
+      "title": "Título",
+      "titleValue": "Publicar um post",
+      "connection": "Conexão",
+      "connectionValue": "API do blog",
+      "path": "Caminho",
+      "params": "Parâmetros"
+    },
     "group": "Grupo",
     "ownTools": "Ferramentas próprias",
     "noGroupMatches": "Nenhuma ferramenta nos grupos escolhidos."
@@ -692,6 +700,7 @@
     "loadMore": "Carregar mais 25",
     "endOfHistory": "Não há execuções mais antigas",
     "manualTask": "Tarefa manual",
+    "apiTask": "Tarefa via API",
     "scheduledTask": "Tarefa agendada",
     "documentTask": "Comentário em um documento",
     "failed": "Com falha",

@@ -2,11 +2,10 @@
   "archived": "Archived",
   "create": {
     "title": "New team",
-    "namePlaceholder": "Team name",
+    "name": "Team name",
     "slug": "URL",
-    "slugHint": "Links to the team's projects start with it, e.g. /acme.",
     "slugInvalid": "Use 2–40 lowercase letters, numbers or hyphens, starting with a letter.",
-    "hint": "You'll be the owner of this team.",
+    "nameRequired": "Enter a team name.",
     "submit": "Create team"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "Needs Cloud or Pro",
     "lockedHint": "Made with Cloud or Pro. It is kept as it is, but no agent gets it here.",
     "ownTool": "Create HTTP tool",
-    "ownToolUnavailableTitle": "Tools for any API",
-    "ownToolUnavailableHint": "Create tools that let your agents call any service with an API, your own included. Available in Cloud and self-hosted Pro.",
+    "ownToolUnavailableTitle": "Let agents call any API",
+    "ownToolUnavailableHint": "Agents can call your own services too, with the address and API key you set. Available in Cloud and self-hosted Pro.",
+    "ownToolPreview": {
+      "heading": "New HTTP tool",
+      "title": "Title",
+      "titleValue": "Publish a post",
+      "connection": "Connection",
+      "connectionValue": "Blog API",
+      "path": "Path",
+      "params": "Parameters"
+    },
     "group": "Group",
     "ownTools": "Custom tools",
     "noGroupMatches": "No tools in the chosen groups."
@@ -692,6 +700,7 @@
     "loadMore": "Load 25 more",
     "endOfHistory": "No older runs",
     "manualTask": "Manual task",
+    "apiTask": "API task",
     "scheduledTask": "Scheduled task",
     "documentTask": "Document comment",
     "failed": "Failed",

@@ -2,11 +2,10 @@
   "archived": "已封存",
   "create": {
     "title": "新建團隊",
-    "namePlaceholder": "團隊名稱",
+    "name": "團隊名稱",
     "slug": "URL",
-    "slugHint": "團隊專案的連結以它開頭，例如 /acme。",
     "slugInvalid": "請使用 2–40 個小寫字母、數字或連字元，並以字母開頭。",
-    "hint": "你將成為該團隊的所有者。",
+    "nameRequired": "請輸入團隊名稱。",
     "submit": "建立團隊"
   },
   "sections": {
@@ -461,8 +460,17 @@
     "locked": "需要 Cloud 或 Pro",
     "lockedHint": "使用 Cloud 或 Pro 建立。按原樣保留，但在這裡不會提供給任何代理。",
     "ownTool": "建立 HTTP 工具",
-    "ownToolUnavailableTitle": "適用於任何 API 的工具",
-    "ownToolUnavailableHint": "建立工具，讓 AI 代理呼叫任何有 API 的服務，包括你自己的服務。可在 Cloud 和自託管 Pro 版中使用。",
+    "ownToolUnavailableTitle": "讓 AI 代理呼叫任何 API",
+    "ownToolUnavailableHint": "AI 代理也能呼叫你自己的服務，使用你設定的位址和 API 金鑰。可在 Cloud 和自託管 Pro 版中使用。",
+    "ownToolPreview": {
+      "heading": "新增 HTTP 工具",
+      "title": "標題",
+      "titleValue": "發布文章",
+      "connection": "連線",
+      "connectionValue": "部落格 API",
+      "path": "路徑",
+      "params": "參數"
+    },
     "group": "群組",
     "ownTools": "自訂工具",
     "noGroupMatches": "所選群組中沒有工具。"
@@ -692,6 +700,7 @@
     "loadMore": "再載入 25 條",
     "endOfHistory": "沒有更早的執行記錄",
     "manualTask": "手動任務",
+    "apiTask": "API 任務",
     "scheduledTask": "排程任務",
     "documentTask": "文件留言",
     "failed": "失敗",
