@@ -126,29 +126,62 @@ export interface CompanyDetail extends CompanySummary {
   attachments: CompanyAttachmentDto[];
 }
 
-export async function isCompanyManager(userId: string, teamId?: number | null): Promise<boolean> {
-  const [userRow] = await db.select({ role: user.role }).from(user).where(eq(user.id, userId));
-  if (userRow?.role === 'god') return true;
+async function getTeamWorkspaceId(teamId: number): Promise<number | null> {
+  const [row] = await db
+    .select({ workspaceId: team.workspaceId })
+    .from(team)
+    .where(eq(team.id, teamId));
+  return row?.workspaceId ?? null;
+}
 
+async function isManagerInWorkspace(userId: string, workspaceId: number): Promise<boolean> {
   const [wsAdmin] = await db
     .select({ role: workspaceManager.role })
     .from(workspaceManager)
-    .where(eq(workspaceManager.userId, userId));
+    .where(and(eq(workspaceManager.workspaceId, workspaceId), eq(workspaceManager.userId, userId)));
   if (wsAdmin) return true;
 
-  if (teamId != null) {
-    const [tm] = await db
-      .select({ role: teamMember.role })
-      .from(teamMember)
-      .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, userId)));
-    return tm?.role === 'owner' || tm?.role === 'manager';
-  }
-
-  const tms = await db
+  const [tm] = await db
     .select({ role: teamMember.role })
     .from(teamMember)
-    .where(eq(teamMember.userId, userId));
-  return tms.some((tm) => tm.role === 'owner' || tm.role === 'manager');
+    .innerJoin(team, eq(team.id, teamMember.teamId))
+    .where(
+      and(
+        eq(team.workspaceId, workspaceId),
+        eq(teamMember.userId, userId),
+        or(eq(teamMember.role, 'owner'), eq(teamMember.role, 'manager')),
+      ),
+    )
+    .limit(1);
+  return Boolean(tm);
+}
+
+export async function isCompanyManager(
+  userId: string,
+  teamId?: number | null,
+  companyId?: number | null,
+): Promise<boolean> {
+  const [userRow] = await db.select({ role: user.role }).from(user).where(eq(user.id, userId));
+  if (userRow?.role === 'god') return true;
+
+  let resolvedTeamId = teamId ?? null;
+  if (resolvedTeamId == null && companyId != null) {
+    const [comp] = await db
+      .select({ teamId: company.teamId })
+      .from(company)
+      .where(eq(company.id, companyId));
+    resolvedTeamId = comp?.teamId ?? null;
+  }
+
+  if (resolvedTeamId != null) {
+    const workspaceId = await getTeamWorkspaceId(resolvedTeamId);
+    if (workspaceId == null) return false;
+    return isManagerInWorkspace(userId, workspaceId);
+  }
+
+  // Without a team context, only global god users are managers so a user's personal
+  // workspace/team ownership never grants manager access over other reps' companies.
+  return false;
 }
 
 async function accessibleProjectIds(userId: string): Promise<number[]> {
@@ -221,11 +254,12 @@ async function requireCompanyReadAccess(
 export async function assertCompanyAssignable(
   companyId: number | null | undefined,
   userId: string,
+  teamId?: number | null,
 ): Promise<void> {
   if (companyId == null) return;
   const [comp] = await db.select().from(company).where(eq(company.id, companyId));
   if (!comp) throw new HttpError(400, 'Company not found');
-  if (await isCompanyManager(userId)) return;
+  if (await isCompanyManager(userId, teamId ?? comp.teamId, companyId)) return;
   if (isCompanyOwner(comp, userId)) return;
   if (await hasProjectLinkedCompanyReadAccess(companyId, userId)) return;
   throw new HttpError(403, 'No tienes permiso para vincular esta empresa');
@@ -420,7 +454,17 @@ export async function listCompanies(params: {
   }
 
   if (params.teamId !== undefined) {
-    conditions.push(eq(company.teamId, params.teamId));
+    const workspaceId = await getTeamWorkspaceId(params.teamId);
+    if (workspaceId != null) {
+      const wsTeams = await db
+        .select({ id: team.id })
+        .from(team)
+        .where(eq(team.workspaceId, workspaceId));
+      const wsTeamIds = wsTeams.map((t) => t.id);
+      if (wsTeamIds.length > 0) {
+        conditions.push(or(inArray(company.teamId, wsTeamIds), isNull(company.teamId)));
+      }
+    }
   }
 
   if (params.isManager && params.ownerUserId) {

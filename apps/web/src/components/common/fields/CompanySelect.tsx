@@ -4,6 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { Building2, Check, AlertTriangle, CircleDashed, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { CompanyRef, CompanySummary } from '@/lib/api/endpoints/companies';
+import { useShell } from '@/context/shellContext';
 import { useCompaniesQuery } from '@/services/companies.service';
 import {
   Command,
@@ -24,6 +25,7 @@ export default function CompanySelect({
   onSelectCompany,
   fallbackCompany,
   inherited,
+  teamId,
   trigger,
   readOnly,
 }: {
@@ -32,15 +34,18 @@ export default function CompanySelect({
   onSelectCompany?: (company: CompanySummary | null) => void;
   fallbackCompany?: CompanyRef | null;
   inherited?: boolean;
+  teamId?: number;
   trigger?: ReactNode;
   readOnly?: boolean;
 }) {
   const t = useTranslations('companies.select');
+  const { project } = useShell();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
 
   const { data: companies = [], isLoading } = useCompaniesQuery({
     search: query.trim() || undefined,
+    teamId: teamId ?? project?.project.teamId,
   });
 
   const fromList = companies.find((c) => c.id === value) ?? null;

@@ -95,6 +95,7 @@ export default function CompaniesPage() {
     search: search.trim() || undefined,
     isBlacklisted: showBlacklistOnly ? true : undefined,
     filter: isAdmin ? scopeFilter : 'mine',
+    teamId,
   });
 
   const companies = rawCompanies.filter((c) => {

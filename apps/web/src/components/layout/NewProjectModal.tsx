@@ -139,6 +139,7 @@ export default function NewProjectModal({
       companiesEnabled={companiesEnabled}
       companyId={companyId}
       initialCompany={selectedCompany}
+      teamId={destinationTeamId}
       onNameChange={onNameChange}
       onKeyChange={onKeyChange}
       onDescriptionChange={setDescription}

@@ -605,7 +605,7 @@ export async function createProject(
   teamId: number,
 ): Promise<ProjectRow> {
   const ownerTeam = await targetTeam(ownerId, teamId);
-  await assertCompanyAssignable(input.companyId, ownerId);
+  await assertCompanyAssignable(input.companyId, ownerId, teamId);
   // What a new project starts with, set instance-wide in god mode. Read before the
   // transaction opens so the settings lookup is not part of it.
   const defaults = await getProjectDefaults();

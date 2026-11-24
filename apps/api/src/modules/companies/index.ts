@@ -98,7 +98,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       const company = await getCompanyById(params.companyId, user.id, isManager);
       if (!company) throw new HttpError(404, 'Company not found');
       return company;
@@ -144,7 +144,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId',
     async ({ params, body, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, body.teamId, params.companyId);
       try {
         return await updateCompany(params.companyId, body, user.id, isManager);
       } catch (err) {
@@ -163,7 +163,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/blacklist',
     async ({ params, body, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       return await setCompanyBlacklist(
         params.companyId,
         body.isBlacklisted,
@@ -184,7 +184,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       const deleted = await deleteCompany(params.companyId, user.id, isManager);
       if (!deleted) throw new HttpError(404, 'Company not found');
       return noContent();
@@ -200,7 +200,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/activities',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       return await getCompanyActivities(params.companyId, user.id, isManager);
     },
     {
@@ -216,7 +216,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/projects',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       return await getCompanyProjects(params.companyId, user.id, isManager);
     },
     {
@@ -230,7 +230,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/initiatives',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       return await getCompanyInitiatives(params.companyId, user.id, isManager);
     },
     {
@@ -244,7 +244,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/contacts',
     async ({ params, body, user, set }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       set.status = 201;
       return await createContact(params.companyId, body, user.id, isManager);
     },
@@ -260,7 +260,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/contacts/:contactId',
     async ({ params, body, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       const contact = await updateContact(
         params.contactId,
         params.companyId,
@@ -283,7 +283,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/contacts/:contactId',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       const deleted = await deleteContact(params.contactId, params.companyId, user.id, isManager);
       if (!deleted) throw new HttpError(404, 'Contact not found');
       return noContent();
@@ -299,7 +299,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/attachments',
     async ({ params, body, user, set }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       set.status = 201;
       return await createCompanyAttachment(
         params.companyId,
@@ -322,7 +322,7 @@ export const companyRoutes = new Elysia({
     '/companies/:companyId/attachments/:attachmentId',
     async ({ params, user }) => {
       if (!user) throw new HttpError(401, 'Authentication required');
-      const isManager = await isCompanyManager(user.id);
+      const isManager = await isCompanyManager(user.id, null, params.companyId);
       const deleted = await deleteCompanyAttachment(
         params.attachmentId,
         params.companyId,

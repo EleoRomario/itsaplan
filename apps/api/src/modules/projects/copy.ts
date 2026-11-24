@@ -604,7 +604,7 @@ export async function insertSnapshotProject(
   },
 ): Promise<{ project: ProjectRow; maps: CopyIdMaps }> {
   const { team, input, ownerId } = options;
-  await assertCompanyAssignable(input.companyId, ownerId);
+  await assertCompanyAssignable(input.companyId, ownerId, team.id);
   const [row] = await tx
     .insert(project)
     .values({

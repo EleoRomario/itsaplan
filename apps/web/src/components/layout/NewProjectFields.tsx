@@ -14,6 +14,7 @@ export default function NewProjectFields({
   companiesEnabled,
   companyId,
   initialCompany,
+  teamId,
   onNameChange,
   onKeyChange,
   onDescriptionChange,
@@ -26,6 +27,7 @@ export default function NewProjectFields({
   companiesEnabled?: boolean;
   companyId?: number | null;
   initialCompany?: CompanyRef | null;
+  teamId?: number;
   onNameChange: (value: string) => void;
   onKeyChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
@@ -83,6 +85,7 @@ export default function NewProjectFields({
                   }}
                   onSelectCompany={(c) => onCompanyChange(c?.id ?? null, c)}
                   fallbackCompany={initialCompany}
+                  teamId={teamId}
                 />
               </div>
               <p className="text-[11px] text-muted-foreground">{t('companyOptionalHint')}</p>
