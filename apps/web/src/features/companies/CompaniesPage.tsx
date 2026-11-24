@@ -25,6 +25,11 @@ import {
 } from '@/services/companies.service';
 import { useMembersQuery } from '@/services/members.service';
 import { companyDetailPath } from '@/utils/paths';
+import {
+  COMPANY_CODE_MAX_LENGTH,
+  normalizeCompanyCode,
+  suggestCompanyCode,
+} from '@/utils/companyCode';
 import SectionPageView from '@/components/common/page/SectionPageView';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,6 +65,8 @@ export default function CompaniesPage() {
 
   // Form state
   const [taxId, setTaxId] = useState('');
+  const [code, setCode] = useState('');
+  const [codeEdited, setCodeEdited] = useState(false);
   const [name, setName] = useState('');
   const [tradeName, setTradeName] = useState('');
   const [status, setStatus] = useState('ACTIVO');
@@ -95,6 +102,7 @@ export default function CompaniesPage() {
       const sunatData = await sunatMutation.mutateAsync(cleanTaxId);
       if (sunatData) {
         setName(sunatData.name);
+        if (!codeEdited) setCode(suggestCompanyCode(sunatData.name, tradeName));
         setStatus(sunatData.status || 'ACTIVO');
         if (sunatData.address) setAddress(sunatData.address);
         const cityParts = [sunatData.district, sunatData.province, sunatData.department]
@@ -122,6 +130,7 @@ export default function CompaniesPage() {
     try {
       await createMutation.mutateAsync({
         taxId: taxId.trim(),
+        code: code.trim() || undefined,
         name: name.trim(),
         tradeName: tradeName.trim() || undefined,
         status: status || undefined,
@@ -137,6 +146,8 @@ export default function CompaniesPage() {
 
       setCreating(false);
       setTaxId('');
+      setCode('');
+      setCodeEdited(false);
       setName('');
       setTradeName('');
       setStatus('ACTIVO');
@@ -272,7 +283,14 @@ export default function CompaniesPage() {
                     )}
                   </div>
 
-                  <div className="mb-2 font-mono text-xs text-muted-foreground">RUC: {c.taxId}</div>
+                  <div className="mb-2 flex items-center gap-2 font-mono text-xs text-muted-foreground">
+                    {c.code && (
+                      <Badge variant="outline" className="h-5 px-1.5 font-mono text-[10px]">
+                        {c.code}
+                      </Badge>
+                    )}
+                    <span>RUC: {c.taxId}</span>
+                  </div>
 
                   {c.tradeName && (
                     <div className="mb-2 line-clamp-1 text-xs text-muted-foreground">
@@ -398,15 +416,36 @@ export default function CompaniesPage() {
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="name">{t('newModal.nameLabel')}</Label>
-                <Input
-                  id="name"
-                  required
-                  placeholder="ACME Corporation S.A.C."
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+              <div className="grid grid-cols-3 gap-2">
+                <div className="col-span-2 space-y-1">
+                  <Label htmlFor="name">{t('newModal.nameLabel')}</Label>
+                  <Input
+                    id="name"
+                    required
+                    placeholder="ACME Corporation S.A.C."
+                    value={name}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setName(next);
+                      if (!codeEdited) setCode(suggestCompanyCode(next, tradeName));
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="code">{t('newModal.codeLabel')}</Label>
+                  <Input
+                    id="code"
+                    className="font-mono uppercase"
+                    placeholder="ACIDE"
+                    maxLength={COMPANY_CODE_MAX_LENGTH}
+                    value={code}
+                    onChange={(e) => {
+                      const next = normalizeCompanyCode(e.target.value);
+                      setCode(next);
+                      setCodeEdited(next !== '');
+                    }}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -416,7 +455,11 @@ export default function CompaniesPage() {
                     id="tradeName"
                     placeholder="ACME Tech"
                     value={tradeName}
-                    onChange={(e) => setTradeName(e.target.value)}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setTradeName(next);
+                      if (!codeEdited) setCode(suggestCompanyCode(name, next));
+                    }}
                   />
                 </div>
                 <div className="space-y-1">

@@ -51,6 +51,7 @@ export const CompanySummaryResponse = t.Object({
   createdByUserId: t.Nullable(t.String()),
   owner: t.Optional(t.Nullable(CompanyUserSummary)),
   taxId: t.String(),
+  code: t.Nullable(t.String()),
   name: t.String(),
   tradeName: t.Nullable(t.String()),
   status: t.String(),
@@ -72,6 +73,7 @@ export const CompanyDetailResponse = t.Object({
   createdByUserId: t.Nullable(t.String()),
   owner: t.Optional(t.Nullable(CompanyUserSummary)),
   taxId: t.String(),
+  code: t.Nullable(t.String()),
   name: t.String(),
   tradeName: t.Nullable(t.String()),
   status: t.String(),
@@ -125,6 +127,7 @@ export const listCompaniesQuery = t.Object({
 
 export const createCompanyBody = t.Object({
   taxId: t.String({ minLength: 3 }),
+  code: t.Optional(t.String()),
   name: t.String({ minLength: 1 }),
   tradeName: t.Optional(t.String()),
   status: t.Optional(t.String()),

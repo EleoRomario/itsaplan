@@ -13,6 +13,7 @@ export interface CompanySummary {
   createdByUserId: string | null;
   owner?: CompanyOwner | null;
   taxId: string;
+  code: string | null;
   name: string;
   tradeName: string | null;
   status: string;
@@ -78,6 +79,7 @@ export interface CompanyActivityIssue {
 
 export interface CreateCompanyInput {
   taxId: string;
+  code?: string;
   name: string;
   tradeName?: string;
   status?: string;

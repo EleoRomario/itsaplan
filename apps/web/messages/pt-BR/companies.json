@@ -72,7 +72,8 @@
     "addressLabel": "Address",
     "notesLabel": "Internal Notes",
     "notesPlaceholder": "Observations about the company...",
-    "submit": "Register Company"
+    "submit": "Register Company",
+    "codeLabel": "Code"
   },
   "select": {
     "placeholder": "Select company",
@@ -89,5 +90,8 @@
   "assignedToYou": "Assigned to you",
   "selectExecutive": "Select executive",
   "reassign": "Reassign",
-  "reassignTitle": "Reassign Company Executive"
+  "reassignTitle": "Reassign Company Executive",
+  "code": "Code",
+  "editCode": "Edit",
+  "editCodeTitle": "Edit Company Code"
 }

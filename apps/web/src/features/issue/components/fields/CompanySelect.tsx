@@ -41,9 +41,11 @@ export default function CompanySelect({
     setOpen(false);
   };
 
-  const displayText = current ? `${current.name} (${current.taxId})` : t('label');
+  const displayText = current
+    ? `${current.code ? `${current.code} · ` : ''}${current.name} (${current.taxId})`
+    : t('label');
   const fullTooltipText = current
-    ? `${current.name} — RUC: ${current.taxId}${current.isBlacklisted ? ` [${t('blacklist')}: ${current.blacklistReason || 'Sancionada'}]` : ''}`
+    ? `${current.code ? `[${current.code}] ` : ''}${current.name} — RUC: ${current.taxId}${current.isBlacklisted ? ` [${t('blacklist')}: ${current.blacklistReason || 'Sancionada'}]` : ''}`
     : null;
 
   if (readOnly) {
@@ -160,6 +162,7 @@ export default function CompanySelect({
                       )}
                     </div>
                     <span className="font-mono text-[11px] text-muted-foreground">
+                      {c.code ? `${c.code} • ` : ''}
                       {c.taxId} {c.city ? `• ${c.city}` : ''}
                     </span>
                   </div>

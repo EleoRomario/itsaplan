@@ -79,7 +79,8 @@
     "addressLabel": "Address",
     "notesLabel": "Internal Notes",
     "notesPlaceholder": "Observations about the company...",
-    "submit": "Register Company"
+    "submit": "Register Company",
+    "codeLabel": "Code"
   },
   "select": {
     "placeholder": "Select company",
@@ -89,5 +90,8 @@
     "clear": "Clear company",
     "blacklist": "Blacklist",
     "label": "Company"
-  }
+  },
+  "code": "Code",
+  "editCode": "Edit",
+  "editCodeTitle": "Edit Company Code"
 }

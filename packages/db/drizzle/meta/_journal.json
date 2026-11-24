@@ -1317,6 +1317,13 @@
       "when": 1795096908021,
       "tag": "0187_fresh_sunspot",
       "breakpoints": true
+    },
+    {
+      "idx": 188,
+      "version": "7",
+      "when": 1795468042816,
+      "tag": "0188_brave_sprite",
+      "breakpoints": true
     }
   ]
 }

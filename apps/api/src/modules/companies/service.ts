@@ -11,9 +11,10 @@ import {
   user,
   teamMember,
 } from '@repo/db';
-import { and, desc, eq, ilike, isNull, or } from 'drizzle-orm';
+import { and, desc, eq, ilike, isNull, ne, or } from 'drizzle-orm';
 import { putObject, deleteObject } from '@repo/storage';
 import { HttpError, iso, num } from '#shared/lib';
+import { COMPANY_CODE_MAX_LENGTH, normalizeCompanyCode, suggestCompanyCode } from './code';
 
 export interface CompanyUserSummaryDto {
   id: string;
@@ -28,6 +29,7 @@ export interface CompanySummary {
   createdByUserId: string | null;
   owner?: CompanyUserSummaryDto | null;
   taxId: string;
+  code: string | null;
   name: string;
   tradeName: string | null;
   status: string;
@@ -161,6 +163,7 @@ export async function listCompanies(params: {
     conditions.push(
       or(
         ilike(company.taxId, `%${params.query}%`),
+        ilike(company.code, `%${params.query}%`),
         ilike(company.name, `%${params.query}%`),
         ilike(company.tradeName, `%${params.query}%`),
       ),
@@ -209,6 +212,7 @@ export async function listCompanies(params: {
     owner:
       r.ownerUserId && owner?.id ? { id: owner.id, name: owner.name, email: owner.email } : null,
     taxId: r.taxId,
+    code: r.code,
     name: r.name,
     tradeName: r.tradeName,
     status: r.status,
@@ -275,6 +279,7 @@ export async function getCompanyById(
     owner:
       r.ownerUserId && owner?.id ? { id: owner.id, name: owner.name, email: owner.email } : null,
     taxId: r.taxId,
+    code: r.code,
     name: r.name,
     tradeName: r.tradeName,
     status: r.status,
@@ -306,8 +311,46 @@ export async function getCompanyByTaxId(
   return getCompanyById(row.id, userId, isManager);
 }
 
+async function resolveUniqueCompanyCode(
+  requested: string | undefined,
+  name: string,
+  tradeName?: string,
+  excludeId?: number,
+): Promise<string> {
+  const isTaken = async (candidate: string) => {
+    const cond =
+      excludeId !== undefined
+        ? and(eq(company.code, candidate), ne(company.id, excludeId))
+        : eq(company.code, candidate);
+    const [row] = await db.select({ id: company.id }).from(company).where(cond);
+    return Boolean(row);
+  };
+
+  if (requested !== undefined && requested.trim() !== '') {
+    const normalized = normalizeCompanyCode(requested);
+    if (!normalized) {
+      throw new HttpError(400, 'Código de empresa inválido');
+    }
+    if (await isTaken(normalized)) {
+      throw new HttpError(409, `El código de empresa ${normalized} ya está en uso`);
+    }
+    return normalized;
+  }
+
+  const base = suggestCompanyCode(name, tradeName) || 'EMP';
+  if (!(await isTaken(base))) return base;
+
+  for (let i = 2; i < 1000; i += 1) {
+    const suffix = String(i);
+    const candidate = `${base.slice(0, COMPANY_CODE_MAX_LENGTH - suffix.length)}${suffix}`;
+    if (!(await isTaken(candidate))) return candidate;
+  }
+  throw new HttpError(409, 'No se pudo generar un código único para la empresa');
+}
+
 export async function createCompany(data: {
   taxId: string;
+  code?: string;
   name: string;
   tradeName?: string;
   status?: string;
@@ -342,11 +385,13 @@ export async function createCompany(data: {
   }
 
   const assignedOwnerId = data.isManager && data.ownerUserId ? data.ownerUserId : data.userId;
+  const resolvedCode = await resolveUniqueCompanyCode(data.code, data.name, data.tradeName);
 
   const [created] = await db
     .insert(company)
     .values({
       taxId: cleanTaxId,
+      code: resolvedCode,
       name: data.name.trim(),
       tradeName: data.tradeName?.trim(),
       status: data.status ?? 'active',
@@ -370,6 +415,7 @@ export async function updateCompany(
   id: number,
   data: Partial<{
     taxId: string;
+    code?: string;
     name: string;
     tradeName?: string;
     status?: string;
@@ -386,13 +432,21 @@ export async function updateCompany(
   userId: string,
   isManager: boolean,
 ): Promise<CompanyDetail> {
-  await requireCompanyAccess(id, userId, isManager);
+  const current = await requireCompanyAccess(id, userId, isManager);
 
   const updateValues: Record<string, unknown> = {
     updatedAt: new Date(),
   };
 
   if (data.taxId !== undefined) updateValues.taxId = data.taxId.trim();
+  if (data.code !== undefined) {
+    updateValues.code = await resolveUniqueCompanyCode(
+      data.code,
+      data.name ?? current.name,
+      data.tradeName ?? current.tradeName ?? undefined,
+      id,
+    );
+  }
   if (data.name !== undefined) updateValues.name = data.name.trim();
   if (data.tradeName !== undefined) updateValues.tradeName = data.tradeName?.trim() || null;
   if (data.status !== undefined) updateValues.status = data.status;

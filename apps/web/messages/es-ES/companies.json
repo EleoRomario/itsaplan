@@ -79,7 +79,8 @@
     "addressLabel": "Dirección Fiscal",
     "notesLabel": "Notas Internas",
     "notesPlaceholder": "Observaciones de la empresa...",
-    "submit": "Registrar Empresa"
+    "submit": "Registrar Empresa",
+    "codeLabel": "Código"
   },
   "select": {
     "placeholder": "Seleccionar empresa",
@@ -89,5 +90,8 @@
     "clear": "Limpiar empresa",
     "blacklist": "Blacklist",
     "label": "Empresa"
-  }
+  },
+  "code": "Código",
+  "editCode": "Editar",
+  "editCodeTitle": "Editar Código de Empresa"
 }

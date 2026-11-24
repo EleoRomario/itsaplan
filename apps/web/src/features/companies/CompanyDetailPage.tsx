@@ -32,6 +32,7 @@ import {
 } from '@/services/companies.service';
 import { useMembersQuery } from '@/services/members.service';
 import { companiesPath } from '@/utils/paths';
+import { COMPANY_CODE_MAX_LENGTH, normalizeCompanyCode } from '@/utils/companyCode';
 import SectionPageView from '@/components/common/page/SectionPageView';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -74,6 +75,10 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
   const [reassignOpen, setReassignOpen] = useState(false);
   const [reassignUserId, setReassignUserId] = useState('');
 
+  // Code edit modal state
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [editCodeValue, setEditCodeValue] = useState('');
+
   // Contact modal state
   const [contactOpen, setContactOpen] = useState(false);
   const [contactName, setContactName] = useState('');
@@ -100,6 +105,14 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
     if (!reassignUserId) return;
     await updateCompanyMutation.mutateAsync({ ownerUserId: reassignUserId });
     setReassignOpen(false);
+  };
+
+  const handleSaveCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const next = normalizeCompanyCode(editCodeValue);
+    if (!next) return;
+    await updateCompanyMutation.mutateAsync({ code: next });
+    setCodeOpen(false);
   };
 
   if (isLoading) {
@@ -161,7 +174,7 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
   return (
     <SectionPageView
       title={company.name}
-      description={`RUC: ${company.taxId} ${company.tradeName ? `• ${company.tradeName}` : ''}`}
+      description={`${company.code ? `${company.code} • ` : ''}RUC: ${company.taxId} ${company.tradeName ? `• ${company.tradeName}` : ''}`}
       wide
       actions={
         <div className="flex items-center gap-2">
@@ -212,7 +225,26 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
         )}
 
         {/* Company Overview Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-6">
+          <div className="rounded-lg border bg-card p-4">
+            <div className="mb-1 text-xs text-muted-foreground">{t('code')}</div>
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-mono text-sm font-semibold">
+                {company.code || t('notRegistered')}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 px-1.5 text-[11px] text-primary"
+                onClick={() => {
+                  setEditCodeValue(company.code ?? '');
+                  setCodeOpen(true);
+                }}
+              >
+                {t('editCode')}
+              </Button>
+            </div>
+          </div>
           <div className="rounded-lg border bg-card p-4">
             <div className="mb-1 text-xs text-muted-foreground">{t('newModal.taxIdLabel')}</div>
             <div className="font-mono text-sm font-medium">{company.taxId}</div>
@@ -713,6 +745,43 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
               {updateCompanyMutation.isPending ? 'Saving...' : t('reassign')}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Edit Code Modal */}
+      <Dialog open={codeOpen} onOpenChange={setCodeOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <form onSubmit={handleSaveCode}>
+            <DialogHeader>
+              <DialogTitle>{t('editCodeTitle')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 py-4 text-sm">
+              <Label htmlFor="editCompanyCode">{t('code')}</Label>
+              <Input
+                id="editCompanyCode"
+                className="font-mono uppercase"
+                maxLength={COMPANY_CODE_MAX_LENGTH}
+                value={editCodeValue}
+                onChange={(e) => setEditCodeValue(normalizeCompanyCode(e.target.value))}
+                autoFocus
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCodeOpen(false)}
+                disabled={updateCompanyMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={updateCompanyMutation.isPending || !normalizeCompanyCode(editCodeValue)}
+              >
+                {updateCompanyMutation.isPending ? 'Saving...' : t('editCode')}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </SectionPageView>

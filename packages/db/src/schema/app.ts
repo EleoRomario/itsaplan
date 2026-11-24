@@ -2772,6 +2772,7 @@ export const company = pgTable(
       onDelete: 'set null',
     }),
     taxId: text('tax_id').notNull().unique(),
+    code: text('code').unique(),
     name: text('name').notNull(),
     tradeName: text('trade_name'),
     status: text('status').notNull().default('active'),
