@@ -141,10 +141,13 @@
       "subtasks": "Des tickets découpés en sous-tâches sous un parent.",
       "checklists": "Des listes d'étapes suivies au sein d'un ticket.",
       "issueStats": "Le temps passé par un ticket dans chaque état.",
-      "documents": "Documentation partagée du projet, organisée en pages."
+      "documents": "Documentation partagée du projet, organisée en pages.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "Section {feature} activée",
-    "featureOff": "Section {feature} désactivée"
+    "featureOff": "Section {feature} désactivée",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "Modifications enregistrées",

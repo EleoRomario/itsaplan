@@ -28,7 +28,9 @@
   "tabs": {
     "documents": "Documentos Base",
     "contacts": "Contactos",
-    "activity": "Historial Proyectos"
+    "activity": "Historial Proyectos",
+    "projects": "Proyectos",
+    "initiatives": "Iniciativas"
   },
   "documents": {
     "description": "Documentos reutilizables: Ficha RUC, Vigencia de Poder, Testimonio de Constitución, etc.",
@@ -89,9 +91,32 @@
     "notFound": "No se encontró empresa.",
     "clear": "Limpiar empresa",
     "blacklist": "Blacklist",
-    "label": "Empresa"
+    "label": "Empresa",
+    "inherited": "heredada"
   },
   "code": "Código",
   "editCode": "Editar",
-  "editCodeTitle": "Editar Código de Empresa"
+  "editCodeTitle": "Editar Código de Empresa",
+  "portfolio": {
+    "companies": "Empresas",
+    "projects": "Proyectos",
+    "progress": "Avance",
+    "open": "abiertos",
+    "overdue": "Vencidos",
+    "filterAll": "Todas",
+    "filterActive": "Con actividad",
+    "filterOverdue": "Con vencidos"
+  },
+  "table": {
+    "company": "Empresa",
+    "lastActivity": "Última actividad"
+  },
+  "projects": {
+    "description": "Proyectos vinculados directamente a esta empresa.",
+    "create": "Nuevo proyecto",
+    "empty": "Aún no hay proyectos vinculados a esta empresa."
+  },
+  "initiatives": {
+    "empty": "Aún no hay iniciativas vinculadas a esta empresa."
+  }
 }

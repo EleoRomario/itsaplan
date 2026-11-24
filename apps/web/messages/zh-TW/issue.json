@@ -36,7 +36,8 @@
     "groupLabels": "標籤",
     "groupCustom": "自訂欄位",
     "empty": "空",
-    "openInNewTab": "在新標籤頁中開啟"
+    "openInNewTab": "在新標籤頁中開啟",
+    "company": "Company"
   },
   "menu": {
     "preview": "預覽",

@@ -141,10 +141,13 @@
       "subtasks": "Bir ana iş altında alt işlere bölünen görevler.",
       "checklists": "Bir iş içinde takip edilen kontrol listeleri.",
       "issueStats": "Bir işin her durumda ne kadar süre kaldığı.",
-      "documents": "Sayfalar halinde düzenlenen ortak proje belgeleri."
+      "documents": "Sayfalar halinde düzenlenen ortak proje belgeleri.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "{feature} açıldı",
-    "featureOff": "{feature} kapatıldı"
+    "featureOff": "{feature} kapatıldı",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "Değişiklikler kaydedildi",

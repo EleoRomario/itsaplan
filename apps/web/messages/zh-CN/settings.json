@@ -141,10 +141,13 @@
       "subtasks": "将工作项拆分为父工作项下的子任务。",
       "checklists": "在工作项中跟踪简单步骤。",
       "issueStats": "统计工作项在各状态中停留的时间。",
-      "documents": "组织和共享项目文档。"
+      "documents": "组织和共享项目文档。",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "已启用{feature}",
-    "featureOff": "已停用{feature}"
+    "featureOff": "已停用{feature}",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "更改已保存",

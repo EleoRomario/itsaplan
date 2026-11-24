@@ -36,7 +36,8 @@
     "groupLabels": "برچسب‌ها",
     "groupCustom": "فیلدهای سفارشی",
     "empty": "خالی",
-    "openInNewTab": "باز کردن در تب جدید"
+    "openInNewTab": "باز کردن در تب جدید",
+    "company": "Company"
   },
   "menu": {
     "preview": "پیش‌نمایش",

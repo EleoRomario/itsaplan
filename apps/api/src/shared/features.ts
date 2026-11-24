@@ -10,6 +10,7 @@ export const PROJECT_FEATURES = [
   'subtasks',
   'checklists',
   'issueStats',
+  'companies',
 ] as const;
 
 export type ProjectFeature = (typeof PROJECT_FEATURES)[number];

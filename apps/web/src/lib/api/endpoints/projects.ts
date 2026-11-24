@@ -11,6 +11,7 @@ import type { MemberRole } from '@/lib/api/endpoints/members';
 import type { Permissions } from '@/lib/api/endpoints/roles';
 import type { ProjectFeatures } from '@/lib/api/endpoints/settings';
 import type { TeamRole } from '@/lib/api/endpoints/teams';
+import type { CompanyRef } from '@/lib/api/endpoints/companies';
 
 export interface Project {
   id: number;
@@ -24,6 +25,8 @@ export interface Project {
   ref: string;
   name: string;
   description: string;
+  companyId: number | null;
+  company: CompanyRef | null;
   // Whether the team's MCP reach covers this project, and whether the team is
   // reachable over MCP at all. Both are set in the team's MCP section; a tool call
   // scoped to this project needs both.
@@ -39,6 +42,7 @@ export interface Project {
   subtasksEnabled: boolean;
   checklistsEnabled: boolean;
   issueStatsEnabled: boolean;
+  companiesEnabled: boolean;
   // The sections this project may use at all. One missing here is not available to
   // the team: its flag above always reads false and the settings page does not offer
   // it. Everything is available on a self-hosted instance.
@@ -141,6 +145,8 @@ export interface ProjectSearchFilters {
   sort?: ProjectSort;
   workspaceId?: number;
   teamId?: number;
+  companyId?: number;
+  myCompanies?: boolean;
   ids?: number[];
   favorite?: boolean;
   hidden?: boolean;
@@ -153,6 +159,8 @@ export const searchProjects = (filters: ProjectSearchFilters, params: PageParams
       sort: filters.sort,
       workspaceId: filters.workspaceId?.toString(),
       teamId: filters.teamId?.toString(),
+      companyId: filters.companyId?.toString(),
+      myCompanies: filters.myCompanies ? 'true' : undefined,
       ids: filters.ids?.join(','),
       favorite: filters.favorite?.toString(),
       hidden: filters.hidden?.toString(),
@@ -167,9 +175,11 @@ export const updateProjectPreferences = (projectKey: string, patch: ProjectPrefe
     body: JSON.stringify(patch),
   });
 
-// Update a project's name/description. The key is immutable, so it is not sent.
-export const updateProject = (projectKey: string, patch: { name?: string; description?: string }) =>
-  request<Project>(`/projects/${projectKey}`, { method: 'PATCH', body: JSON.stringify(patch) });
+// Update a project's name, description, or linked company. The key is immutable, so it is not sent.
+export const updateProject = (
+  projectKey: string,
+  patch: { name?: string; description?: string; companyId?: number | null },
+) => request<Project>(`/projects/${projectKey}`, { method: 'PATCH', body: JSON.stringify(patch) });
 
 // The board scaffold (no issues). The issues come from getBoardIssues.
 export const getProject = (projectKey: string, signal?: AbortSignal) =>

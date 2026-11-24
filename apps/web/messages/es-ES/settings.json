@@ -141,10 +141,13 @@
       "subtasks": "Tickets descompuestos en subtareas bajo un padre.",
       "checklists": "Listas de pasos seguidas dentro de un ticket.",
       "issueStats": "Cuánto tiempo ha pasado un ticket en cada estado.",
-      "documents": "Documentación del proyecto compartida, organizada en páginas."
+      "documents": "Documentación del proyecto compartida, organizada en páginas.",
+      "companies": "Vincula empresas a este proyecto, sus iniciativas y sus tickets."
     },
     "featureOn": "{feature} se ha activado",
-    "featureOff": "{feature} se ha desactivado"
+    "featureOff": "{feature} se ha desactivado",
+    "company": "Empresa",
+    "companyHint": "Opcional. Déjalo vacío para proyectos multi-empresa; selecciona una para que todos los tickets la hereden."
   },
   "configuration": {
     "saved": "Los cambios se han guardado",

@@ -141,10 +141,13 @@
       "subtasks": "Issue yang dipecah menjadi subtugas di bawah induk.",
       "checklists": "Daftar langkah yang dipantau di dalam issue.",
       "issueStats": "Berapa lama suatu issue berada di setiap status.",
-      "documents": "Dokumentasi proyek bersama yang diorganisasikan ke dalam halaman."
+      "documents": "Dokumentasi proyek bersama yang diorganisasikan ke dalam halaman.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "{feature} diaktifkan",
-    "featureOff": "{feature} dinonaktifkan"
+    "featureOff": "{feature} dinonaktifkan",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "Perubahan disimpan",

@@ -13,6 +13,8 @@ import {
   deleteCompany,
   setCompanyBlacklist,
   listCompanyActivity,
+  listCompanyProjects,
+  listCompanyInitiatives,
   addCompanyContact,
   updateCompanyContact,
   deleteCompanyContact,
@@ -28,10 +30,13 @@ export const companyKeys = {
     isBlacklisted?: boolean;
     filter?: 'mine' | 'all';
     teamId?: number;
+    ownerUserId?: string;
   }) => ['companies', 'list', params] as const,
   detail: (id: number) => ['companies', 'detail', id] as const,
   byTaxId: (taxId: string) => ['companies', 'taxId', taxId] as const,
   activity: (id: number) => ['companies', 'activity', id] as const,
+  projects: (id: number) => ['companies', 'projects', id] as const,
+  initiatives: (id: number) => ['companies', 'initiatives', id] as const,
 };
 
 export function useCompaniesQuery(params?: {
@@ -39,6 +44,7 @@ export function useCompaniesQuery(params?: {
   isBlacklisted?: boolean;
   filter?: 'mine' | 'all';
   teamId?: number;
+  ownerUserId?: string;
 }) {
   return useQuery({
     queryKey: companyKeys.list(params),
@@ -66,6 +72,22 @@ export function useCompanyActivityQuery(companyId: number | null) {
   return useQuery({
     queryKey: companyKeys.activity(companyId!),
     queryFn: () => listCompanyActivity(companyId!),
+    enabled: companyId != null,
+  });
+}
+
+export function useCompanyProjectsQuery(companyId: number | null) {
+  return useQuery({
+    queryKey: companyKeys.projects(companyId!),
+    queryFn: () => listCompanyProjects(companyId!),
+    enabled: companyId != null,
+  });
+}
+
+export function useCompanyInitiativesQuery(companyId: number | null) {
+  return useQuery({
+    queryKey: companyKeys.initiatives(companyId!),
+    queryFn: () => listCompanyInitiatives(companyId!),
     enabled: companyId != null,
   });
 }

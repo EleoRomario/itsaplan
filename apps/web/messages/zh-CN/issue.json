@@ -36,7 +36,8 @@
     "groupLabels": "标签",
     "groupCustom": "自定义字段",
     "empty": "空",
-    "openInNewTab": "在新标签页中打开"
+    "openInNewTab": "在新标签页中打开",
+    "company": "Company"
   },
   "menu": {
     "preview": "预览",

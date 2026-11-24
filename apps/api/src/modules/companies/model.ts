@@ -44,6 +44,16 @@ export const CompanyAttachmentResponse = t.Object({
   createdAt: t.String(),
 });
 
+export const CompanyStatsResponse = t.Object({
+  projectCount: t.Number(),
+  initiativeCount: t.Number(),
+  totalIssues: t.Number(),
+  openIssues: t.Number(),
+  completedIssues: t.Number(),
+  overdueIssues: t.Number(),
+  lastActivityAt: t.Nullable(t.String()),
+});
+
 export const CompanySummaryResponse = t.Object({
   id: t.Number(),
   teamId: t.Nullable(t.Number()),
@@ -64,6 +74,7 @@ export const CompanySummaryResponse = t.Object({
   country: t.Nullable(t.String()),
   createdAt: t.String(),
   updatedAt: t.String(),
+  stats: t.Optional(CompanyStatsResponse),
 });
 
 export const CompanyDetailResponse = t.Object({
@@ -111,17 +122,51 @@ export const CompanyActivityIssueResponse = t.Object({
   title: t.String(),
   projectId: t.Number(),
   projectKey: t.String(),
+  projectRef: t.String(),
   projectName: t.String(),
   teamKey: t.String(),
   columnName: t.String(),
   columnStateType: t.String(),
+  dueDate: t.Nullable(t.String()),
+  inherited: t.Boolean(),
   createdAt: t.String(),
+});
+
+export const CompanyProjectItemResponse = t.Object({
+  id: t.Number(),
+  key: t.String(),
+  ref: t.String(),
+  name: t.String(),
+  description: t.String(),
+  teamId: t.Number(),
+  teamName: t.String(),
+  archivedAt: t.Nullable(t.String()),
+  totalIssues: t.Number(),
+  openIssues: t.Number(),
+  completedIssues: t.Number(),
+  overdueIssues: t.Number(),
+  lastActivityAt: t.Nullable(t.String()),
+});
+
+export const CompanyInitiativeItemResponse = t.Object({
+  id: t.Number(),
+  title: t.String(),
+  status: t.String(),
+  targetDate: t.Nullable(t.String()),
+  projectId: t.Number(),
+  projectKey: t.String(),
+  projectRef: t.String(),
+  projectName: t.String(),
+  totalIssues: t.Number(),
+  completedIssues: t.Number(),
+  inherited: t.Boolean(),
 });
 
 export const listCompaniesQuery = t.Object({
   q: t.Optional(t.String()),
   filter: t.Optional(t.Union([t.Literal('mine'), t.Literal('all')])),
   teamId: t.Optional(t.Numeric()),
+  ownerUserId: t.Optional(t.String()),
   isBlacklisted: t.Optional(t.Boolean()),
 });
 

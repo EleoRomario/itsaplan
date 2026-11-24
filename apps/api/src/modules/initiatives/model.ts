@@ -2,6 +2,7 @@ import { t } from 'elysia';
 import { isoDate } from '#shared/schemas';
 import { pageQueryFields, pageResponse } from '#shared/pagination';
 import { ActivityPayloadResponse } from '#shared/activity';
+import { CompanyRefResponse } from '#modules/projects/model';
 
 // The initiative lifecycle enum, validated at the edge so an invalid value is a
 // 400 (not a Postgres CHECK violation → 500). Mirrors the DB check constraint.
@@ -22,6 +23,9 @@ export const listInitiativesQuery = t.Object({
     }),
   ),
   search: t.Optional(t.String({ description: 'Matches the title.' })),
+  companyId: t.Optional(
+    t.Numeric({ minimum: 1, description: 'Only initiatives linked to this company.' }),
+  ),
   sort: t.Optional(
     t.Union(
       [t.Literal('title'), t.Literal('priority'), t.Literal('targetDate'), t.Literal('owner')],
@@ -50,6 +54,8 @@ export const initiativeFeedQuery = t.Object({
 export const InitiativeResponse = t.Object({
   id: t.Number(),
   projectId: t.Number(),
+  companyId: t.Nullable(t.Number()),
+  company: t.Nullable(CompanyRefResponse),
   title: t.String(),
   description: t.String(),
   status: t.String(),
@@ -105,6 +111,7 @@ export const createInitiativeBody = t.Object({
   title: t.String({ minLength: 1 }),
   description: t.Optional(t.String()),
   status: t.Optional(InitiativeStatus),
+  companyId: t.Optional(t.Nullable(t.Integer({ description: 'Optional company id to link.' }))),
   ownerUserId: t.Optional(t.Nullable(t.String({ description: 'Project member user id.' }))),
   priority: t.Optional(t.Nullable(t.String({ description: 'urgent, high, medium or low.' }))),
   startDate: t.Optional(t.Nullable(isoDate())),

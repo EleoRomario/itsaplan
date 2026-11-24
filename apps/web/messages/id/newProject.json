@@ -54,5 +54,9 @@
   "copyAction": "Salin proyek",
   "defaultAgents": "Agen yang akan bergabung dengan proyek ini: {names}",
   "copyName": "Salinan {name}",
-  "team": "Team"
+  "team": "Team",
+  "useCompanies": "Use companies in this project",
+  "useCompaniesHint": "Hide company fields when this project is internal.",
+  "companyOptional": "Linked company (optional)",
+  "companyOptionalHint": "Leave empty for multi-company projects, or choose one for a dedicated client project."
 }

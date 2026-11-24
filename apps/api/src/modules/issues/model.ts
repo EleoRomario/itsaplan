@@ -104,10 +104,12 @@ export const IssueResponse = t.Object({
   company: t.Nullable(
     t.Object({
       id: t.Number(),
+      code: t.Nullable(t.String()),
       taxId: t.String(),
       name: t.String(),
       isBlacklisted: t.Boolean(),
       blacklistReason: t.Nullable(t.String()),
+      ownerUserId: t.Nullable(t.String()),
     }),
   ),
   companyId: t.Nullable(t.Number()),

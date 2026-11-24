@@ -6,6 +6,26 @@ export interface CompanyOwner {
   email: string;
 }
 
+export interface CompanyRef {
+  id: number;
+  code: string | null;
+  taxId: string;
+  name: string;
+  isBlacklisted: boolean;
+  blacklistReason: string | null;
+  ownerUserId: string | null;
+}
+
+export interface CompanyStats {
+  projectCount: number;
+  initiativeCount: number;
+  totalIssues: number;
+  openIssues: number;
+  completedIssues: number;
+  overdueIssues: number;
+  lastActivityAt: string | null;
+}
+
 export interface CompanySummary {
   id: number;
   teamId: number | null;
@@ -26,6 +46,7 @@ export interface CompanySummary {
   country: string | null;
   createdAt: string;
   updatedAt: string;
+  stats?: CompanyStats;
 }
 
 export interface CompanyContact {
@@ -70,11 +91,44 @@ export interface CompanyActivityIssue {
   title: string;
   projectId: number;
   projectKey: string;
+  projectRef: string;
   projectName: string;
   teamKey: string;
   columnName: string;
   columnStateType: string;
+  dueDate: string | null;
+  inherited: boolean;
   createdAt: string;
+}
+
+export interface CompanyProjectItem {
+  id: number;
+  key: string;
+  ref: string;
+  name: string;
+  description: string;
+  teamId: number;
+  teamName: string;
+  archivedAt: string | null;
+  totalIssues: number;
+  openIssues: number;
+  completedIssues: number;
+  overdueIssues: number;
+  lastActivityAt: string | null;
+}
+
+export interface CompanyInitiativeItem {
+  id: number;
+  title: string;
+  status: string;
+  targetDate: string | null;
+  projectId: number;
+  projectKey: string;
+  projectRef: string;
+  projectName: string;
+  totalIssues: number;
+  completedIssues: number;
+  inherited: boolean;
 }
 
 export interface CreateCompanyInput {
@@ -118,6 +172,7 @@ export const listCompanies = (query?: {
   isBlacklisted?: boolean;
   filter?: 'mine' | 'all';
   teamId?: number;
+  ownerUserId?: string;
 }) => {
   const params = new URLSearchParams();
   if (query?.search) {
@@ -131,6 +186,9 @@ export const listCompanies = (query?: {
   }
   if (query?.teamId !== undefined) {
     params.set('teamId', String(query.teamId));
+  }
+  if (query?.ownerUserId) {
+    params.set('ownerUserId', query.ownerUserId);
   }
   const qs = params.toString() ? `?${params.toString()}` : '';
   return request<CompanySummary[]>(`/companies${qs}`);
@@ -165,7 +223,13 @@ export const setCompanyBlacklist = (companyId: number, input: SetBlacklistInput)
   });
 
 export const listCompanyActivity = (companyId: number) =>
-  request<CompanyActivityIssue[]>(`/companies/${companyId}/activity`);
+  request<CompanyActivityIssue[]>(`/companies/${companyId}/activities`);
+
+export const listCompanyProjects = (companyId: number) =>
+  request<CompanyProjectItem[]>(`/companies/${companyId}/projects`);
+
+export const listCompanyInitiatives = (companyId: number) =>
+  request<CompanyInitiativeItem[]>(`/companies/${companyId}/initiatives`);
 
 export const addCompanyContact = (companyId: number, input: CreateContactInput) =>
   request<CompanyContact>(`/companies/${companyId}/contacts`, {

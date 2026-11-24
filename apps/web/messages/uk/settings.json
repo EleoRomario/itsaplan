@@ -141,10 +141,13 @@
       "subtasks": "Задачі, розбиті на підзадачі під батьківською.",
       "checklists": "Списки кроків усередині задачі.",
       "issueStats": "Скільки часу задача пробула в кожному статусі.",
-      "documents": "Спільна робота з документами проєкту."
+      "documents": "Спільна робота з документами проєкту.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "Розділ «{feature}» увімкнено",
-    "featureOff": "Розділ «{feature}» вимкнено"
+    "featureOff": "Розділ «{feature}» вимкнено",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "Зміни збережено",

@@ -40,10 +40,12 @@ export interface Issue {
   // The global company linked to this issue, or null.
   company: {
     id: number;
+    code: string | null;
     taxId: string;
     name: string;
     isBlacklisted: boolean;
     blacklistReason: string | null;
+    ownerUserId: string | null;
   } | null;
   companyId: number | null;
   // The cycle this issue is planned into, expanded to id + name for rendering, or

@@ -1324,6 +1324,13 @@
       "when": 1795468042816,
       "tag": "0188_brave_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 189,
+      "version": "7",
+      "when": 1795539612242,
+      "tag": "0189_safe_trish_tilby",
+      "breakpoints": true
     }
   ]
 }

@@ -36,7 +36,8 @@
     "groupLabels": "Étiquettes",
     "groupCustom": "Champs personnalisés",
     "empty": "Vide",
-    "openInNewTab": "Ouvrir dans un nouvel onglet"
+    "openInNewTab": "Ouvrir dans un nouvel onglet",
+    "company": "Company"
   },
   "menu": {
     "preview": "Aperçu",

@@ -36,7 +36,8 @@
     "groupLabels": "الوسوم",
     "groupCustom": "حقول مخصصة",
     "empty": "فارغ",
-    "openInNewTab": "فتح في تبويب جديد"
+    "openInNewTab": "فتح في تبويب جديد",
+    "company": "Company"
   },
   "menu": {
     "preview": "معاينة",

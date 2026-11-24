@@ -54,5 +54,9 @@
   "copyAction": "Copier le projet",
   "defaultAgents": "Agents ajoutés à ce projet : {names}",
   "copyName": "{name} (copie)",
-  "team": "Team"
+  "team": "Team",
+  "useCompanies": "Use companies in this project",
+  "useCompaniesHint": "Hide company fields when this project is internal.",
+  "companyOptional": "Linked company (optional)",
+  "companyOptionalHint": "Leave empty for multi-company projects, or choose one for a dedicated client project."
 }

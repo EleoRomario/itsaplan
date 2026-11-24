@@ -54,5 +54,9 @@
   "copyAction": "프로젝트 복사",
   "defaultAgents": "이 프로젝트에 참여할 AI 에이전트: {names}",
   "copyName": "{name} 복사본",
-  "team": "Team"
+  "team": "Team",
+  "useCompanies": "Use companies in this project",
+  "useCompaniesHint": "Hide company fields when this project is internal.",
+  "companyOptional": "Linked company (optional)",
+  "companyOptionalHint": "Leave empty for multi-company projects, or choose one for a dedicated client project."
 }

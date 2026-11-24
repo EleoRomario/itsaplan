@@ -36,7 +36,8 @@
     "groupLabels": "Labels",
     "groupCustom": "Custom fields",
     "empty": "Empty",
-    "openInNewTab": "Open in new tab"
+    "openInNewTab": "Open in new tab",
+    "company": "Company"
   },
   "menu": {
     "preview": "Preview",

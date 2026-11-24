@@ -141,10 +141,13 @@
       "subtasks": "Issues broken down into subtasks under a parent.",
       "checklists": "Lists of steps tracked inside an issue.",
       "issueStats": "How long an issue spent in each state.",
-      "documents": "Shared project documentation organized into pages."
+      "documents": "Shared project documentation organized into pages.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "{feature} turned on",
-    "featureOff": "{feature} turned off"
+    "featureOff": "{feature} turned off",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "Changes saved",

@@ -8,6 +8,7 @@ import { useUpdateInitiative } from '@/services/initiatives.service';
 import { parseDate } from '@/utils/dates';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AssigneeSelect from '@/components/common/fields/AssigneeSelect';
+import CompanySelect from '@/components/common/fields/CompanySelect';
 import DatePill from '@/components/common/fields/DatePill';
 import LabelsSelect from '@/components/common/fields/LabelsSelect';
 import PrioritySelect from '@/components/common/fields/PrioritySelect';
@@ -91,6 +92,14 @@ export default function InitiativeHeader({
             value={initiative.priority ?? ''}
             onChange={(v) => patch({ priority: v || null })}
           />
+          {project.project.companiesEnabled && (
+            <CompanySelect
+              value={initiative.companyId}
+              onChange={(companyId) => patch({ companyId })}
+              fallbackCompany={initiative.company}
+              inherited={initiative.companyId == null && initiative.company != null}
+            />
+          )}
           <DatePill
             value={initiative.startDate}
             placeholder={t('startDate')}

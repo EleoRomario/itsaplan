@@ -20,10 +20,26 @@ const projectKey = t.String({
   pattern: PROJECT_KEY_PATTERN,
 });
 
+export const CompanyRefResponse = t.Object({
+  id: t.Number(),
+  code: t.Nullable(t.String()),
+  taxId: t.String(),
+  name: t.String(),
+  isBlacklisted: t.Boolean(),
+  blacklistReason: t.Nullable(t.String()),
+  ownerUserId: t.Nullable(t.String()),
+});
+
 const projectBody = t.Object({
   key: projectKey,
   name: t.String({ minLength: 1 }),
   description: t.Optional(t.String({ maxLength: PROJECT_DESCRIPTION_LIMIT })),
+  companyId: t.Optional(
+    t.Nullable(t.Integer({ description: 'Optional company id to link this project to.' })),
+  ),
+  companiesEnabled: t.Optional(
+    t.Boolean({ description: 'Whether companies are enabled in this project. Defaults to true.' }),
+  ),
 });
 
 // Create adds the issue-type preset: which set of types the new project starts with.
@@ -62,6 +78,11 @@ export const updateProjectBody = t.Object({
   key: t.Optional(projectKey),
   name: t.Optional(t.String({ minLength: 1 })),
   description: t.Optional(t.String({ maxLength: PROJECT_DESCRIPTION_LIMIT })),
+  companyId: t.Optional(
+    t.Nullable(
+      t.Integer({ description: 'Company id to link this project to, or null to unlink.' }),
+    ),
+  ),
 });
 
 export const ProjectPreferencesResponse = t.Object({
@@ -97,10 +118,26 @@ const projectTeamId = t.Optional(
   }),
 );
 
+const projectCompanyId = t.Optional(
+  t.Numeric({
+    minimum: 1,
+    multipleOf: 1,
+    description: 'Only projects linked to this company.',
+  }),
+);
+const projectMyCompanies = t.Optional(
+  t.String({
+    pattern: '^(true|false)$',
+    description: 'Only projects linked to companies owned by the current user.',
+  }),
+);
+
 export const listProjectsQuery = t.Object({
   q: projectSearch,
   sort: projectSort,
   teamId: projectTeamId,
+  companyId: projectCompanyId,
+  myCompanies: projectMyCompanies,
   permissions: t.Optional(
     t.String({ description: "'true' adds your permission matrix to each project." }),
   ),
@@ -110,6 +147,8 @@ export const searchProjectsQuery = t.Object({
   q: projectSearch,
   sort: projectSort,
   teamId: projectTeamId,
+  companyId: projectCompanyId,
+  myCompanies: projectMyCompanies,
   workspaceId: t.Optional(
     t.Numeric({
       minimum: 1,
@@ -144,6 +183,8 @@ export const ProjectResponse = t.Object({
   }),
   name: t.String(),
   description: t.String(),
+  companyId: t.Nullable(t.Number()),
+  company: t.Nullable(CompanyRefResponse),
   mcpEnabled: t.Boolean(),
   teamMcpEnabled: t.Boolean(),
   // The optional sections, toggled in Settings -> General. All on by default; a
@@ -156,6 +197,7 @@ export const ProjectResponse = t.Object({
   subtasksEnabled: t.Boolean(),
   checklistsEnabled: t.Boolean(),
   issueStatsEnabled: t.Boolean(),
+  companiesEnabled: t.Boolean(),
   pointsEstimateEnabled: t.Boolean(),
   timeEstimateEnabled: t.Boolean(),
   timeLoggingEnabled: t.Boolean(),
@@ -255,6 +297,7 @@ export const FeaturesResponse = t.Object({
   subtasks: t.Boolean(),
   checklists: t.Boolean(),
   issueStats: t.Boolean(),
+  companies: t.Boolean(),
 });
 
 // The project's settings: MCP reachability and the enabled sections. Reachability is

@@ -36,7 +36,8 @@
     "groupLabels": "Etiketler",
     "groupCustom": "Özel alanlar",
     "empty": "Boş",
-    "openInNewTab": "Yeni sekmede aç"
+    "openInNewTab": "Yeni sekmede aç",
+    "company": "Company"
   },
   "menu": {
     "preview": "Önizle",

@@ -78,4 +78,130 @@ describe('companies ownership & permissions', () => {
     expect(rep2ListAfter.status).toBe(200);
     expect(rep2ListAfter.data!.some((c) => c.id === companyId)).toBe(true);
   });
+
+  it('links companies to projects and initiatives, inherits on issues, and computes portfolio stats', async () => {
+    const owner = await signUpTestUser({ name: 'Manager' });
+    const asOwner = authedApi(owner.cookie);
+
+    const rep = await signUpTestUser({ name: 'Sales Rep' });
+    const asRep = authedApi(rep.cookie);
+
+    const tech = await signUpTestUser({ name: 'Tech Member' });
+    const asTech = authedApi(tech.cookie);
+
+    // Rep registers a company
+    const compRes = await asRep.companies.post({
+      taxId: '20987654321',
+      name: 'Hotel Valle Sagrado S.A.C.',
+      code: 'HVS',
+    });
+    expect(compRes.status).toBe(201);
+    const companyId = compRes.data!.id;
+
+    // Manager creates a dedicated project linked to the company
+    const projRes = await createProject(asOwner, {
+      key: 'HVS',
+      name: 'Ejecución Turismo Emprende - HVS',
+      companyId,
+      companiesEnabled: true,
+    });
+    expect(projRes.status).toBe(201);
+    expect(projRes.data!.companyId).toBe(companyId);
+    expect(projRes.data!.company?.code).toBe('HVS');
+    expect(projRes.data!.companiesEnabled).toBe(true);
+
+    // Add tech member and rep to the project
+    await asOwner
+      .projects({ projectKey: 'HVS' })
+      .members.post({ userId: tech.userId, role: 'member' });
+    await asOwner
+      .projects({ projectKey: 'HVS' })
+      .members.post({ userId: rep.userId, role: 'member' });
+
+    // Tech member (not owner, not manager) can now read the project-linked company,
+    // but cannot edit it.
+    const techRead = await asTech.companies({ companyId }).get();
+    expect(techRead.status).toBe(200);
+    expect(techRead.data!.id).toBe(companyId);
+
+    const techEdit = await asTech.companies({ companyId }).patch({ name: 'Unauthorized' });
+    expect(techEdit.status).toBe(403);
+
+    // Create an issue without explicit companyId -> inherits project.company
+    const board = await asOwner.projects({ projectKey: 'HVS' }).get();
+    const todoCol = board.data!.columns.find((c) => c.stateType === 'unstarted')!;
+    const doneCol = board.data!.columns.find((c) => c.stateType === 'completed')!;
+
+    const issue1 = await asOwner.projects({ projectKey: 'HVS' }).issues.post({
+      columnId: todoCol.id,
+      title: 'Hito 1 - Compras',
+    });
+    expect(issue1.status).toBe(201);
+    expect(issue1.data!.companyId).toBeNull();
+    expect(issue1.data!.company?.id).toBe(companyId);
+
+    const issue2 = await asOwner.projects({ projectKey: 'HVS' }).issues.post({
+      columnId: doneCol.id,
+      title: 'Hito 0 - Contrato',
+    });
+    expect(issue2.status).toBe(201);
+
+    // Rep sees portfolio stats in GET /companies
+    const repCompanies = await asRep.companies.get();
+    expect(repCompanies.status).toBe(200);
+    expect(repCompanies.data![0].stats).toMatchObject({
+      projectCount: 1,
+      totalIssues: 2,
+      openIssues: 1,
+      completedIssues: 1,
+    });
+
+    // GET /companies/:id/projects and /activities include the project and inherited issues
+    const compProjects = await asRep.companies({ companyId }).projects.get();
+    expect(compProjects.status).toBe(200);
+    expect(compProjects.data).toHaveLength(1);
+    expect(compProjects.data![0]).toMatchObject({
+      key: 'HVS',
+      totalIssues: 2,
+      completedIssues: 1,
+      openIssues: 1,
+    });
+
+    const compActivities = await asRep.companies({ companyId }).activities.get();
+    expect(compActivities.status).toBe(200);
+    expect(compActivities.data).toHaveLength(2);
+    expect(compActivities.data!.every((a) => a.inherited)).toBe(true);
+
+    // Multi-company project with initiative linked to company
+    await createProject(asOwner, { key: 'TE', name: 'Turismo Emprende 2026' });
+    await asOwner
+      .projects({ projectKey: 'TE' })
+      .members.post({ userId: rep.userId, role: 'member' });
+    const initRes = await asOwner.projects({ projectKey: 'TE' }).initiatives.post({
+      title: 'Postulación HVS',
+      companyId,
+    });
+    expect(initRes.status).toBe(201);
+    expect(initRes.data!.companyId).toBe(companyId);
+    expect(initRes.data!.company?.id).toBe(companyId);
+
+    const teBoard = await asOwner.projects({ projectKey: 'TE' }).get();
+    const teTodo = teBoard.data!.columns.find((c) => c.stateType === 'unstarted')!;
+    const teIssue = await asOwner.projects({ projectKey: 'TE' }).issues.post({
+      columnId: teTodo.id,
+      initiativeId: initRes.data!.id,
+      title: 'Presupuesto TE',
+    });
+    expect(teIssue.status).toBe(201);
+    expect(teIssue.data!.company?.id).toBe(companyId);
+
+    const compInits = await asRep.companies({ companyId }).initiatives.get();
+    expect(compInits.status).toBe(200);
+    expect(compInits.data!.some((i) => i.id === initRes.data!.id)).toBe(true);
+
+    // myCompanies filter on /projects
+    const myProjects = await asRep.projects.get({ query: { myCompanies: 'true' } });
+    expect(myProjects.status).toBe(200);
+    expect(myProjects.data!.map((p) => p.key)).toEqual(['HVS']);
+  });
 });

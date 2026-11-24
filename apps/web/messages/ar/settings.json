@@ -141,10 +141,13 @@
       "subtasks": "مهام بتتقسّم لمهام فرعية تحت مهمة أصل.",
       "checklists": "قوايم خطوات بتتابعها جوه المهمة.",
       "issueStats": "المدة اللي قضتها المهمة في كل حالة.",
-      "documents": "وثائق المشروع المشتركة والمنظمة كويكي."
+      "documents": "وثائق المشروع المشتركة والمنظمة كويكي.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "تم تفعيل {feature}",
-    "featureOff": "تم إيقاف {feature}"
+    "featureOff": "تم إيقاف {feature}",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "حُفظت التغييرات",

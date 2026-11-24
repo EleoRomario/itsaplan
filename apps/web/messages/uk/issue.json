@@ -36,7 +36,8 @@
     "groupLabels": "Мітки",
     "groupCustom": "Власні поля",
     "empty": "Порожньо",
-    "openInNewTab": "Відкрити в новій вкладці"
+    "openInNewTab": "Відкрити в новій вкладці",
+    "company": "Company"
   },
   "menu": {
     "preview": "Попередній перегляд",

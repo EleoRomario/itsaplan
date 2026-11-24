@@ -13,6 +13,9 @@ import {
   Sparkles,
   User,
   Users,
+  LayoutGrid,
+  Table2,
+  FolderKanban,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useShell } from '@/context/shellContext';
@@ -31,6 +34,8 @@ import {
   suggestCompanyCode,
 } from '@/utils/companyCode';
 import SectionPageView from '@/components/common/page/SectionPageView';
+import CompaniesPortfolioSummary from './components/CompaniesPortfolioSummary';
+import CompaniesTable from './components/CompaniesTable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -60,6 +65,8 @@ export default function CompaniesPage() {
   const [search, setSearch] = useState('');
   const [showBlacklistOnly, setShowBlacklistOnly] = useState(false);
   const [scopeFilter, setScopeFilter] = useState<'mine' | 'all'>('mine');
+  const [activityFilter, setActivityFilter] = useState<'all' | 'active' | 'overdue'>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -84,11 +91,20 @@ export default function CompaniesPage() {
   const membersQuery = useMembersQuery(projectKey, { kind: 'human', page: 1, pageSize: 50 });
   const members = membersQuery.data?.items ?? [];
 
-  const { data: companies = [], isLoading } = useCompaniesQuery({
+  const { data: rawCompanies = [], isLoading } = useCompaniesQuery({
     search: search.trim() || undefined,
     isBlacklisted: showBlacklistOnly ? true : undefined,
     filter: isAdmin ? scopeFilter : 'mine',
-    teamId,
+  });
+
+  const companies = rawCompanies.filter((c) => {
+    if (activityFilter === 'active') {
+      return (c.stats?.openIssues ?? 0) > 0 || (c.stats?.projectCount ?? 0) > 0;
+    }
+    if (activityFilter === 'overdue') {
+      return (c.stats?.overdueIssues ?? 0) > 0;
+    }
+    return true;
   });
 
   const createMutation = useCreateCompanyMutation();
@@ -180,15 +196,17 @@ export default function CompaniesPage() {
       }
     >
       <div className="flex flex-col gap-4">
+        {!isLoading && <CompaniesPortfolioSummary companies={rawCompanies} />}
+
         {/* Filters bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="relative max-w-sm min-w-[260px]">
-              <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
+            <div className="relative max-w-sm min-w-[240px]">
+              <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder={t('searchPlaceholder')}
-                className="pl-8 text-sm"
+                className="ps-8 text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -202,7 +220,7 @@ export default function CompaniesPage() {
                   className="h-7 text-xs font-medium"
                   onClick={() => setScopeFilter('mine')}
                 >
-                  <User className="mr-1 h-3.5 w-3.5" />
+                  <User className="me-1 h-3.5 w-3.5" />
                   {t('myCompanies')}
                 </Button>
                 <Button
@@ -211,11 +229,38 @@ export default function CompaniesPage() {
                   className="h-7 text-xs font-medium"
                   onClick={() => setScopeFilter('all')}
                 >
-                  <Users className="mr-1 h-3.5 w-3.5" />
+                  <Users className="me-1 h-3.5 w-3.5" />
                   {t('allCompanies')}
                 </Button>
               </div>
             )}
+
+            <div className="flex items-center rounded-lg border bg-muted/40 p-1">
+              <Button
+                variant={activityFilter === 'all' ? 'default' : 'ghost'}
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setActivityFilter('all')}
+              >
+                {t('portfolio.filterAll')}
+              </Button>
+              <Button
+                variant={activityFilter === 'active' ? 'default' : 'ghost'}
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setActivityFilter('active')}
+              >
+                {t('portfolio.filterActive')}
+              </Button>
+              <Button
+                variant={activityFilter === 'overdue' ? 'destructive' : 'ghost'}
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setActivityFilter('overdue')}
+              >
+                {t('portfolio.filterOverdue')}
+              </Button>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -228,6 +273,27 @@ export default function CompaniesPage() {
               <ShieldAlert className="h-3.5 w-3.5" />
               {showBlacklistOnly ? t('showingBlacklisted') : t('filterBlacklisted')}
             </Button>
+
+            <div className="flex items-center rounded-lg border bg-muted/40 p-1">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => setViewMode('grid')}
+                aria-label="Grid view"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => setViewMode('table')}
+                aria-label="Table view"
+              >
+                <Table2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -247,83 +313,117 @@ export default function CompaniesPage() {
               </Button>
             )}
           </div>
+        ) : viewMode === 'table' ? (
+          <CompaniesTable companies={companies} projectKey={projectKey} />
         ) : (
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {companies.map((c) => (
-              <Link
-                key={c.id}
-                href={companyDetailPath(projectKey, c.id)}
-                className={`group relative flex flex-col justify-between rounded-lg border p-4 transition-all hover:shadow-sm ${
-                  c.isBlacklisted
-                    ? 'border-destructive/40 bg-destructive/5 hover:border-destructive'
-                    : 'bg-card hover:border-primary/50'
-                }`}
-              >
-                <div>
-                  <div className="mb-1.5 flex items-start justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <div
-                        className={`rounded-md p-1.5 ${c.isBlacklisted ? 'bg-destructive/20 text-destructive' : 'bg-muted text-muted-foreground'}`}
-                      >
-                        <Building2 className="h-4 w-4" />
+            {companies.map((c) => {
+              const s = c.stats;
+              const total = s?.totalIssues ?? 0;
+              const completed = s?.completedIssues ?? 0;
+              const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+              return (
+                <Link
+                  key={c.id}
+                  href={companyDetailPath(projectKey, c.id)}
+                  className={`group relative flex flex-col justify-between rounded-lg border p-4 transition-all hover:shadow-sm ${
+                    c.isBlacklisted
+                      ? 'border-destructive/40 bg-destructive/5 hover:border-destructive'
+                      : 'bg-card hover:border-primary/50'
+                  }`}
+                >
+                  <div>
+                    <div className="mb-1.5 flex items-start justify-between gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <div
+                          className={`rounded-md p-1.5 ${c.isBlacklisted ? 'bg-destructive/20 text-destructive' : 'bg-muted text-muted-foreground'}`}
+                        >
+                          <Building2 className="h-4 w-4" />
+                        </div>
+                        <span className="truncate text-sm font-semibold group-hover:text-primary">
+                          {c.name}
+                        </span>
                       </div>
-                      <span className="truncate text-sm font-semibold group-hover:text-primary">
-                        {c.name}
+                      {c.isBlacklisted ? (
+                        <Badge variant="destructive" className="h-5 shrink-0 gap-1 text-[10px]">
+                          <AlertTriangle className="h-3 w-3" />
+                          Blacklist
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="h-5 shrink-0 text-[10px]">
+                          {c.status}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="mb-2 flex items-center gap-2 font-mono text-xs text-muted-foreground">
+                      {c.code && (
+                        <Badge variant="outline" className="h-5 px-1.5 font-mono text-[10px]">
+                          {c.code}
+                        </Badge>
+                      )}
+                      <span>RUC: {c.taxId}</span>
+                    </div>
+
+                    {c.tradeName && (
+                      <div className="mb-2 line-clamp-1 text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">{t('commercialName')}</span>{' '}
+                        {c.tradeName}
+                      </div>
+                    )}
+
+                    {/* Account executive badge */}
+                    <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <User className="h-3 w-3 text-muted-foreground" />
+                      <span className="font-medium text-foreground">{t('assignedExecutive')}:</span>
+                      <span className="truncate">
+                        {c.owner?.name || c.owner?.email || 'Sin asignar'}
                       </span>
                     </div>
-                    {c.isBlacklisted ? (
-                      <Badge variant="destructive" className="h-5 shrink-0 gap-1 text-[10px]">
-                        <AlertTriangle className="h-3 w-3" />
-                        Blacklist
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="h-5 shrink-0 text-[10px]">
-                        {c.status}
-                      </Badge>
+
+                    {s && (s.projectCount > 0 || total > 0) && (
+                      <div className="mb-3 space-y-1.5 rounded-md border bg-muted/30 p-2 text-[11px]">
+                        <div className="flex items-center justify-between text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <FolderKanban className="h-3 w-3" />
+                            {s.projectCount} {t('portfolio.projects')}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span>
+                              {completed}/{total} ({pct}%)
+                            </span>
+                            {s.overdueIssues > 0 && (
+                              <Badge variant="destructive" className="h-4 px-1 text-[9px]">
+                                {s.overdueIssues} {t('portfolio.overdue')}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        {total > 0 && (
+                          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+                            <div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {c.isBlacklisted && c.blacklistReason && (
+                      <div className="mb-2 rounded border border-destructive/20 bg-destructive/10 p-2 text-xs text-destructive">
+                        <strong>{t('reason')}</strong> {c.blacklistReason}
+                      </div>
                     )}
                   </div>
 
-                  <div className="mb-2 flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                    {c.code && (
-                      <Badge variant="outline" className="h-5 px-1.5 font-mono text-[10px]">
-                        {c.code}
-                      </Badge>
-                    )}
-                    <span>RUC: {c.taxId}</span>
-                  </div>
-
-                  {c.tradeName && (
-                    <div className="mb-2 line-clamp-1 text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">{t('commercialName')}</span>{' '}
-                      {c.tradeName}
-                    </div>
-                  )}
-
-                  {/* Account executive badge */}
-                  <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <User className="h-3 w-3 text-muted-foreground" />
-                    <span className="font-medium text-foreground">{t('assignedExecutive')}:</span>
-                    <span className="truncate">
-                      {c.owner?.name || c.owner?.email || 'Sin asignar'}
+                  <div className="mt-2 flex items-center justify-between border-t pt-2 text-[11px] text-muted-foreground">
+                    <span>{c.city ? `${c.city}, ${c.country}` : c.country || 'Global'}</span>
+                    <span className="flex items-center gap-1 group-hover:text-foreground">
+                      {t('viewFile')}
+                      <ChevronRight className="h-3 w-3" />
                     </span>
                   </div>
-
-                  {c.isBlacklisted && c.blacklistReason && (
-                    <div className="mb-2 rounded border border-destructive/20 bg-destructive/10 p-2 text-xs text-destructive">
-                      <strong>{t('reason')}</strong> {c.blacklistReason}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-2 flex items-center justify-between border-t pt-2 text-[11px] text-muted-foreground">
-                  <span>{c.city ? `${c.city}, ${c.country}` : c.country || 'Global'}</span>
-                  <span className="flex items-center gap-1 group-hover:text-foreground">
-                    {t('viewFile')}
-                    <ChevronRight className="h-3 w-3" />
-                  </span>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

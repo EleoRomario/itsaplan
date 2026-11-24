@@ -192,7 +192,8 @@
     "notes": "یادداشت‌ها",
     "subtasks": "زیرتسک‌ها",
     "checklists": "چک‌لیست‌ها",
-    "issueStats": "آمار تسک"
+    "issueStats": "آمار تسک",
+    "companies": "Companies"
   },
   "featureOffTitle": "{feature} غیرفعال است",
   "toggleSidebar": "تغییر نوار کناری",

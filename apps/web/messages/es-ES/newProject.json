@@ -54,5 +54,9 @@
   "copyAction": "Duplicar proyecto",
   "defaultAgents": "Agentes que se añadirán a este proyecto: {names}",
   "copyName": "Copia de {name}",
-  "team": "Equipo"
+  "team": "Equipo",
+  "useCompanies": "Usar empresas en este proyecto",
+  "useCompaniesHint": "Desactívalo para ocultar el campo de empresa en proyectos internos.",
+  "companyOptional": "Empresa vinculada (opcional)",
+  "companyOptionalHint": "Déjalo vacío para proyectos multi-empresa, o elige una empresa para un proyecto dedicado."
 }

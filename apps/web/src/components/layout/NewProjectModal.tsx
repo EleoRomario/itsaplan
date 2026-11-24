@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { ArrowLeft, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCreateProject } from '@/services/projects.service';
+import type { CompanyRef, CompanySummary } from '@/lib/api/endpoints/companies';
 import { useTeamsQuery, useTeamProjectDefaultsQuery } from '@/services/teams.service';
 import { useAiAgentsQuery } from '@/services/aiAgents.service';
 import { useTeamProjectTemplatesQuery } from '@/services/projectTemplates.service';
@@ -28,21 +29,28 @@ export default function NewProjectModal({
   onCreated,
   teamId,
   copyFrom,
+  initialCompany,
 }: {
   onClose: () => void;
   onCreated: (projectKey: string) => void;
   teamId: number;
   copyFrom?: { id: number; name: string; description: string };
+  initialCompany?: CompanyRef | null;
 }) {
   const t = useTranslations('newProject');
   const tCommon = useTranslations('common');
   const initialName = copyFrom ? t('copyName', { name: copyFrom.name }) : '';
-  const [key, setKey] = useState(() => suggestKey(initialName));
+  const [key, setKey] = useState(() =>
+    initialCompany?.code ? normalizeKey(initialCompany.code) : suggestKey(initialName),
+  );
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(copyFrom?.description ?? '');
+  const [companiesEnabled, setCompaniesEnabled] = useState(true);
+  const [companyId, setCompanyId] = useState<number | null>(initialCompany?.id ?? null);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyRef | null>(initialCompany ?? null);
   // Once the user edits the key, stop deriving it from the name. Clearing the
   // key field resumes auto-generation.
-  const [keyEdited, setKeyEdited] = useState(false);
+  const [keyEdited, setKeyEdited] = useState(Boolean(initialCompany?.code));
   // Which parts of the source project to copy. Defaults to everything; the user
   // clears what they don't want.
   const copyColumns = useCopyColumns();
@@ -83,11 +91,34 @@ export default function NewProjectModal({
     setKeyEdited(next !== '');
   }
 
+  function onCompanyChange(id: number | null, company: CompanySummary | null) {
+    setCompanyId(id);
+    setSelectedCompany(
+      company
+        ? {
+            id: company.id,
+            code: company.code,
+            taxId: company.taxId,
+            name: company.name,
+            isBlacklisted: company.isBlacklisted,
+            blacklistReason: company.blacklistReason,
+            ownerUserId: company.ownerUserId,
+          }
+        : null,
+    );
+    if (company?.code && !keyEdited) {
+      const normalized = normalizeKey(company.code);
+      if (normalized) setKey(normalized);
+    }
+  }
+
   function submit() {
     const input = {
       key: key.trim().toUpperCase(),
       name: name.trim(),
       description: description.trim(),
+      companiesEnabled,
+      companyId: companiesEnabled ? companyId : null,
       ...(copyFrom
         ? { include: includeOf(copyColumns, include) }
         : template
@@ -105,9 +136,14 @@ export default function NewProjectModal({
       name={name}
       projectKey={key}
       description={description}
+      companiesEnabled={companiesEnabled}
+      companyId={companyId}
+      initialCompany={selectedCompany}
       onNameChange={onNameChange}
       onKeyChange={onKeyChange}
       onDescriptionChange={setDescription}
+      onCompaniesEnabledChange={setCompaniesEnabled}
+      onCompanyChange={onCompanyChange}
     />
   );
   const presetPicker = <NewProjectPreset value={preset} onChange={setPreset} />;

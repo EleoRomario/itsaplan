@@ -36,7 +36,8 @@
     "groupLabels": "Label",
     "groupCustom": "Bidang kustom",
     "empty": "Kosong",
-    "openInNewTab": "Buka di tab baru"
+    "openInNewTab": "Buka di tab baru",
+    "company": "Company"
   },
   "menu": {
     "preview": "Pratinjau",

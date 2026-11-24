@@ -36,7 +36,8 @@
     "groupLabels": "라벨",
     "groupCustom": "사용자 지정 필드",
     "empty": "비어 있음",
-    "openInNewTab": "새 탭에서 열기"
+    "openInNewTab": "새 탭에서 열기",
+    "company": "Company"
   },
   "menu": {
     "preview": "미리보기",

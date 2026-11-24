@@ -8,6 +8,7 @@ import { useCreateInitiative, useUpdateInitiative } from '@/services/initiatives
 import { useProjectQuery } from '@/services/projects.service';
 import Modal, { useModalFullscreen } from './Modal';
 import AssigneeSelect from '@/components/common/fields/AssigneeSelect';
+import CompanySelect from '@/components/common/fields/CompanySelect';
 import DatePill from '@/components/common/fields/DatePill';
 import LabelsSelect from '@/components/common/fields/LabelsSelect';
 import PrioritySelect from '@/components/common/fields/PrioritySelect';
@@ -39,6 +40,7 @@ export default function InitiativeDialog({
   const [description, setDescription] = useState(initiative?.description ?? '');
   const [status, setStatus] = useState<InitiativeStatus>(initiative?.status ?? 'planned');
   const [ownerUserId, setOwnerUserId] = useState<string | null>(initiative?.ownerUserId ?? null);
+  const [companyId, setCompanyId] = useState<number | null>(initiative?.companyId ?? null);
   const [priority, setPriority] = useState(initiative?.priority ?? '');
   const [startDate, setStartDate] = useState<string | null>(initiative?.startDate ?? null);
   const [targetDate, setTargetDate] = useState<string | null>(initiative?.targetDate ?? null);
@@ -70,6 +72,7 @@ export default function InitiativeDialog({
       title: name,
       description: description.trim(),
       status,
+      companyId,
       ownerUserId,
       priority: priority || null,
       startDate,
@@ -135,6 +138,19 @@ export default function InitiativeDialog({
           )}
 
           <PrioritySelect value={priority} onChange={setPriority} />
+
+          {project?.project.companiesEnabled && (
+            <CompanySelect
+              value={companyId}
+              onChange={setCompanyId}
+              fallbackCompany={
+                companyId == null ? (initiative?.company ?? project.project.company) : null
+              }
+              inherited={
+                companyId == null && (initiative?.company ?? project.project.company) != null
+              }
+            />
+          )}
 
           <DatePill
             value={startDate}

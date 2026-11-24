@@ -248,6 +248,8 @@ export const createTeamProject = (
     description?: string;
     preset?: string;
     templateId?: number;
+    companyId?: number | null;
+    companiesEnabled?: boolean;
   },
 ) =>
   request<Project>(`/teams/${teamId}/projects`, {
@@ -262,6 +264,8 @@ export const copyTeamProject = (
     key: string;
     name: string;
     description?: string;
+    companyId?: number | null;
+    companiesEnabled?: boolean;
     // One key per part (useCopyColumns); an omitted key is not copied. The API
     // force-enables dependencies (a view needs its states/types/labels/fields).
     include?: Record<string, boolean>;

@@ -49,7 +49,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Pill } from '@/components/common/fields/Pill';
 import InitiativeSelect from '../fields/InitiativeSelect';
-import CompanySelect from '../fields/CompanySelect';
+import CompanySelect from '@/components/common/fields/CompanySelect';
 import CycleSelect from '../fields/CycleSelect';
 import { useTranslations } from 'next-intl';
 
@@ -413,7 +413,14 @@ export default function NewIssueModal({
             />
           )}
 
-          <CompanySelect value={companyId} onChange={setCompanyId} />
+          {project.project.companiesEnabled && (
+            <CompanySelect
+              value={companyId}
+              onChange={setCompanyId}
+              fallbackCompany={companyId == null ? project.project.company : null}
+              inherited={companyId == null && project.project.company != null}
+            />
+          )}
 
           {project.project.cyclesEnabled && (
             <CycleSelect projectKey={project.project.ref} value={cycle} onChange={setCycle} />

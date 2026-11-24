@@ -2,15 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   AlertTriangle,
   User,
   FileText,
+  FolderKanban,
   History,
   Mail,
   Phone,
   MapPin,
   Plus,
+  Target,
   Trash2,
   Upload,
   ArrowLeft,
@@ -23,6 +26,8 @@ import { usePermissions } from '@/hooks/usePermissions';
 import {
   useCompanyQuery,
   useCompanyActivityQuery,
+  useCompanyProjectsQuery,
+  useCompanyInitiativesQuery,
   useSetCompanyBlacklistMutation,
   useUpdateCompanyMutation,
   useAddCompanyContactMutation,
@@ -31,9 +36,12 @@ import {
   useDeleteCompanyAttachmentMutation,
 } from '@/services/companies.service';
 import { useMembersQuery } from '@/services/members.service';
-import { companiesPath } from '@/utils/paths';
+import { companiesPath, projectPath } from '@/utils/paths';
 import { COMPANY_CODE_MAX_LENGTH, normalizeCompanyCode } from '@/utils/companyCode';
 import SectionPageView from '@/components/common/page/SectionPageView';
+import NewProjectModal from '@/components/layout/NewProjectModal';
+import CompanyProjectsTab from './components/CompanyProjectsTab';
+import CompanyInitiativesTab from './components/CompanyInitiativesTab';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -57,12 +65,19 @@ import {
 
 export default function CompanyDetailPage({ companyId }: { companyId: number }) {
   const t = useTranslations('companies');
+  const router = useRouter();
   const { project } = useShell();
   const { isAdmin } = usePermissions(project);
   const projectKey = project?.project.ref ?? '';
+  const teamId = project?.project.teamId;
 
   const { data: company, isLoading } = useCompanyQuery(companyId);
   const { data: activity = [], isLoading: isLoadingActivity } = useCompanyActivityQuery(companyId);
+  const { data: companyProjects = [], isLoading: isLoadingProjects } =
+    useCompanyProjectsQuery(companyId);
+  const { data: companyInitiatives = [], isLoading: isLoadingInitiatives } =
+    useCompanyInitiativesQuery(companyId);
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
 
   const membersQuery = useMembersQuery(projectKey, { kind: 'human', page: 1, pageSize: 50 });
   const members = membersQuery.data?.items ?? [];
@@ -294,9 +309,21 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
           </div>
         </div>
 
-        {/* Tabs: Master Documents, Contacts, Cross-Project Activity */}
-        <Tabs defaultValue="attachments" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+        {/* Tabs: Projects, Initiatives, Master Documents, Contacts, Cross-Project Activity */}
+        <Tabs defaultValue="projects" className="w-full">
+          <TabsList className="flex w-full flex-wrap justify-start gap-1">
+            <TabsTrigger value="projects" className="gap-1.5 text-xs">
+              <FolderKanban className="h-3.5 w-3.5" />
+              {t('tabs.projects')} ({companyProjects.length})
+            </TabsTrigger>
+            <TabsTrigger value="initiatives" className="gap-1.5 text-xs">
+              <Target className="h-3.5 w-3.5" />
+              {t('tabs.initiatives')} ({companyInitiatives.length})
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="gap-1.5 text-xs">
+              <History className="h-3.5 w-3.5" />
+              {t('tabs.activity')} ({activity.length})
+            </TabsTrigger>
             <TabsTrigger value="attachments" className="gap-1.5 text-xs">
               <FileText className="h-3.5 w-3.5" />
               {t('tabs.documents')} ({company.attachments?.length ?? 0})
@@ -305,11 +332,24 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
               <User className="h-3.5 w-3.5" />
               {t('tabs.contacts')} ({company.contacts?.length ?? 0})
             </TabsTrigger>
-            <TabsTrigger value="activity" className="gap-1.5 text-xs">
-              <History className="h-3.5 w-3.5" />
-              {t('tabs.activity')} ({activity.length})
-            </TabsTrigger>
           </TabsList>
+
+          {/* TAB: PROJECTS */}
+          <TabsContent value="projects" className="pt-4">
+            <CompanyProjectsTab
+              projects={companyProjects}
+              isLoading={isLoadingProjects}
+              onCreateProject={teamId ? () => setNewProjectOpen(true) : undefined}
+            />
+          </TabsContent>
+
+          {/* TAB: INITIATIVES */}
+          <TabsContent value="initiatives" className="pt-4">
+            <CompanyInitiativesTab
+              initiatives={companyInitiatives}
+              isLoading={isLoadingInitiatives}
+            />
+          </TabsContent>
 
           {/* TAB: ATTACHMENTS */}
           <TabsContent value="attachments" className="space-y-4 pt-4">
@@ -784,6 +824,25 @@ export default function CompanyDetailPage({ companyId }: { companyId: number }) 
           </form>
         </DialogContent>
       </Dialog>
+      {newProjectOpen && teamId && (
+        <NewProjectModal
+          teamId={teamId}
+          initialCompany={{
+            id: company.id,
+            code: company.code,
+            taxId: company.taxId,
+            name: company.name,
+            isBlacklisted: company.isBlacklisted,
+            blacklistReason: company.blacklistReason,
+            ownerUserId: company.ownerUserId,
+          }}
+          onClose={() => setNewProjectOpen(false)}
+          onCreated={(ref) => {
+            setNewProjectOpen(false);
+            router.push(projectPath(ref));
+          }}
+        />
+      )}
     </SectionPageView>
   );
 }

@@ -1,6 +1,9 @@
+'use client';
+
 import { useState, type ReactNode } from 'react';
 import { Building2, Check, AlertTriangle, CircleDashed, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { CompanyRef, CompanySummary } from '@/lib/api/endpoints/companies';
 import { useCompaniesQuery } from '@/services/companies.service';
 import {
   Command,
@@ -18,11 +21,17 @@ import { Badge } from '@/components/ui/badge';
 export default function CompanySelect({
   value,
   onChange,
+  onSelectCompany,
+  fallbackCompany,
+  inherited,
   trigger,
   readOnly,
 }: {
   value: number | null;
   onChange: (id: number | null) => void;
+  onSelectCompany?: (company: CompanySummary | null) => void;
+  fallbackCompany?: CompanyRef | null;
+  inherited?: boolean;
   trigger?: ReactNode;
   readOnly?: boolean;
 }) {
@@ -34,18 +43,23 @@ export default function CompanySelect({
     search: query.trim() || undefined,
   });
 
-  const current = companies.find((c) => c.id === value) ?? null;
+  const fromList = companies.find((c) => c.id === value) ?? null;
+  const current =
+    fromList ??
+    (fallbackCompany && (value == null || fallbackCompany.id === value) ? fallbackCompany : null);
 
-  const select = (id: number | null) => {
-    onChange(id);
+  const select = (company: CompanySummary | null) => {
+    onChange(company?.id ?? null);
+    onSelectCompany?.(company);
     setOpen(false);
   };
 
+  const inheritedSuffix = inherited ? ` (${t('inherited')})` : '';
   const displayText = current
-    ? `${current.code ? `${current.code} · ` : ''}${current.name} (${current.taxId})`
+    ? `${current.code ? `${current.code} · ` : ''}${current.name}${inheritedSuffix}`
     : t('label');
   const fullTooltipText = current
-    ? `${current.code ? `[${current.code}] ` : ''}${current.name} — RUC: ${current.taxId}${current.isBlacklisted ? ` [${t('blacklist')}: ${current.blacklistReason || 'Sancionada'}]` : ''}`
+    ? `${current.code ? `[${current.code}] ` : ''}${current.name} — RUC: ${current.taxId}${inheritedSuffix}${current.isBlacklisted ? ` [${t('blacklist')}: ${current.blacklistReason || 'Sancionada'}]` : ''}`
     : null;
 
   if (readOnly) {
@@ -59,6 +73,11 @@ export default function CompanySelect({
         )}
         <span className="truncate font-medium">{current.name}</span>
         <span className="shrink-0 font-mono text-muted-foreground">({current.taxId})</span>
+        {inherited && (
+          <Badge variant="outline" className="h-4 shrink-0 px-1 text-[10px]">
+            {t('inherited')}
+          </Badge>
+        )}
         {current.isBlacklisted && (
           <Badge variant="destructive" className="h-4 shrink-0 gap-0.5 px-1 text-[10px]">
             <AlertTriangle className="size-2.5" />
@@ -84,25 +103,26 @@ export default function CompanySelect({
     return readOnlyContent;
   }
 
+  let triggerIcon: ReactNode;
+  if (current == null) {
+    triggerIcon = <CircleDashed className="size-3.5 shrink-0" />;
+  } else if (current.isBlacklisted) {
+    triggerIcon = <AlertTriangle className="size-3.5 shrink-0 text-destructive" />;
+  } else {
+    triggerIcon = <Building2 className="size-3.5 shrink-0" />;
+  }
+
   const triggerPill = trigger ?? (
     <Pill
-      active={value != null}
+      active={current != null}
       className={
         current?.isBlacklisted
           ? 'border-destructive/50 bg-destructive/10 text-destructive'
           : undefined
       }
     >
-      {value != null ? (
-        current?.isBlacklisted ? (
-          <AlertTriangle className="size-3.5 shrink-0 text-destructive" />
-        ) : (
-          <Building2 className="size-3.5 shrink-0" />
-        )
-      ) : (
-        <CircleDashed className="size-3.5 shrink-0" />
-      )}
-      <span className="max-w-[160px] truncate">{displayText}</span>
+      {triggerIcon}
+      <span className="max-w-[180px] truncate">{displayText}</span>
     </Pill>
   );
 
@@ -148,10 +168,10 @@ export default function CompanySelect({
                 <CommandItem
                   key={c.id}
                   value={String(c.id)}
-                  onSelect={() => select(c.id)}
+                  onSelect={() => select(c)}
                   className="flex items-center justify-between"
                 >
-                  <div className="flex min-w-0 flex-col pr-2">
+                  <div className="flex min-w-0 flex-col pe-2">
                     <div className="flex items-center gap-1.5">
                       <span className="truncate text-xs font-medium">{c.name}</span>
                       {c.isBlacklisted && (

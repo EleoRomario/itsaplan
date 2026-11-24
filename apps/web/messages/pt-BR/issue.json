@@ -36,7 +36,8 @@
     "groupLabels": "Etiquetas",
     "groupCustom": "Campos personalizados",
     "empty": "Vazio",
-    "openInNewTab": "Abrir em nova aba"
+    "openInNewTab": "Abrir em nova aba",
+    "company": "Company"
   },
   "menu": {
     "preview": "Visualizar",

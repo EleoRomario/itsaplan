@@ -62,6 +62,8 @@ export const projectRoutes = new Elysia({ name: 'projects', detail: { tags: ['Pr
         q: query.q,
         sort: query.sort,
         teamId: query.teamId,
+        companyId: query.companyId,
+        myCompanies: query.myCompanies === 'true',
       }),
     {
       query: listProjectsQuery,
@@ -86,6 +88,8 @@ export const projectRoutes = new Elysia({ name: 'projects', detail: { tags: ['Pr
             q: query.q,
             sort: query.sort,
             teamId: query.teamId,
+            companyId: query.companyId,
+            myCompanies: query.myCompanies === 'true',
             workspaceId: query.workspaceId,
             ids: query.ids?.split(',').map(Number),
             favorite: query.favorite === undefined ? undefined : query.favorite === 'true',
@@ -201,8 +205,8 @@ export const projectRoutes = new Elysia({ name: 'projects', detail: { tags: ['Pr
   // pattern (see updateProject). Owner-only.
   .patch(
     '/projects/:projectKey',
-    async ({ project, body }) => {
-      const updated = await updateProject(project.id, body);
+    async ({ project, body, user }) => {
+      const updated = await updateProject(project.id, body, requireUser(user).id);
       if (!updated) throw new HttpError(404, 'Project not found');
       return updated;
     },

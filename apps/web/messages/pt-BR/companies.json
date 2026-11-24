@@ -21,7 +21,9 @@
   "tabs": {
     "documents": "Master Documents",
     "contacts": "Contacts",
-    "activity": "Project History"
+    "activity": "Project History",
+    "projects": "Projects",
+    "initiatives": "Initiatives"
   },
   "documents": {
     "description": "Reusable documents: Ficha RUC, Vigencia de Poder, Certificate of Incorporation, etc.",
@@ -82,7 +84,8 @@
     "notFound": "No company found.",
     "clear": "Clear company",
     "blacklist": "Blacklist",
-    "label": "Empresa"
+    "label": "Empresa",
+    "inherited": "inherited"
   },
   "myCompanies": "My Companies",
   "allCompanies": "All Companies",
@@ -93,5 +96,27 @@
   "reassignTitle": "Reassign Company Executive",
   "code": "Code",
   "editCode": "Edit",
-  "editCodeTitle": "Edit Company Code"
+  "editCodeTitle": "Edit Company Code",
+  "portfolio": {
+    "companies": "Companies",
+    "projects": "Projects",
+    "progress": "Progress",
+    "open": "open",
+    "overdue": "Overdue",
+    "filterAll": "All",
+    "filterActive": "Active",
+    "filterOverdue": "Overdue"
+  },
+  "table": {
+    "company": "Company",
+    "lastActivity": "Last activity"
+  },
+  "projects": {
+    "description": "Projects linked directly to this company.",
+    "create": "New project",
+    "empty": "No projects linked to this company yet."
+  },
+  "initiatives": {
+    "empty": "No initiatives linked to this company yet."
+  }
 }

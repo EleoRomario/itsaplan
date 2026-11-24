@@ -170,6 +170,9 @@ export const project = pgTable(
     teamId: integer('team_id')
       .notNull()
       .references(() => team.id, { onDelete: 'cascade' }),
+    companyId: integer('company_id').references((): AnyPgColumn => company.id, {
+      onDelete: 'set null',
+    }),
     key: text('key').notNull(),
     name: text('name').notNull(),
     description: text('description').notNull().default(''),
@@ -189,6 +192,7 @@ export const project = pgTable(
     subtasksEnabled: boolean('subtasks_enabled').notNull().default(true),
     checklistsEnabled: boolean('checklists_enabled').notNull().default(true),
     issueStatsEnabled: boolean('issue_stats_enabled').notNull().default(true),
+    companiesEnabled: boolean('companies_enabled').notNull().default(true),
     // Which kinds of estimate the issues of this project carry, set in Settings ->
     // Configuration. Both off by default; turning one off hides its UI and keeps the
     // values, which show again when it is turned back on.
@@ -203,7 +207,12 @@ export const project = pgTable(
     archivedAt: timestamp('archived_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [unique('project_team_key_uq').on(t.teamId, t.key)],
+  (t) => [
+    unique('project_team_key_uq').on(t.teamId, t.key),
+    index('project_company_idx')
+      .on(t.companyId)
+      .where(sql`${t.companyId} IS NOT NULL`),
+  ],
 );
 
 // A project template of a workspace: a snapshot of a project's configuration, without
@@ -1471,6 +1480,9 @@ export const initiative = pgTable(
     projectId: integer('project_id')
       .notNull()
       .references(() => project.id, { onDelete: 'cascade' }),
+    companyId: integer('company_id').references((): AnyPgColumn => company.id, {
+      onDelete: 'set null',
+    }),
     title: text('title').notNull(),
     description: text('description').notNull().default(''),
     status: text('status').notNull().default('planned'),
@@ -1490,6 +1502,9 @@ export const initiative = pgTable(
       sql`${t.status} IN ('proposed', 'planned', 'active', 'completed', 'canceled')`,
     ),
     index('initiative_project_idx').on(t.projectId, t.position),
+    index('initiative_company_idx')
+      .on(t.companyId)
+      .where(sql`${t.companyId} IS NOT NULL`),
   ],
 );
 

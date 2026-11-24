@@ -119,7 +119,10 @@ export function templateContents(snapshot: ProjectSnapshot): ProjectTemplateCont
   const { flags, sections, ...parts } = snapshot;
   return {
     ...parts,
-    features: projectFeatures(flags),
+    features: projectFeatures({
+      ...flags,
+      companiesEnabled: flags.companiesEnabled ?? true,
+    }),
     estimates: {
       points: flags.pointsEstimateEnabled,
       time: flags.timeEstimateEnabled,
@@ -279,7 +282,13 @@ export async function deleteProjectTemplate(
 export async function createProjectFromTemplate(
   teamId: number,
   templateId: number,
-  input: { key: string; name: string; description?: string },
+  input: {
+    key: string;
+    name: string;
+    description?: string;
+    companyId?: number | null;
+    companiesEnabled?: boolean;
+  },
   userId: string,
 ): Promise<ProjectRow> {
   const row = await requireTemplate(await teamTemplatesWhere(teamId), templateId);

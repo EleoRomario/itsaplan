@@ -2,6 +2,7 @@ import {
   db,
   aiAgent,
   chatAttachment,
+  company,
   documentAsset,
   initiative,
   initiativeAttachment,
@@ -47,6 +48,7 @@ import { getProjectDefaults } from '#modules/settings/service';
 import { getDefaultRoleId } from '#modules/roles/service';
 import { dropUnusedTeamMembership } from '#modules/scim/reconcile';
 import { projectRef, teamRef } from '#modules/teams/ref';
+import { assertCompanyAssignable } from '#modules/companies/service';
 import { deleteObjects } from '@repo/storage';
 import { lockAttachmentStorage } from '#modules/attachments/storage';
 
@@ -54,6 +56,16 @@ import { lockAttachmentStorage } from '#modules/attachments/storage';
 // issue types, labels, assignees, custom fields, issues, saved views, and
 // actions. Access is by membership (project_member): the creator becomes an
 // "owner" and only members can reach a project's entities.
+
+export interface CompanyRef {
+  id: number;
+  code: string | null;
+  taxId: string;
+  name: string;
+  isBlacklisted: boolean;
+  blacklistReason: string | null;
+  ownerUserId: string | null;
+}
 
 export interface ProjectRow {
   id: number;
@@ -66,6 +78,8 @@ export interface ProjectRow {
   ref: string;
   name: string;
   description: string;
+  companyId: number | null;
+  company: CompanyRef | null;
   mcpEnabled: boolean;
   // The team's own MCP switch, carried here because every MCP gate is a project
   // gate: a project is reachable only while both flags are on.
@@ -78,6 +92,7 @@ export interface ProjectRow {
   subtasksEnabled: boolean;
   checklistsEnabled: boolean;
   issueStatsEnabled: boolean;
+  companiesEnabled: boolean;
   pointsEstimateEnabled: boolean;
   timeEstimateEnabled: boolean;
   timeLoggingEnabled: boolean;
@@ -100,6 +115,7 @@ export interface ProjectFeatures {
   subtasks: boolean;
   checklists: boolean;
   issueStats: boolean;
+  companies: boolean;
 }
 
 // A project in the caller's list, carrying the caller's own role in it. The list
@@ -121,6 +137,12 @@ type ProjectWithTeam = typeof project.$inferSelect & {
   teamSlug: string | null;
   teamMcpEnabled: boolean;
   workspaceId: number;
+  companyCode?: string | null;
+  companyTaxId?: string | null;
+  companyName?: string | null;
+  companyIsBlacklisted?: boolean | null;
+  companyBlacklistReason?: string | null;
+  companyOwnerUserId?: string | null;
 };
 
 const projectWithTeam = {
@@ -129,6 +151,12 @@ const projectWithTeam = {
   teamSlug: team.slug,
   teamMcpEnabled: team.mcpEnabled,
   workspaceId: team.workspaceId,
+  companyCode: company.code,
+  companyTaxId: company.taxId,
+  companyName: company.name,
+  companyIsBlacklisted: company.isBlacklisted,
+  companyBlacklistReason: company.blacklistReason,
+  companyOwnerUserId: company.ownerUserId,
 };
 
 // A blocked section reads as off whatever the project has stored, so masking here is
@@ -138,6 +166,18 @@ export async function mapProject(row: ProjectWithTeam): Promise<ProjectRow> {
   const { blockedFeatures } = await getLimits(row.workspaceId);
   const on = (feature: ProjectFeature, stored: boolean) =>
     stored && !blockedFeatures.includes(feature);
+  const companyRef: CompanyRef | null =
+    row.companyId != null && row.companyTaxId && row.companyName
+      ? {
+          id: row.companyId,
+          code: row.companyCode ?? null,
+          taxId: row.companyTaxId,
+          name: row.companyName,
+          isBlacklisted: row.companyIsBlacklisted ?? false,
+          blacklistReason: row.companyBlacklistReason ?? null,
+          ownerUserId: row.companyOwnerUserId ?? null,
+        }
+      : null;
   return {
     id: row.id,
     teamId: row.teamId,
@@ -147,6 +187,8 @@ export async function mapProject(row: ProjectWithTeam): Promise<ProjectRow> {
     ref: projectRef({ id: row.teamId, slug: row.teamSlug }, row.key),
     name: row.name,
     description: row.description,
+    companyId: row.companyId,
+    company: companyRef,
     mcpEnabled: row.mcpEnabled,
     teamMcpEnabled: row.teamMcpEnabled,
     initiativesEnabled: on('initiatives', row.initiativesEnabled),
@@ -157,6 +199,7 @@ export async function mapProject(row: ProjectWithTeam): Promise<ProjectRow> {
     subtasksEnabled: on('subtasks', row.subtasksEnabled),
     checklistsEnabled: on('checklists', row.checklistsEnabled),
     issueStatsEnabled: on('issueStats', row.issueStatsEnabled),
+    companiesEnabled: on('companies', row.companiesEnabled),
     pointsEstimateEnabled: row.pointsEstimateEnabled,
     timeEstimateEnabled: row.timeEstimateEnabled,
     timeLoggingEnabled: row.timeLoggingEnabled,
@@ -172,6 +215,8 @@ interface ProjectListOptions {
   q?: string;
   sort?: 'key' | 'name' | 'created' | 'activity';
   teamId?: number;
+  companyId?: number;
+  myCompanies?: boolean;
   workspaceId?: number;
   ids?: number[];
   favorite?: boolean;
@@ -224,6 +269,13 @@ async function readProjects(
     isNull(project.archivedAt),
     opts.mcpOnly ? and(eq(project.mcpEnabled, true), eq(team.mcpEnabled, true)) : undefined,
     opts.teamId !== undefined ? eq(project.teamId, opts.teamId) : undefined,
+    opts.companyId !== undefined ? eq(project.companyId, opts.companyId) : undefined,
+    opts.myCompanies
+      ? or(
+          eq(company.ownerUserId, userId),
+          and(isNull(company.ownerUserId), eq(company.createdByUserId, userId)),
+        )
+      : undefined,
     opts.workspaceId !== undefined ? eq(team.workspaceId, opts.workspaceId) : undefined,
     opts.ids ? inArray(project.id, opts.ids) : undefined,
     preference(projectMember.isFavorite, opts.favorite),
@@ -248,6 +300,7 @@ async function readProjects(
     .innerJoin(issue, eq(issue.id, issueActivity.issueId))
     .innerJoin(project, eq(project.id, issue.projectId))
     .innerJoin(team, eq(team.id, project.teamId))
+    .leftJoin(company, eq(company.id, project.companyId))
     .leftJoin(projectMember, callerMember)
     .leftJoin(teamRole, eq(teamRole.id, projectMember.roleId))
     .where(
@@ -284,6 +337,7 @@ async function readProjects(
     })
     .from(project)
     .innerJoin(team, eq(team.id, project.teamId))
+    .leftJoin(company, eq(company.id, project.companyId))
     .leftJoin(projectMember, callerMember)
     .leftJoin(teamRole, eq(teamRole.id, projectMember.roleId))
     .leftJoin(latestActivity, eq(latestActivity.projectId, project.id))
@@ -297,6 +351,7 @@ async function readProjects(
           .select({ count: sql<number>`count(*)::int` })
           .from(project)
           .innerJoin(team, eq(team.id, project.teamId))
+          .leftJoin(company, eq(company.id, project.companyId))
           .leftJoin(projectMember, callerMember)
           .where(where)
       : undefined,
@@ -340,6 +395,7 @@ export async function getProjectByRef(ref: string, userId: string): Promise<Proj
       .select(projectWithTeam)
       .from(project)
       .innerJoin(team, eq(team.id, project.teamId))
+      .leftJoin(company, eq(company.id, project.companyId))
       .where(and(byTeam, eq(project.key, ref.slice(dot + 1))));
     return row ? mapProject(row) : null;
   }
@@ -348,6 +404,7 @@ export async function getProjectByRef(ref: string, userId: string): Promise<Proj
     .select(projectWithTeam)
     .from(project)
     .innerJoin(team, eq(team.id, project.teamId))
+    .leftJoin(company, eq(company.id, project.companyId))
     .where(eq(project.key, ref));
   if (rows.length <= 1) return rows[0] ? mapProject(rows[0]) : null;
 
@@ -384,6 +441,7 @@ export async function getProjectById(id: number): Promise<ProjectRow | null> {
     .select(projectWithTeam)
     .from(project)
     .innerJoin(team, eq(team.id, project.teamId))
+    .leftJoin(company, eq(company.id, project.companyId))
     .where(eq(project.id, id));
   return rows[0] ? mapProject(rows[0]) : null;
 }
@@ -540,20 +598,25 @@ export async function createProject(
     name: string;
     description?: string;
     preset?: string;
+    companyId?: number | null;
+    companiesEnabled?: boolean;
   },
   ownerId: string,
   teamId: number,
 ): Promise<ProjectRow> {
   const ownerTeam = await targetTeam(ownerId, teamId);
+  await assertCompanyAssignable(input.companyId, ownerId);
   // What a new project starts with, set instance-wide in god mode. Read before the
   // transaction opens so the settings lookup is not part of it.
   const defaults = await getProjectDefaults();
   const agentMembers = await defaultAgentMembers(ownerTeam);
-  return db.transaction(async (tx) => {
+  const createdId = await db.transaction(async (tx) => {
     const [row] = await tx
       .insert(project)
       .values({
         teamId: ownerTeam.id,
+        companyId: input.companyId ?? null,
+        companiesEnabled: input.companiesEnabled ?? true,
         key: input.key,
         name: input.name,
         description: input.description ?? '',
@@ -589,21 +652,17 @@ export async function createProject(
     await tx
       .insert(projectSetting)
       .values({ projectId: row.id, key: AUTO_ARCHIVE_KEY, value: DEFAULT_AUTO_ARCHIVE });
-    return mapProject({
-      ...row,
-      teamName: ownerTeam.name,
-      teamSlug: ownerTeam.slug,
-      teamMcpEnabled: ownerTeam.mcpEnabled,
-      workspaceId: ownerTeam.workspaceId,
-    });
+    return row.id;
   });
+  return (await getProjectById(createdId))!;
 }
 
 // A key stored before PROJECT_KEY_PATTERN existed (e.g. "7XTR") cannot form an issue
 // identifier, so it may be replaced once. A valid key does not change.
 export async function updateProject(
   projectId: number,
-  patch: { key?: string; name?: string; description?: string },
+  patch: { key?: string; name?: string; description?: string; companyId?: number | null },
+  actorUserId?: string,
 ): Promise<ProjectRow | null> {
   const values: Partial<typeof project.$inferInsert> = {};
   if (patch.key !== undefined) {
@@ -618,6 +677,18 @@ export async function updateProject(
   }
   if (patch.name !== undefined) values.name = patch.name;
   if (patch.description !== undefined) values.description = patch.description;
+  if (patch.companyId !== undefined) {
+    if (actorUserId) {
+      await assertCompanyAssignable(patch.companyId, actorUserId);
+    } else if (patch.companyId != null) {
+      const [row] = await db
+        .select({ id: company.id })
+        .from(company)
+        .where(eq(company.id, patch.companyId));
+      if (!row) throw new HttpError(400, 'Company not found');
+    }
+    values.companyId = patch.companyId;
+  }
   if (Object.keys(values).length === 0) return getProjectById(projectId);
   await db.update(project).set(values).where(eq(project.id, projectId));
   return getProjectById(projectId);
@@ -647,6 +718,7 @@ export function projectFeatures(
     subtasks: row.subtasksEnabled,
     checklists: row.checklistsEnabled,
     issueStats: row.issueStatsEnabled,
+    companies: row.companiesEnabled,
   };
 }
 
@@ -670,6 +742,7 @@ export async function setProjectFeatures(
   if (patch.subtasks !== undefined) values.subtasksEnabled = patch.subtasks;
   if (patch.checklists !== undefined) values.checklistsEnabled = patch.checklists;
   if (patch.issueStats !== undefined) values.issueStatsEnabled = patch.issueStats;
+  if (patch.companies !== undefined) values.companiesEnabled = patch.companies;
   if (Object.keys(values).length === 0) return getProjectById(projectId);
   await db.update(project).set(values).where(eq(project.id, projectId));
   return getProjectById(projectId);

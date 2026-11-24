@@ -111,6 +111,7 @@ export const initiativeRoutes = new Elysia({
         listInitiatives(project.id, {
           statuses,
           search: query.search,
+          companyId: query.companyId,
           sort: query.sort,
           dir: query.dir,
           ...window,

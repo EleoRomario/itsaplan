@@ -141,10 +141,13 @@
       "subtasks": "Issues detalhadas em subtarefas sob um pai.",
       "checklists": "Listas de passos acompanhados dentro de uma issue.",
       "issueStats": "Quanto tempo uma issue passou em cada estado.",
-      "documents": "Documentação compartilhada do projeto organizada em páginas."
+      "documents": "Documentação compartilhada do projeto organizada em páginas.",
+      "companies": "Link companies to this project, its initiatives, and its issues."
     },
     "featureOn": "{feature} ativado",
-    "featureOff": "{feature} desativado"
+    "featureOff": "{feature} desativado",
+    "company": "Company",
+    "companyHint": "Optional. Leave empty for multi-company projects; set one so all issues inherit it."
   },
   "configuration": {
     "saved": "Alterações salvas",

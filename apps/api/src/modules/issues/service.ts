@@ -116,10 +116,12 @@ export interface IssueRow {
   // The global company linked to this issue, or null.
   company: {
     id: number;
+    code: string | null;
     taxId: string;
     name: string;
     isBlacklisted: boolean;
     blacklistReason: string | null;
+    ownerUserId: string | null;
   } | null;
   companyId: number | null;
   // The cycle this issue is planned into, expanded to id + name for rendering and
@@ -752,6 +754,9 @@ export async function restoreIssue(
 // Rendering those names on a board card needs no separate scaffold lookup this way.
 async function attachGroupings(issues: IssueRow[], ids: number[] | SQLWrapper): Promise<void> {
   if (issues.length === 0) return;
+  const effectiveCompanyId = sql<
+    number | null
+  >`COALESCE(${issue.companyId}, ${initiative.companyId}, ${projectTable.companyId})`;
   const rows = await db
     .select({
       issueId: issue.id,
@@ -764,19 +769,28 @@ async function attachGroupings(issues: IssueRow[], ids: number[] | SQLWrapper): 
       cycleEnd: cycle.endDate,
       cycleCompletedAt: cycle.completedAt,
       companyId: company.id,
+      companyCode: company.code,
       companyTaxId: company.taxId,
       companyName: company.name,
       companyIsBlacklisted: company.isBlacklisted,
       companyBlacklistReason: company.blacklistReason,
+      companyOwnerUserId: company.ownerUserId,
     })
     .from(issue)
+    .innerJoin(projectTable, eq(projectTable.id, issue.projectId))
     .leftJoin(initiative, eq(initiative.id, issue.initiativeId))
     .leftJoin(cycle, eq(cycle.id, issue.cycleId))
-    .leftJoin(company, eq(company.id, issue.companyId))
+    .leftJoin(company, eq(company.id, effectiveCompanyId))
     .where(
       and(
         inArray(issue.id, ids),
-        or(isNotNull(issue.initiativeId), isNotNull(issue.cycleId), isNotNull(issue.companyId)),
+        or(
+          isNotNull(issue.initiativeId),
+          isNotNull(issue.cycleId),
+          isNotNull(issue.companyId),
+          isNotNull(initiative.companyId),
+          isNotNull(projectTable.companyId),
+        ),
       ),
     );
   const byIssue = new Map(rows.map((r) => [r.issueId, r]));
@@ -798,10 +812,12 @@ async function attachGroupings(issues: IssueRow[], ids: number[] | SQLWrapper): 
       r && r.companyId != null
         ? {
             id: r.companyId,
+            code: r.companyCode ?? null,
             taxId: r.companyTaxId!,
             name: r.companyName!,
             isBlacklisted: r.companyIsBlacklisted ?? false,
             blacklistReason: r.companyBlacklistReason ?? null,
+            ownerUserId: r.companyOwnerUserId ?? null,
           }
         : null;
   }

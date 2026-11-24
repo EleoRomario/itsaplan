@@ -12,6 +12,8 @@ import {
   CompanyAttachmentResponse,
   CompanyContactResponse,
   CompanyDetailResponse,
+  CompanyInitiativeItemResponse,
+  CompanyProjectItemResponse,
   CompanySummaryResponse,
   SunatRucResponse,
   createCompanyBody,
@@ -32,6 +34,8 @@ import {
   getCompanyActivities,
   getCompanyById,
   getCompanyByTaxId,
+  getCompanyInitiatives,
+  getCompanyProjects,
   isCompanyManager,
   listCompanies,
   lookupSunatRuc,
@@ -55,6 +59,7 @@ export const companyRoutes = new Elysia({
         isBlacklisted: query.isBlacklisted,
         filter: query.filter,
         teamId: query.teamId,
+        ownerUserId: query.ownerUserId,
         userId: user.id,
         isManager,
       });
@@ -204,6 +209,34 @@ export const companyRoutes = new Elysia({
       detail: {
         summary: 'Get all project issues/tasks linked to this company across the platform',
       },
+    },
+  )
+
+  .get(
+    '/companies/:companyId/projects',
+    async ({ params, user }) => {
+      if (!user) throw new HttpError(401, 'Authentication required');
+      const isManager = await isCompanyManager(user.id);
+      return await getCompanyProjects(params.companyId, user.id, isManager);
+    },
+    {
+      params: companyParams,
+      response: { 200: t.Array(CompanyProjectItemResponse), ...commonErrors },
+      detail: { summary: 'Get projects linked to this company' },
+    },
+  )
+
+  .get(
+    '/companies/:companyId/initiatives',
+    async ({ params, user }) => {
+      if (!user) throw new HttpError(401, 'Authentication required');
+      const isManager = await isCompanyManager(user.id);
+      return await getCompanyInitiatives(params.companyId, user.id, isManager);
+    },
+    {
+      params: companyParams,
+      response: { 200: t.Array(CompanyInitiativeItemResponse), ...commonErrors },
+      detail: { summary: 'Get initiatives linked to this company' },
     },
   )
 

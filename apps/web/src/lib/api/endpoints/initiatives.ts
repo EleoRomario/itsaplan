@@ -1,6 +1,7 @@
 import { request } from '@/lib/api/core/client';
 import type { ActivityPayload, FeedCursor } from '@/lib/api/endpoints/activity';
 import { pageQuery, type Page, type PageParams } from '@/lib/api/core/paging';
+import type { CompanyRef } from '@/lib/api/endpoints/companies';
 
 export type InitiativeStatus = 'proposed' | 'planned' | 'active' | 'completed' | 'canceled';
 
@@ -15,6 +16,8 @@ export interface InitiativeProgress {
 export interface Initiative {
   id: number;
   projectId: number;
+  companyId: number | null;
+  company: CompanyRef | null;
   title: string;
   description: string;
   status: InitiativeStatus;
@@ -64,6 +67,7 @@ export interface NewInitiativeInput {
   title: string;
   description?: string;
   status?: InitiativeStatus;
+  companyId?: number | null;
   ownerUserId?: string | null;
   priority?: string | null;
   startDate?: string | null;
@@ -75,6 +79,7 @@ export interface InitiativePatch {
   title?: string;
   description?: string;
   status?: InitiativeStatus;
+  companyId?: number | null;
   ownerUserId?: string | null;
   priority?: string | null;
   startDate?: string | null;

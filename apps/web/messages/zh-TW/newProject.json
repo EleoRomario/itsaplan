@@ -54,5 +54,9 @@
   "copyAction": "複製專案",
   "defaultAgents": "將加入此專案的代理：{names}",
   "copyName": "{name} 副本",
-  "team": "Team"
+  "team": "Team",
+  "useCompanies": "Use companies in this project",
+  "useCompaniesHint": "Hide company fields when this project is internal.",
+  "companyOptional": "Linked company (optional)",
+  "companyOptionalHint": "Leave empty for multi-company projects, or choose one for a dedicated client project."
 }

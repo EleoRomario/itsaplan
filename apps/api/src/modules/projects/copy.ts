@@ -1,5 +1,6 @@
 import {
   db,
+  company,
   project,
   projectMember,
   projectColumn,
@@ -30,6 +31,7 @@ import {
   type ProjectRow,
   type TargetTeam,
 } from './service';
+import { assertCompanyAssignable } from '#modules/companies/service';
 import { GIT_SETTING_KEY } from '#modules/git/service';
 import { getProjectDefaults } from '#modules/settings/service';
 import { listAgents, updateAgent } from '#modules/agents/core/service';
@@ -195,6 +197,7 @@ const PROJECT_FLAGS = {
   subtasksEnabled: project.subtasksEnabled,
   checklistsEnabled: project.checklistsEnabled,
   issueStatsEnabled: project.issueStatsEnabled,
+  companiesEnabled: project.companiesEnabled,
   pointsEstimateEnabled: project.pointsEstimateEnabled,
   timeEstimateEnabled: project.timeEstimateEnabled,
   timeLoggingEnabled: project.timeLoggingEnabled,
@@ -212,7 +215,9 @@ type Row<T extends { $inferSelect: object }, K extends keyof T['$inferSelect']> 
 // a view's filters, an action's effect). applyProjectSnapshot maps the ids to the new rows.
 // A part the selection left out is empty.
 export interface ProjectSnapshot {
-  flags: { [K in keyof typeof PROJECT_FLAGS]: boolean };
+  flags: Omit<{ [K in keyof typeof PROJECT_FLAGS]: boolean }, 'companiesEnabled'> & {
+    companiesEnabled?: boolean;
+  };
   columns: Row<
     typeof projectColumn,
     'id' | 'name' | 'stateType' | 'color' | 'position' | 'wipLimit' | 'wipMode'
@@ -583,7 +588,13 @@ export async function insertSnapshotProject(
   snapshot: ProjectSnapshot,
   options: {
     team: TargetTeam;
-    input: { key: string; name: string; description?: string };
+    input: {
+      key: string;
+      name: string;
+      description?: string;
+      companyId?: number | null;
+      companiesEnabled?: boolean;
+    };
     ownerId: string;
     // From getProjectDefaults, read before the transaction opens.
     mcpEnabled: boolean;
@@ -593,10 +604,13 @@ export async function insertSnapshotProject(
   },
 ): Promise<{ project: ProjectRow; maps: CopyIdMaps }> {
   const { team, input, ownerId } = options;
+  await assertCompanyAssignable(input.companyId, ownerId);
   const [row] = await tx
     .insert(project)
     .values({
       ...snapshot.flags,
+      companiesEnabled: input.companiesEnabled ?? snapshot.flags.companiesEnabled ?? true,
+      companyId: input.companyId ?? null,
       teamId: team.id,
       key: input.key,
       name: input.name,
@@ -615,12 +629,42 @@ export async function insertSnapshotProject(
     ownerId,
     sameTeam: options.sameTeam,
   });
+  let companyRow:
+    | {
+        code: string | null;
+        taxId: string;
+        name: string;
+        isBlacklisted: boolean;
+        blacklistReason: string | null;
+        ownerUserId: string | null;
+      }
+    | undefined;
+  if (row.companyId != null) {
+    [companyRow] = await tx
+      .select({
+        code: company.code,
+        taxId: company.taxId,
+        name: company.name,
+        isBlacklisted: company.isBlacklisted,
+        blacklistReason: company.blacklistReason,
+        ownerUserId: company.ownerUserId,
+      })
+      .from(company)
+      .where(eq(company.id, row.companyId));
+    if (!companyRow) throw new HttpError(400, 'Company not found');
+  }
   const created = await mapProject({
     ...row,
     teamName: team.name,
     teamSlug: team.slug,
     teamMcpEnabled: team.mcpEnabled,
     workspaceId: team.workspaceId,
+    companyCode: companyRow?.code ?? null,
+    companyTaxId: companyRow?.taxId ?? null,
+    companyName: companyRow?.name ?? null,
+    companyIsBlacklisted: companyRow?.isBlacklisted ?? null,
+    companyBlacklistReason: companyRow?.blacklistReason ?? null,
+    companyOwnerUserId: companyRow?.ownerUserId ?? null,
   });
   return { project: created, maps };
 }
@@ -635,7 +679,13 @@ export async function insertSnapshotProject(
 // service function the UI uses.
 export async function copyProject(
   sourceProjectId: number,
-  input: { key: string; name: string; description?: string },
+  input: {
+    key: string;
+    name: string;
+    description?: string;
+    companyId?: number | null;
+    companiesEnabled?: boolean;
+  },
   ownerId: string,
   teamId: number,
   rawInclude?: Record<string, boolean | undefined>,

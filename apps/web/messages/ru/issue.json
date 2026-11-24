@@ -36,7 +36,8 @@
     "groupLabels": "Метки",
     "groupCustom": "Свои поля",
     "empty": "Пусто",
-    "openInNewTab": "Открыть в новой вкладке"
+    "openInNewTab": "Открыть в новой вкладке",
+    "company": "Company"
   },
   "menu": {
     "preview": "Предпросмотр",

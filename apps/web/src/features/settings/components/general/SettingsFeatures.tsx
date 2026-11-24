@@ -18,6 +18,7 @@ const FEATURES = [
   'subtasks',
   'checklists',
   'issueStats',
+  'companies',
 ] as const satisfies (keyof ProjectFeatures)[];
 
 // The Features block of the General page. Each switch saves on its own. Only an

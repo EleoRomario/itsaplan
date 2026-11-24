@@ -1,7 +1,19 @@
-import { db, initiative, initiativeLabel, issue, label, projectColumn, user } from '@repo/db';
+import {
+  db,
+  company,
+  initiative,
+  initiativeLabel,
+  issue,
+  label,
+  project,
+  projectColumn,
+  user,
+} from '@repo/db';
 import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 import { labelNames, rowSide } from '#modules/issues/activity';
 import { getMembership } from '#modules/members/service';
+import { assertCompanyAssignable } from '#modules/companies/service';
+import type { CompanyRef } from '#modules/projects/service';
 import { HttpError, iso, num } from '#shared/lib';
 import { computeHealth, type Health } from './health';
 import { recordActivity, logInitiativeUpdate, type InitiativeSnapshot } from './activity';
@@ -20,6 +32,8 @@ export interface InitiativeProgress {
 export interface InitiativeRow {
   id: number;
   projectId: number;
+  companyId: number | null;
+  company: CompanyRef | null;
   title: string;
   description: string;
   status: string;
@@ -80,14 +94,59 @@ async function labelsFor(initiativeIds: number[]): Promise<Map<number, number[]>
   return out;
 }
 
+async function companiesFor(
+  rows: (typeof initiative.$inferSelect)[],
+): Promise<Map<number, CompanyRef>> {
+  const out = new Map<number, CompanyRef>();
+  if (rows.length === 0) return out;
+  const projectIds = [...new Set(rows.map((r) => r.projectId))];
+  const projectRows = await db
+    .select({ id: project.id, companyId: project.companyId })
+    .from(project)
+    .where(inArray(project.id, projectIds));
+  const projectCompany = new Map(projectRows.map((p) => [p.id, p.companyId]));
+  const companyIds = [
+    ...new Set(
+      rows
+        .map((r) => r.companyId ?? projectCompany.get(r.projectId) ?? null)
+        .filter((id): id is number => id != null),
+    ),
+  ];
+  if (companyIds.length === 0) return out;
+  const companies = await db
+    .select({
+      id: company.id,
+      code: company.code,
+      taxId: company.taxId,
+      name: company.name,
+      isBlacklisted: company.isBlacklisted,
+      blacklistReason: company.blacklistReason,
+      ownerUserId: company.ownerUserId,
+    })
+    .from(company)
+    .where(inArray(company.id, companyIds));
+  const byId = new Map(companies.map((c) => [c.id, c]));
+  for (const r of rows) {
+    const cid = r.companyId ?? projectCompany.get(r.projectId) ?? null;
+    if (cid != null) {
+      const ref = byId.get(cid);
+      if (ref) out.set(r.id, ref);
+    }
+  }
+  return out;
+}
+
 function mapInitiative(
   row: typeof initiative.$inferSelect,
   labelIds: number[],
   progress: InitiativeProgress,
+  companyRef: CompanyRef | null,
 ): InitiativeRow {
   return {
     id: row.id,
     projectId: row.projectId,
+    companyId: row.companyId,
+    company: companyRef,
     title: row.title,
     description: row.description,
     status: row.status,
@@ -118,6 +177,7 @@ export type InitiativeSort = 'title' | 'priority' | 'targetDate' | 'owner';
 export interface ListInitiativesOpts {
   statuses?: string[];
   search?: string;
+  companyId?: number;
   sort?: InitiativeSort;
   dir?: 'asc' | 'desc';
   limit: number;
@@ -159,6 +219,9 @@ export async function listInitiatives(
   if (opts.search && opts.search.trim()) {
     conds.push(ilike(initiative.title, `%${opts.search.trim()}%`));
   }
+  if (opts.companyId !== undefined) {
+    conds.push(eq(initiative.companyId, opts.companyId));
+  }
   const where = and(...conds);
 
   // A chosen sort orders by that column (nulls last); the default is the manual
@@ -183,10 +246,19 @@ export async function listInitiatives(
     .where(where);
 
   const ids = rows.map((r) => r.id);
-  const [counts, labels] = await Promise.all([countsFor(ids), labelsFor(ids)]);
+  const [counts, labels, companies] = await Promise.all([
+    countsFor(ids),
+    labelsFor(ids),
+    companiesFor(rows),
+  ]);
   return {
     items: rows.map((row) =>
-      mapInitiative(row, labels.get(row.id) ?? [], counts.get(row.id) ?? EMPTY_PROGRESS),
+      mapInitiative(
+        row,
+        labels.get(row.id) ?? [],
+        counts.get(row.id) ?? EMPTY_PROGRESS,
+        companies.get(row.id) ?? null,
+      ),
     ),
     total: Number(total),
   };
@@ -270,8 +342,17 @@ export async function initiativeStatusCounts(projectId: number): Promise<Initiat
 export async function getInitiative(id: number): Promise<InitiativeRow | null> {
   const rows = await db.select().from(initiative).where(eq(initiative.id, id));
   if (!rows[0]) return null;
-  const [counts, labels] = await Promise.all([countsFor([id]), labelsFor([id])]);
-  return mapInitiative(rows[0], labels.get(id) ?? [], counts.get(id) ?? EMPTY_PROGRESS);
+  const [counts, labels, companies] = await Promise.all([
+    countsFor([id]),
+    labelsFor([id]),
+    companiesFor(rows),
+  ]);
+  return mapInitiative(
+    rows[0],
+    labels.get(id) ?? [],
+    counts.get(id) ?? EMPTY_PROGRESS,
+    companies.get(id) ?? null,
+  );
 }
 
 // The project an initiative belongs to, or null if it does not exist. Used by the
@@ -288,11 +369,25 @@ export interface NewInitiativeInput {
   title: string;
   description?: string;
   status?: string;
+  companyId?: number | null;
   ownerUserId?: string | null;
   priority?: string | null;
   startDate?: string | null;
   targetDate?: string | null;
   labelIds?: number[];
+}
+
+async function assertInitiativeCompany(
+  companyId?: number | null,
+  actorUserId?: string | null,
+): Promise<void> {
+  if (companyId == null) return;
+  if (actorUserId) {
+    await assertCompanyAssignable(companyId, actorUserId);
+    return;
+  }
+  const [row] = await db.select({ id: company.id }).from(company).where(eq(company.id, companyId));
+  if (!row) throw new HttpError(400, 'Company not found');
 }
 
 async function assertInitiativeOwner(
@@ -326,11 +421,13 @@ function assertDateOrder(startDate?: string | null, targetDate?: string | null) 
 
 async function assertInitiativeReferences(
   projectId: number,
-  input: { ownerUserId?: string | null; labelIds?: number[] },
+  input: { ownerUserId?: string | null; labelIds?: number[]; companyId?: number | null },
+  actorUserId?: string | null,
 ): Promise<void> {
   await Promise.all([
     assertInitiativeOwner(projectId, input.ownerUserId),
     assertInitiativeLabels(projectId, input.labelIds),
+    assertInitiativeCompany(input.companyId, actorUserId),
   ]);
 }
 
@@ -339,7 +436,7 @@ export async function createInitiative(
   input: NewInitiativeInput,
   actorUserId?: string | null,
 ): Promise<InitiativeRow> {
-  await assertInitiativeReferences(projectId, input);
+  await assertInitiativeReferences(projectId, input, actorUserId);
   assertDateOrder(input.startDate, input.targetDate);
   const [posRow] = await db
     .select({ pos: sql<number>`COALESCE(MAX(${initiative.position}), 0) + 1000` })
@@ -349,6 +446,7 @@ export async function createInitiative(
     .insert(initiative)
     .values({
       projectId,
+      companyId: input.companyId ?? null,
       title: input.title,
       description: input.description ?? '',
       status: input.status ?? 'planned',
@@ -369,6 +467,7 @@ export interface InitiativePatch {
   title?: string;
   description?: string;
   status?: string;
+  companyId?: number | null;
   ownerUserId?: string | null;
   priority?: string | null;
   startDate?: string | null;
@@ -400,7 +499,7 @@ export async function updateInitiative(
   const beforeRows = await db.select().from(initiative).where(eq(initiative.id, id));
   const before = beforeRows[0];
   if (!before) return null;
-  await assertInitiativeReferences(before.projectId, patch);
+  await assertInitiativeReferences(before.projectId, patch, actorUserId);
   // Each date is checked against the effective other one: a patch sets one date
   // and leaves the stored value of the other in force.
   assertDateOrder(
@@ -412,6 +511,7 @@ export async function updateInitiative(
   if (patch.title !== undefined) set.title = patch.title;
   if (patch.description !== undefined) set.description = patch.description;
   if (patch.status !== undefined) set.status = patch.status;
+  if (patch.companyId !== undefined) set.companyId = patch.companyId;
   if (patch.ownerUserId !== undefined) set.ownerUserId = patch.ownerUserId;
   if (patch.priority !== undefined) set.priority = patch.priority;
   if (patch.startDate !== undefined) set.startDate = patch.startDate;

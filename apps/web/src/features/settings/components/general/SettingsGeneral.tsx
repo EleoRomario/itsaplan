@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import SettingsCard from '@/components/common/page/SettingsCard';
 import SettingsSection from '@/components/common/page/SettingsSection';
+import CompanySelect from '@/components/common/fields/CompanySelect';
 import type { GeneralForm } from '../../hooks/useGeneralForm';
 
 // The Project block of the General page. The key is shown read-only: it prefixes
@@ -40,6 +41,20 @@ export default function SettingsGeneral({ form }: { form: GeneralForm }) {
             disabled={!form.editable}
           />
         </div>
+        {form.companiesEnabled && (
+          <div className="space-y-1.5">
+            <Label>{t('company')}</Label>
+            <div>
+              <CompanySelect
+                value={form.companyId}
+                onChange={form.setCompanyId}
+                fallbackCompany={form.company}
+                readOnly={!form.editable}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">{t('companyHint')}</p>
+          </div>
+        )}
       </SettingsCard>
     </SettingsSection>
   );
