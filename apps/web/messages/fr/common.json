@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Afficher ou masquer le chat IA"
       },
+      "runs": {
+        "toggle": "Afficher ou masquer les exécutions d'agents"
+      },
       "issue": {
         "new": "Nouveau ticket"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Détails complets du ticket",
     "fullDetailsHint": "Responsables, étiquettes, champs personnalisés et activité.",
     "includeSubpages": "Inclure les sous-pages",
-    "includeSubpagesHint": "Toute personne disposant du lien peut aussi lire les pages situées sous celle-ci.",
     "includeIssues": "Afficher les tickets liés",
-    "includeIssuesHint": "Les tickets de ce projet cités dans les pages affichent leur titre et leur statut, et s’ouvrent en lecture seule : description, statut, type, priorité et dates. Sans commentaires ni personnes.",
     "throughDocuments": "Public via des documents partagés",
     "throughDocumentsHint": "Ces pages partagées citent ce ticket et affichent les tickets liés, il est donc lisible via leurs liens.",
     "overviewTitle": "Public",
@@ -217,7 +218,6 @@
     "noImages": "Aucune image jointe pour l'instant. Envoyez-en une depuis le panneau Pièces jointes, ou déposez-la directement dans l'éditeur.",
     "image": "Image",
     "linkPreview": "Link preview",
-    "openPreviewLink": "Open {name} in a new tab",
     "loadingPreview": "Loading preview…",
     "previewUnavailable": "A preview is not available. Open the link to view this page.",
     "internalPage": "ItsAPlan page",
@@ -237,7 +237,23 @@
     "editLink": "Modifier le lien",
     "retryPreview": "Réessayer",
     "copyLinkFailed": "Impossible de copier le lien. Sélectionnez et copiez l’URL ci-dessus.",
-    "todoList": "Liste de tâches"
+    "todoList": "Liste de tâches",
+    "blocks": "Blocs",
+    "mentionMembers": "Membres",
+    "mentionAgents": "Agents",
+    "link": "Lien",
+    "linkPlaceholder": "Collez ou saisissez un lien",
+    "applyLink": "Appliquer",
+    "open": "Ouvrir",
+    "heading1": "Titre 1",
+    "heading2": "Titre 2",
+    "bold": "Gras",
+    "italic": "Italique",
+    "strike": "Barré",
+    "inlineCode": "Code en ligne",
+    "quote": "Citation",
+    "bulletList": "Liste à puces",
+    "numberedList": "Liste numérotée"
   },
   "chart": {
     "download": "Enregistrer le graphique",
@@ -314,5 +330,16 @@
     "range": "{first}-{last} sur {total}"
   },
   "upgradeToPro": "Passer à Pro",
-  "signingOut": "Déconnexion…"
+  "signingOut": "Déconnexion…",
+  "slackApp": {
+    "setup": "Créez une app sur api.slack.com/apps avec le scope de bot chat:write et la Redirect URL. Installez-la dans votre espace de travail Slack, puis copiez le Client ID et le secret depuis Basic Information.",
+    "botToken": "Token du bot",
+    "botTokenHint": "Dans OAuth & Permissions. Slack le vérifie à l'enregistrement.",
+    "clientId": "Client ID",
+    "clientSecret": "Secret client",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Ajoutez-la dans Slack, sous OAuth & Permissions → Redirect URLs.",
+    "workspace": "Espace de travail Slack",
+    "workspaceHint": "L'espace de travail Slack où l'app est installée. Seuls ses comptes peuvent se connecter."
+  }
 }

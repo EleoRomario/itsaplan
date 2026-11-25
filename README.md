@@ -41,7 +41,7 @@ If It's a Plan looks useful to you, star the repo ⭐ and
 | Product management | Kanban, table, timeline, and calendar views · cycles · custom fields · dashboards · docs · notes boards · project templates · import from Linear, Trello, and Plane |
 | AI agents | Agents as project members · internal on any model, or external on your coding CLI · runs start on an @mention, an assignment, or a schedule |
 | Platform | REST API with OpenAPI · MCP server · webhooks · pull requests from 5 forges · SSO over OIDC and SCIM · passkeys and Google sign-in |
-| 13 languages | English · Українська · Русский · 简体中文 · 繁體中文 · العربية · Français · فارسی · Português (Brasil) · Bahasa Indonesia · Español · 한국어 · Türkçe |
+| 14 languages | English · Українська · Русский · 简体中文 · 繁體中文 · العربية · Français · فارسی · Português (Brasil) · Bahasa Indonesia · Español · 한국어 · Türkçe · Italiano |
 
 <details>
 <summary><b>Product management</b>: the full list</summary>
@@ -81,8 +81,8 @@ If It's a Plan looks useful to you, star the repo ⭐ and
 - A run starts on an @mention in a comment on an issue or a document, on an assignment, or on a
   schedule. A schedule starts on a timer or when an issue moves to a state
 - Tokens and cost of every run, by agent, project, and model
-- Tools for other services: Notion, Telegram, Threads, Instagram, Jina, Firecrawl, Keenable,
-  DataForSEO, Gitea, Forgejo, and GitHub
+- Tools for other services: Notion, Baserow, Telegram, Slack, Threads, Instagram, Jina,
+  Firecrawl, Keenable, DataForSEO, Gitea, Forgejo, GitHub, and GitLab
 - Images, video, music, and speech from the models on
   [Kie](https://kie.ai?ref=0b6eb19939298accdf58e18b1a92a26e): Nano Banana, Seedream, Kling,
   Veo, Suno, and others, with one API key
@@ -103,8 +103,8 @@ If It's a Plan looks useful to you, star the repo ⭐ and
 - Outgoing webhooks for the events you pick, with signed payloads, retries, and a delivery log
 - Sign-in with an email or username and a password, a passkey, Google, or your identity provider
   over OIDC. SCIM keeps accounts in sync with your directory
-- Notifications by email (SMTP, Resend, or Microsoft 365) and Telegram, with preferences for
-  each member
+- Notifications by email (SMTP, Resend, or Microsoft 365), Telegram, and Slack, with preferences
+  for each member
 - Instance administration: storage limits, the mail provider, and instance-wide settings
 
 </details>

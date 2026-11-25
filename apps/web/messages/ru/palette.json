@@ -3,6 +3,7 @@
   "noResults": "Ничего не найдено.",
   "issues": "Задачи",
   "otherProjectIssues": "Задачи в других проектах",
+  "initiatives": "Инициативы",
   "searchScope": "Область поиска",
   "scopeCurrent": "Этот проект",
   "scopeAll": "Все проекты",
@@ -12,6 +13,7 @@
   "newInitiative": "Новая инициатива",
   "newProject": "Новый проект",
   "toggleChat": "Показать или скрыть ИИ-чат",
+  "toggleRuns": "Показать или скрыть запуски агентов",
   "board": "Доска",
   "commands": "Команды",
   "switchProject": "Сменить проект"

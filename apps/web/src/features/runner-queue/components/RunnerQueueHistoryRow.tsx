@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { RunnerQueueRun } from '@/lib/api/endpoints/runnerQueue';
 import { cn } from '@/lib/utils';
@@ -7,6 +6,7 @@ import { formatRunDuration } from '@/utils/formatRunDuration';
 import { runDuration } from '../utils/runDuration';
 import { runPlace } from '../utils/runIssueKey';
 import { runTitle } from '../utils/runTitle';
+import RunnerQueueLink from './RunnerQueueLink';
 import RunnerQueueStateIcon from './RunnerQueueStateIcon';
 
 // A finished run. Inside a group its issue or schedule is named above, so the row names
@@ -30,17 +30,24 @@ export default function RunnerQueueHistoryRow({
       ? [
           `#${run.id}`,
           t(`triggers.${run.trigger}`),
+          run.initiator?.name,
           run.attempts > 1 ? t('attemptsCount', { count: run.attempts }) : null,
         ]
-      : [`@${run.username}`, runPlace(run, acrossProjects), t(`triggers.${run.trigger}`)]
+      : [
+          `@${run.username}`,
+          runPlace(run, acrossProjects),
+          t(`triggers.${run.trigger}`),
+          run.initiator?.name,
+        ]
   )
     .filter(Boolean)
     .join(' · ');
   const took = runDuration(run);
   return (
-    <Link
+    <RunnerQueueLink
+      runId={run.id}
       href={href}
-      aria-current={selected ? 'page' : undefined}
+      aria-current={selected || undefined}
       className={cn(
         'grid w-full grid-cols-[1rem_minmax(0,1fr)_auto] items-baseline gap-x-2.5 gap-y-0.5 px-4 py-2 text-start hover:bg-accent/50',
         nested && 'ps-[2.625rem]',
@@ -69,6 +76,6 @@ export default function RunnerQueueHistoryRow({
           <span className="text-muted-foreground">{took != null && formatRunDuration(took)}</span>
         )}
       </span>
-    </Link>
+    </RunnerQueueLink>
   );
 }

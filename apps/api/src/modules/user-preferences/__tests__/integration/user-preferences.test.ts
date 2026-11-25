@@ -35,11 +35,13 @@ describe('user preferences', () => {
       issueOpenMode: 'panel',
       startPage: 'work-items',
       showChatByDefault: false,
+      agentRunsView: 'full',
       issueStatsOpen: true,
       issueStatsView: 'compact',
       issueActivityView: 'flat',
       autoWatch: true,
       onboardingSeen: false,
+      showcaseSeen: false,
       lastProjectId: null,
       hotkeys: {},
     });
@@ -80,11 +82,13 @@ describe('user preferences', () => {
       issueOpenMode: 'page',
       startPage: 'inbox',
       showChatByDefault: true,
+      agentRunsView: 'compact',
       issueStatsOpen: false,
       issueStatsView: 'timeline',
       issueActivityView: 'grouped',
       autoWatch: false,
       onboardingSeen: true,
+      showcaseSeen: true,
       hotkeys: { 'issue.new': 'i' },
     });
 
@@ -99,11 +103,13 @@ describe('user preferences', () => {
       issueOpenMode: 'page',
       startPage: 'inbox',
       showChatByDefault: true,
+      agentRunsView: 'compact',
       issueStatsOpen: false,
       issueStatsView: 'timeline',
       issueActivityView: 'grouped',
       autoWatch: false,
       onboardingSeen: true,
+      showcaseSeen: true,
       lastProjectId: null,
       hotkeys: { 'issue.new': 'i' },
     });
@@ -198,6 +204,16 @@ describe('user preferences', () => {
 
     const res = await authedApi(u.cookie).account.preferences.patch({
       locale: 'de' as 'uk',
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects an unknown agent runs view', async () => {
+    const u = await signUpTestUser();
+
+    const res = await authedApi(u.cookie).account.preferences.patch({
+      agentRunsView: 'wide' as 'full',
     });
 
     expect(res.status).toBe(400);

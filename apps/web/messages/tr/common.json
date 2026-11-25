@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Yapay zekâ sohbetini göster veya gizle"
       },
+      "runs": {
+        "toggle": "Ajan çalıştırmalarını göster veya gizle"
+      },
       "issue": {
         "new": "Yeni iş"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Tüm iş ayrıntıları",
     "fullDetailsHint": "Sorumlular, etiketler, özel alanlar ve etkinlikler.",
     "includeSubpages": "Alt sayfaları dahil et",
-    "includeSubpagesHint": "Bağlantıya sahip olan herkes bu sayfanın altındaki sayfaları da okuyabilir.",
     "includeIssues": "Bağlantılı işleri göster",
-    "includeIssuesHint": "Sayfalarda adı geçen bu projenin işleri başlık ve durumlarıyla gösterilir ve salt okunur açılır: açıklama, durum, tür, öncelik ve tarihler. Yorum ve kişi bilgisi yok.",
     "throughDocuments": "Paylaşılan belgeler üzerinden herkese açık",
     "throughDocumentsHint": "Bu paylaşılan sayfalar bu işi anıyor ve bağlantılı işleri gösteriyor, bu yüzden bağlantıları üzerinden okunabilir.",
     "overviewTitle": "Herkese açık",
@@ -217,7 +218,6 @@
     "noImages": "Henüz görsel eklenmedi. Ekler panelinden bir görsel yükleyin veya doğrudan düzenleyicinin üzerine bırakın.",
     "image": "Görsel",
     "linkPreview": "Bağlantı önizlemesi",
-    "openPreviewLink": "{name} bağlantısını yeni sekmede aç",
     "loadingPreview": "Önizleme yükleniyor…",
     "previewUnavailable": "Önizleme mevcut değil. Sayfayı görüntülemek için bağlantıyı açın.",
     "internalPage": "ItsAPlan sayfası",
@@ -237,7 +237,23 @@
     "editLink": "Bağlantıyı düzenle",
     "retryPreview": "Tekrar dene",
     "copyLinkFailed": "Bağlantı kopyalanamadı. Yukarıdaki URL'yi seçip kopyalayın.",
-    "todoList": "Yapılacaklar listesi"
+    "todoList": "Yapılacaklar listesi",
+    "blocks": "Bloklar",
+    "mentionMembers": "Üyeler",
+    "mentionAgents": "Ajanlar",
+    "link": "Bağlantı",
+    "linkPlaceholder": "Bir bağlantı yapıştırın veya yazın",
+    "applyLink": "Uygula",
+    "open": "Aç",
+    "heading1": "Başlık 1",
+    "heading2": "Başlık 2",
+    "bold": "Kalın",
+    "italic": "İtalik",
+    "strike": "Üstü çizili",
+    "inlineCode": "Satır içi kod",
+    "quote": "Alıntı",
+    "bulletList": "Madde işaretli liste",
+    "numberedList": "Numaralı liste"
   },
   "chart": {
     "download": "Grafiği kaydet",
@@ -314,5 +330,16 @@
     "range": "{total} kayıttan {first}-{last} arası"
   },
   "upgradeToPro": "Pro'ya geçin",
-  "signingOut": "Oturum kapatılıyor…"
+  "signingOut": "Oturum kapatılıyor…",
+  "slackApp": {
+    "setup": "api.slack.com/apps adresinde chat:write bot scope'u ve Redirect URL ile bir uygulama oluşturun. Uygulamayı Slack çalışma alanınıza yükleyin, ardından Client ID'yi ve parolayı Basic Information'dan kopyalayın.",
+    "botToken": "Bot jetonu (token)",
+    "botTokenHint": "OAuth & Permissions altında. Slack, kaydettiğinizde jetonu doğrular.",
+    "clientId": "Client ID",
+    "clientSecret": "İstemci Parolası (Client Secret)",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Slack'te OAuth & Permissions → Redirect URLs altına ekleyin.",
+    "workspace": "Slack çalışma alanı",
+    "workspaceHint": "Uygulamanın yüklü olduğu Slack çalışma alanı. Yalnızca bu çalışma alanındaki hesaplar bağlanabilir."
+  }
 }

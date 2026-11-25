@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Показати або сховати ШІ-чат"
       },
+      "runs": {
+        "toggle": "Показати або сховати запуски агентів"
+      },
       "issue": {
         "new": "Нова задача"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Повні деталі задачі",
     "fullDetailsHint": "Виконавці, мітки, власні поля та активність.",
     "includeSubpages": "Включити підсторінки",
-    "includeSubpagesHint": "Усі, хто має посилання, зможуть читати й сторінки, вкладені в цю.",
     "includeIssues": "Показувати пов’язані задачі",
-    "includeIssuesHint": "Задачі цього проєкту, згадані на сторінках, показуються з назвою і статусом і відкриваються лише для читання: опис, статус, тип, пріоритет і дати. Без коментарів і людей.",
     "throughDocuments": "Публічна через спільні документи",
     "throughDocumentsHint": "Ці спільні сторінки згадують задачу й показують пов’язані задачі, тож її можна прочитати за їхніми посиланнями.",
     "overviewTitle": "Публічне",
@@ -217,7 +218,6 @@
     "noImages": "Зображень ще немає. Завантажте з панелі вкладень або перетягніть просто в редактор.",
     "image": "Зображення",
     "linkPreview": "Link preview",
-    "openPreviewLink": "Open {name} in a new tab",
     "loadingPreview": "Loading preview…",
     "previewUnavailable": "A preview is not available. Open the link to view this page.",
     "internalPage": "ItsAPlan page",
@@ -237,7 +237,23 @@
     "editLink": "Редагувати посилання",
     "retryPreview": "Спробувати ще раз",
     "copyLinkFailed": "Не вдалося скопіювати посилання. Виділіть і скопіюйте URL вище.",
-    "todoList": "Список завдань"
+    "todoList": "Список завдань",
+    "blocks": "Блоки",
+    "mentionMembers": "Учасники",
+    "mentionAgents": "Агенти",
+    "link": "Посилання",
+    "linkPlaceholder": "Вставте або введіть посилання",
+    "applyLink": "Застосувати",
+    "open": "Відкрити",
+    "heading1": "Заголовок 1",
+    "heading2": "Заголовок 2",
+    "bold": "Напівжирний",
+    "italic": "Курсив",
+    "strike": "Закреслений",
+    "inlineCode": "Код у рядку",
+    "quote": "Цитата",
+    "bulletList": "Маркований список",
+    "numberedList": "Нумерований список"
   },
   "chart": {
     "download": "Зберегти графік",
@@ -314,5 +330,16 @@
     "range": "{first}-{last} з {total}"
   },
   "upgradeToPro": "Перейти на Pro",
-  "signingOut": "Вихід…"
+  "signingOut": "Вихід…",
+  "slackApp": {
+    "setup": "Створіть застосунок на api.slack.com/apps з bot scope chat:write і Redirect URL. Встановіть його в робочий простір Slack, потім скопіюйте Client ID і секрет із Basic Information.",
+    "botToken": "Токен бота",
+    "botTokenHint": "У розділі OAuth & Permissions. Slack перевірить токен під час збереження.",
+    "clientId": "Client ID",
+    "clientSecret": "Секрет застосунку",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Додайте його в Slack: OAuth & Permissions → Redirect URLs.",
+    "workspace": "Робочий простір Slack",
+    "workspaceHint": "Робочий простір Slack, у який встановлено застосунок. Підключити можна лише акаунти з нього."
+  }
 }

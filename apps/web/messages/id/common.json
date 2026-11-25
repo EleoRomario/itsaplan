@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Tampilkan atau sembunyikan obrolan AI"
       },
+      "runs": {
+        "toggle": "Tampilkan atau sembunyikan eksekusi agen"
+      },
       "issue": {
         "new": "Issue baru"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Detail issue lengkap",
     "fullDetailsHint": "Penerima tugas, label, bidang khusus, dan aktivitas.",
     "includeSubpages": "Sertakan subhalaman",
-    "includeSubpagesHint": "Siapa pun yang memiliki tautan juga dapat membaca halaman di bawah halaman ini.",
     "includeIssues": "Tampilkan isu tertaut",
-    "includeIssuesHint": "Isu proyek ini yang disebut di halaman menampilkan judul dan statusnya, dan terbuka hanya-baca: deskripsi, status, tipe, prioritas, dan tanggal. Tanpa komentar dan tanpa orang.",
     "throughDocuments": "Publik melalui dokumen yang dibagikan",
     "throughDocumentsHint": "Halaman yang dibagikan ini menyebut isu ini dan menampilkan isu tertaut, jadi isu ini bisa dibaca lewat tautannya.",
     "overviewTitle": "Publik",
@@ -217,7 +218,6 @@
     "noImages": "Belum ada gambar yang dilampirkan. Unggah gambar dari panel Lampiran, atau seret langsung ke editor.",
     "image": "Gambar",
     "linkPreview": "Pratinjau tautan",
-    "openPreviewLink": "Buka {name} di tab baru",
     "loadingPreview": "Memuat pratinjau…",
     "previewUnavailable": "Pratinjau tidak tersedia. Buka tautan untuk melihat halaman ini.",
     "internalPage": "Halaman ItsAPlan",
@@ -237,7 +237,23 @@
     "editLink": "Edit tautan",
     "retryPreview": "Coba lagi",
     "copyLinkFailed": "Tautan tidak dapat disalin. Pilih dan salin URL di atas.",
-    "todoList": "Daftar tugas"
+    "todoList": "Daftar tugas",
+    "blocks": "Blok",
+    "mentionMembers": "Anggota",
+    "mentionAgents": "Agen",
+    "link": "Tautan",
+    "linkPlaceholder": "Tempel atau ketik tautan",
+    "applyLink": "Terapkan",
+    "open": "Buka",
+    "heading1": "Judul 1",
+    "heading2": "Judul 2",
+    "bold": "Tebal",
+    "italic": "Miring",
+    "strike": "Coret",
+    "inlineCode": "Kode sebaris",
+    "quote": "Kutipan",
+    "bulletList": "Daftar butir",
+    "numberedList": "Daftar bernomor"
   },
   "chart": {
     "download": "Simpan grafik",
@@ -314,5 +330,16 @@
     "range": "{first}-{last} dari {total}"
   },
   "upgradeToPro": "Upgrade ke Pro",
-  "signingOut": "Sedang keluar…"
+  "signingOut": "Sedang keluar…",
+  "slackApp": {
+    "setup": "Buat aplikasi di api.slack.com/apps dengan bot scope chat:write dan Redirect URL. Pasang aplikasi ke workspace Slack Anda, lalu salin Client ID dan rahasianya dari Basic Information.",
+    "botToken": "Token bot",
+    "botTokenHint": "Di OAuth & Permissions. Slack memeriksanya saat Anda menyimpan.",
+    "clientId": "Client ID",
+    "clientSecret": "Rahasia klien",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Tambahkan di Slack, pada OAuth & Permissions → Redirect URLs.",
+    "workspace": "Workspace Slack",
+    "workspaceHint": "Workspace Slack tempat aplikasi dipasang. Hanya akun di workspace ini yang dapat terhubung."
+  }
 }

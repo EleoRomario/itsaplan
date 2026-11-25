@@ -4,7 +4,7 @@ import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ProjectDetail } from '@/lib/api/endpoints/projects';
 import type { Initiative, InitiativePatch } from '@/lib/api/endpoints/initiatives';
-import { useUpdateInitiative } from '@/services/initiatives.service';
+import { useSetInitiativeFavorite, useUpdateInitiative } from '@/services/initiatives.service';
 import { parseDate } from '@/utils/dates';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AssigneeSelect from '@/components/common/fields/AssigneeSelect';
@@ -15,6 +15,7 @@ import PrioritySelect from '@/components/common/fields/PrioritySelect';
 import InitiativeStatusSelect from '@/components/common/fields/InitiativeStatusSelect';
 import HealthBadge from '../shared/HealthBadge';
 import HealthInfoPopover from '../shared/HealthInfoPopover';
+import InitiativeFavoriteButton from '../shared/InitiativeFavoriteButton';
 import ProgressBar from '@/components/common/ProgressBar';
 import InitiativeActions from './InitiativeActions';
 
@@ -30,6 +31,7 @@ export default function InitiativeHeader({
 }) {
   const t = useTranslations('initiatives');
   const update = useUpdateInitiative(project.project.ref);
+  const setFavorite = useSetInitiativeFavorite(project.project.ref);
   const hasDescription = initiative.description.trim().length > 0;
   // The calendars grey out days that would put one date on the wrong side of the
   // other. Equal dates are allowed.
@@ -127,6 +129,11 @@ export default function InitiativeHeader({
           <HealthBadge health={initiative.health} />
         </div>
         <ProgressBar progress={initiative.progress} />
+        <InitiativeFavoriteButton
+          favorite={initiative.favorite}
+          disabled={setFavorite.isPending}
+          onToggle={() => setFavorite.mutate({ id: initiative.id, favorite: !initiative.favorite })}
+        />
         <InitiativeActions initiative={initiative} projectKey={project.project.ref} />
       </div>
     </div>

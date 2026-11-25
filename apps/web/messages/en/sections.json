@@ -2,6 +2,7 @@
   "account": {
     "profile": "Profile",
     "preferences": "Preferences",
+    "notifications": "Notifications",
     "accounts": "Accounts",
     "security": "Security",
     "api-keys": "API keys",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "The bot people connect their Telegram account to, and the one that delivers Telegram notifications for projects that set no bot of their own."
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "Sends notifications as Slack direct messages."
     },
     "email": {
       "label": "Email provider",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "Repositories",
-      "description": "Close issues when their pull requests merge on GitHub, GitLab, Gitea, Forgejo, or Bitbucket."
+      "description": "Close issues when their pull requests merge, and sync repository issues to the board."
     },
     "import-export": {
       "label": "Import/Export",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "AI Agents",
       "description": "AI agents working in this project."
-    },
-    "queue": {
-      "label": "Agent runs",
-      "description": "Runs of the project's internal and external agents: in progress, waiting and past."
     }
   },
   "previews": {

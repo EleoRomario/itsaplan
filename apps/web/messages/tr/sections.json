@@ -2,6 +2,7 @@
   "account": {
     "profile": "Profil",
     "preferences": "Tercihler",
+    "notifications": "Bildirimler",
     "accounts": "Hesaplar",
     "security": "Güvenlik",
     "api-keys": "API anahtarları",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "Kullanıcıların Telegram hesaplarını bağladığı ve kendi botunu ayarlamayan projeler için bildirim gönderen bot."
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "Bildirimleri Slack doğrudan mesajı olarak gönderir."
     },
     "email": {
       "label": "E-posta Sağlayıcısı",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "Kod Depoları",
-      "description": "GitHub, GitLab, Gitea, Forgejo veya Bitbucket üzerinde pull request birleştiğinde işleri kapatın."
+      "description": "Pull request'leri birleştiğinde işleri kapatın ve depo işlerini panoyla eşitleyin."
     },
     "import-export": {
       "label": "İçe/Dışa Aktarma",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "Yapay Zekâ Ajanları",
       "description": "Bu projede çalışan yapay zekâ ajanları."
-    },
-    "queue": {
-      "label": "Ajan çalıştırmaları",
-      "description": "Projenin dahili ve harici ajanlarının çalıştırmaları: süren, bekleyen ve geçmiş."
     }
   },
   "previews": {

@@ -43,6 +43,21 @@ export const initiativeOptionsQuery = t.Object({
   ),
 });
 
+export const searchInitiativesQuery = t.Object({
+  q: t.String({ minLength: 1, description: 'Case-insensitive substring of the title.' }),
+  projectId: t.Optional(t.Numeric({ description: "Search only this project's initiatives." })),
+});
+
+export const InitiativeSearchHitListResponse = t.Array(
+  t.Object({
+    id: t.Number(),
+    title: t.String(),
+    projectId: t.Number(),
+    projectRef: t.String(),
+    projectKey: t.String(),
+  }),
+);
+
 export const initiativeFeedQuery = t.Object({
   limit: t.Optional(t.String({ description: '1-100. Default 25.' })),
   cursor: t.Optional(t.String({ description: 'nextCursor from the previous page.' })),
@@ -69,6 +84,7 @@ export const InitiativeResponse = t.Object({
   labelIds: t.Array(t.Number()),
   progress: t.Object({ completed: t.Number(), canceled: t.Number(), total: t.Number() }),
   health: t.Nullable(t.String()),
+  favorite: t.Boolean(),
 });
 
 export const InitiativePageResponse = pageResponse(InitiativeResponse);

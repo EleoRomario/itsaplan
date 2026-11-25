@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Показать или скрыть ИИ-чат"
       },
+      "runs": {
+        "toggle": "Показать или скрыть запуски агентов"
+      },
       "issue": {
         "new": "Новая задача"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Полные детали задачи",
     "fullDetailsHint": "Исполнители, метки, пользовательские поля и активность.",
     "includeSubpages": "Включить подстраницы",
-    "includeSubpagesHint": "Все, у кого есть ссылка, смогут читать и страницы, вложенные в эту.",
     "includeIssues": "Показывать связанные задачи",
-    "includeIssuesHint": "Задачи этого проекта, упомянутые на страницах, показываются с названием и статусом и открываются только для чтения: описание, статус, тип, приоритет и даты. Без комментариев и людей.",
     "throughDocuments": "Публична через общие документы",
     "throughDocumentsHint": "Эти общие страницы упоминают задачу и показывают связанные задачи, поэтому её можно прочитать по их ссылкам.",
     "overviewTitle": "Публичное",
@@ -217,7 +218,6 @@
     "noImages": "Изображений пока нет. Загрузите из панели вложений или перетащите прямо в редактор.",
     "image": "Изображение",
     "linkPreview": "Link preview",
-    "openPreviewLink": "Open {name} in a new tab",
     "loadingPreview": "Loading preview…",
     "previewUnavailable": "A preview is not available. Open the link to view this page.",
     "internalPage": "ItsAPlan page",
@@ -237,7 +237,23 @@
     "editLink": "Изменить ссылку",
     "retryPreview": "Повторить",
     "copyLinkFailed": "Не удалось скопировать ссылку. Выделите и скопируйте URL выше.",
-    "todoList": "Список задач"
+    "todoList": "Список задач",
+    "blocks": "Блоки",
+    "mentionMembers": "Участники",
+    "mentionAgents": "Агенты",
+    "link": "Ссылка",
+    "linkPlaceholder": "Вставьте или введите ссылку",
+    "applyLink": "Применить",
+    "open": "Открыть",
+    "heading1": "Заголовок 1",
+    "heading2": "Заголовок 2",
+    "bold": "Полужирный",
+    "italic": "Курсив",
+    "strike": "Зачёркнутый",
+    "inlineCode": "Код в строке",
+    "quote": "Цитата",
+    "bulletList": "Маркированный список",
+    "numberedList": "Нумерованный список"
   },
   "chart": {
     "download": "Сохранить график",
@@ -314,5 +330,16 @@
     "range": "{first}-{last} из {total}"
   },
   "upgradeToPro": "Перейти на Pro",
-  "signingOut": "Выход…"
+  "signingOut": "Выход…",
+  "slackApp": {
+    "setup": "Создайте приложение на api.slack.com/apps с bot scope chat:write и Redirect URL. Установите его в рабочее пространство Slack, затем скопируйте Client ID и секрет из Basic Information.",
+    "botToken": "Токен бота",
+    "botTokenHint": "В разделе OAuth & Permissions. Slack проверит токен при сохранении.",
+    "clientId": "Client ID",
+    "clientSecret": "Секрет приложения",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Добавьте его в Slack: OAuth & Permissions → Redirect URLs.",
+    "workspace": "Рабочее пространство Slack",
+    "workspaceHint": "Рабочее пространство Slack, в которое установлено приложение. Подключить можно только аккаунты из него."
+  }
 }

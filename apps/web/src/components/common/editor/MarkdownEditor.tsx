@@ -87,7 +87,9 @@ export default function MarkdownEditor({
   const router = useRouter();
   const { data: session } = useSession();
   const issueRefs = useIssueRefs();
-  const mentionCandidates = useMentionCandidates(mentions ?? null);
+  // A read-only text has no "@" menu. A public share page renders one with no session,
+  // and the list request would answer 401, which lib/api treats as an ended session.
+  const mentionCandidates = useMentionCandidates(editable ? (mentions ?? null) : null);
   const mentionCandidatesRef = useRef(mentionCandidates);
   mentionCandidatesRef.current = mentionCandidates;
   const mentionNames = useMentionNames();
@@ -190,7 +192,7 @@ export default function MarkdownEditor({
         class: 'md-content flex-1 focus:outline-none',
       },
       handleClick(view, _pos, event) {
-        return openLinkOnModifierClick(event, view.dom);
+        return openLinkOnModifierClick(event, view);
       },
       handleDOMEvents: linkKeyboardHandlers,
       // Files dropped from the OS are uploaded, then inserted at the drop
@@ -256,7 +258,12 @@ export default function MarkdownEditor({
       {/* Grows with the text rather than being pinned to the container's height,
           so a container that scrolls measures the overflow and shows a bar. */}
       <EditorContent editor={editor} className="flex min-h-full flex-col" />
-      <EditorLinkPreview editor={editor} source={defaultValue} compact={readingLinks} />
+      <EditorLinkPreview
+        editor={editor}
+        source={defaultValue}
+        compact={readingLinks}
+        editLink={editable}
+      />
       {imageAttachments && (
         <EditorImagePicker
           open={imagePickerOpen}

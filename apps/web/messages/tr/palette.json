@@ -3,6 +3,7 @@
   "noResults": "Sonuç bulunamadı.",
   "issues": "İşler",
   "otherProjectIssues": "Diğer projelerdeki işler",
+  "initiatives": "Girişimler",
   "searchScope": "Arama kapsamı",
   "scopeCurrent": "Bu proje",
   "scopeAll": "Tüm projeler",
@@ -12,6 +13,7 @@
   "newInitiative": "Yeni girişim",
   "newProject": "Yeni proje",
   "toggleChat": "Yapay zekâ sohbetini göster veya gizle",
+  "toggleRuns": "Ajan çalıştırmalarını göster veya gizle",
   "board": "Pano",
   "commands": "Komutlar",
   "switchProject": "Projeyi değiştir"

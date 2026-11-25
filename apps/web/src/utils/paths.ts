@@ -46,19 +46,18 @@ export const documentsPath = (ref: string) => `${projectPath(ref)}/docs`;
 export const documentPath = (ref: string, documentId: number) =>
   `${documentsPath(ref)}/${documentId}`;
 
+export const documentsArchivePath = (ref: string) => `${documentsPath(ref)}/archive`;
+
 export const settingsPath = (ref: string, section: string) =>
   `${projectPath(ref)}/settings/${section}`;
 
 // The AI Team destinations listed in the main sidebar (see useAiTeamSections).
 export const aiTeamPath = (ref: string, section: string) => `${projectPath(ref)}/agents/${section}`;
 
+// Opens the side panel on the project's agent runs, and on one of them at /<runId>.
 export const runnerQueuePath = (ref: string) => aiTeamPath(ref, 'queue');
 
 export const inboxPath = (ref: string) => `${projectPath(ref)}/inbox`;
-
-// The member's own notification preferences (which events, by which channel, their
-// Telegram chat id). A main-nav Configuration destination, open to any member.
-export const notificationsPath = (ref: string) => `${projectPath(ref)}/notifications`;
 
 export const aiAgentsPath = (ref: string) => `${projectPath(ref)}/agents`;
 

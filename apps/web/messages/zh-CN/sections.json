@@ -2,6 +2,7 @@
   "account": {
     "profile": "个人资料",
     "preferences": "偏好设置",
+    "notifications": "通知",
     "accounts": "关联账户",
     "security": "安全",
     "api-keys": "API 密钥",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "设置用户关联 Telegram 账户所用的机器人，以及项目未单独配置时发送通知的机器人。"
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "以 Slack 私信发送通知。"
     },
     "email": {
       "label": "邮件服务商",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "仓库",
-      "description": "当关联的拉取请求在 GitHub、GitLab、Gitea、Forgejo 或 Bitbucket 上合并时关闭工作项。"
+      "description": "在拉取请求合并时关闭对应工作项，并将仓库工作项同步到看板。"
     },
     "import-export": {
       "label": "导入/导出",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "AI 代理",
       "description": "在该项目中工作的 AI 代理。"
-    },
-    "queue": {
-      "label": "代理运行",
-      "description": "项目内部与外部代理的运行：进行中、等待中和已结束的。"
     }
   },
   "previews": {

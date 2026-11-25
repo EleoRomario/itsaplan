@@ -194,7 +194,9 @@ export async function confirmImport(
         continue;
       }
       const columnId = item.draft.columnId ?? ctx.defaultColumnId;
-      const created = await createIssue(project, { ...item.draft, columnId }, actorUserId);
+      const created = await createIssue(project, { ...item.draft, columnId }, actorUserId, {
+        skipUnavailableAssignee: true,
+      });
       result.imported.push({
         key: `${project.key}-${created.sequenceNumber}`,
         title: created.title,

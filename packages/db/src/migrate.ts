@@ -62,6 +62,23 @@ if (!locked) {
   await migrationClient`select pg_advisory_lock(${MIGRATION_LOCK_KEY})`;
 }
 
+// Reconcile pre-v1.13.0 custom migrations (0187-0189) consolidated into idempotent 0201 so
+// Drizzle applies upstream 0187-0200 and 0201 automatically on existing deployments.
+const SUPERSEDED_CUSTOM_HASHES = [
+  '1f05787ae6d496e9e39917cf1011e887909b7935e7d447e0fbb204af05141331',
+  'b603df66711cb6dc2f29b879675b0ff1d41679e2e41191598ff413e0b040cfbb',
+  '2d9699145243ce2a31a3185b1e4487b1b94c22ef840ef09aedc82c4944000b5e',
+];
+const [{ exists: hasDrizzleMigrations }] = await migrationClient<{ exists: boolean }[]>`
+  select to_regclass('drizzle.__drizzle_migrations') is not null as exists
+`;
+if (hasDrizzleMigrations) {
+  await migrationClient`
+    delete from drizzle.__drizzle_migrations
+    where hash = any(${SUPERSEDED_CUSTOM_HASHES})
+  `;
+}
+
 // A dump of the database as this release found it, so an operator who has to go back
 // to the previous release has something to restore. Taken before anything is applied,
 // and a failure stops the startup: a migration that runs without one cannot be undone.

@@ -1,7 +1,7 @@
 import { t } from 'elysia';
 
 import { pageQueryFields, pageResponse } from '#shared/pagination';
-import { agentRunTrigger, agentExecutionState, runContextTokens } from '../model';
+import { agentRunTrigger, agentExecutionState, runContextTokens, runReceivedAt } from '../model';
 
 export { agentParams, projectAgentParams } from '../model';
 
@@ -224,6 +224,7 @@ export const AgentRunResponse = t.Object({
   lastError: t.Nullable(t.String()),
   output: t.Nullable(t.String()),
   contextTokens: runContextTokens,
+  receivedAt: runReceivedAt,
   nextAttemptAt: t.String(),
   createdAt: t.String(),
 });
@@ -234,9 +235,10 @@ export const AgentRunPageResponse = t.Object({
   nextCursor: t.Nullable(t.Number()),
 });
 
-// One chat thread in the caller's history with an agent (ChatThreadSummary).
+// One chat thread in the caller's history (ChatThreadSummary).
 export const ChatThreadResponse = t.Object({
   id: t.String(),
+  agentId: t.Number(),
   title: t.Nullable(t.String()),
   cliSessionId: t.Nullable(
     t.String({
@@ -304,7 +306,7 @@ export const ProjectAgentListResponse = t.Array(
   t.Pick(AiAgentResponse, ['id', 'name', 'kind', 'model']),
 );
 
-// One page of a caller's chat threads with an agent (ChatThreadPage).
+// One page of a caller's chat threads (ChatThreadPage).
 export const ChatThreadListResponse = t.Object({
   items: t.Array(ChatThreadResponse),
   nextPage: t.Nullable(t.Number()),

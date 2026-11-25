@@ -3,6 +3,7 @@
   "noResults": "Tidak ada hasil yang ditemukan.",
   "issues": "Issue",
   "otherProjectIssues": "Issue di proyek lain",
+  "initiatives": "Inisiatif",
   "searchScope": "Cakupan pencarian",
   "scopeCurrent": "Proyek ini",
   "scopeAll": "Semua proyek",
@@ -12,6 +13,7 @@
   "newInitiative": "Inisiatif baru",
   "newProject": "Proyek baru",
   "toggleChat": "Tampilkan atau sembunyikan obrolan AI",
+  "toggleRuns": "Tampilkan atau sembunyikan eksekusi agen",
   "board": "Papan",
   "commands": "Perintah",
   "switchProject": "Ganti proyek"

@@ -2,6 +2,7 @@
   "account": {
     "profile": "پروفایل",
     "preferences": "ترجیحات",
+    "notifications": "اعلان‌ها",
     "accounts": "حساب‌ها",
     "security": "امنیت",
     "api-keys": "کلیدهای API",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "رباتی که کاربران حساب Telegram خود را به آن متصل می‌کنند، و رباتی که اعلان‌های Telegram را برای پروژه‌هایی که ربات اختصاصی ندارند ارسال می‌کند."
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "اعلان‌ها را به‌صورت پیام مستقیم Slack می‌فرستد."
     },
     "email": {
       "label": "ارائه‌دهنده ایمیل",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "مخازن",
-      "description": "بستن تسک‌ها هنگام ادغام pull request آن‌ها در GitHub، GitLab، Gitea، Forgejo یا Bitbucket."
+      "description": "تسک‌ها را هنگام ادغام پول‌ریکوئست‌هایشان ببندید و تسک‌های مخزن را با برد همگام کنید."
     },
     "import-export": {
       "label": "ورود/خروج",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "ایجنت‌های AI",
       "description": "ایجنت‌های AI که در این پروژه کار می‌کنند."
-    },
-    "queue": {
-      "label": "اجراهای ایجنت",
-      "description": "اجراهای ایجنت‌های داخلی و خارجی پروژه: در حال اجرا، در انتظار و گذشته."
     }
   },
   "previews": {

@@ -1,9 +1,8 @@
 // React Query hooks for everything the settings feature reads and writes: the
 // project's structural entities (columns, issue types, labels and label groups,
-// custom fields, issue templates), the workflow configuration, and the session
-// member's own notification preferences. Structural writes go through
-// useProjectMutation and invalidate the project detail; the settings and
-// notification writes return the stored result and put it straight into the cache.
+// custom fields, issue templates) and the workflow configuration. Structural writes go
+// through useProjectMutation and invalidate the project detail; the settings writes
+// return the stored result and put it straight into the cache.
 // This module wraps the low-level fetch client (api.ts).
 
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -38,6 +37,10 @@ import {
   listAvailableGitRepositories,
   connectGitRepositories,
   disconnectGitRepository,
+  getGitRepositoryMapping,
+  importGitRepositoryIssues,
+  updateGitRepository,
+  type RepositoryMapping,
 } from '@/lib/api/endpoints/git';
 import {
   type CreateImportJobInput,
@@ -71,19 +74,14 @@ import {
   updateLabelGroup,
   deleteLabelGroup,
 } from '@/lib/api/endpoints/labels';
-import {
-  type NotificationPreferences,
-  getNotificationPreferences,
-  setNotificationPreferences,
-} from '@/lib/api/endpoints/notificationPreferences';
 import { useInvalidateProject } from '@/services/projects.service';
 import { qk } from '@/services/queryKeys';
 
 // A mutation whose success invalidates the project detail (and dependent lists).
 // Shared by every settings write below.
-function useProjectMutation<TArgs>(
+function useProjectMutation<TArgs, TResult>(
   projectKey: string,
-  mutationFn: (args: TArgs) => Promise<unknown>,
+  mutationFn: (args: TArgs) => Promise<TResult>,
 ) {
   const invalidate = useInvalidateProject(projectKey);
   return useMutation({ mutationFn, onSuccess: () => invalidate() });
@@ -211,7 +209,8 @@ export function useUpdateEstimates(projectKey: string) {
   );
 }
 
-// Repository section: the inbound webhook connection and its pull request automations.
+// Repository section: the connected repositories, their issue sync, the inbound webhook
+// and the pull request automations.
 export function useGitSettingsQuery(projectKey: string) {
   return useQuery({
     queryKey: qk.gitSettings(projectKey),
@@ -407,23 +406,6 @@ export function useUpdateProjectFeatures(projectKey: string) {
   });
 }
 
-// The session member's own notification preferences for a project. A write returns
-// the normalized result, which replaces the cache directly.
-export function useNotificationPreferencesQuery(projectKey: string) {
-  return useQuery({
-    queryKey: qk.notificationPreferences(projectKey),
-    queryFn: () => getNotificationPreferences(projectKey),
-  });
-}
-
-export function useUpdateNotificationPreferences(projectKey: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (input: NotificationPreferences) => setNotificationPreferences(projectKey, input),
-    onSuccess: (data) => qc.setQueryData(qk.notificationPreferences(projectKey), data),
-  });
-}
-
 // Custom fields. Writes go through the project-scoped endpoint; the shared
 // invalidation also refreshes the custom-field lists the reads depend on.
 export function useCreateCustomField(projectKey: string) {
@@ -462,4 +444,40 @@ export function useUpdateIssueTemplate(projectKey: string) {
 
 export function useDeleteIssueTemplate(projectKey: string) {
   return useProjectMutation(projectKey, (id: number) => deleteIssueTemplate(projectKey, id));
+}
+
+export function useUpdateGitRepository(projectKey: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      repositoryId,
+      patch,
+    }: {
+      repositoryId: number;
+      patch: Parameters<typeof updateGitRepository>[2];
+    }) => updateGitRepository(projectKey, repositoryId, patch),
+    onSuccess: (_, { repositoryId, patch }) => {
+      const { labelMappings } = patch;
+      if (labelMappings)
+        qc.setQueryData(
+          qk.gitRepositoryMapping(projectKey, repositoryId),
+          (current: RepositoryMapping | undefined) => current && { ...current, labelMappings },
+        );
+    },
+    // Exact: the repository's labels come from its provider and have not changed.
+    onSettled: () => qc.invalidateQueries({ queryKey: qk.gitConnections(projectKey), exact: true }),
+  });
+}
+
+export function useGitRepositoryMappingQuery(projectKey: string, repositoryId: number) {
+  return useQuery({
+    queryKey: qk.gitRepositoryMapping(projectKey, repositoryId),
+    queryFn: () => getGitRepositoryMapping(projectKey, repositoryId),
+  });
+}
+
+export function useImportGitRepositoryIssues(projectKey: string, repositoryId: number) {
+  return useMutation({
+    mutationFn: (page: number) => importGitRepositoryIssues(projectKey, repositoryId, page),
+  });
 }

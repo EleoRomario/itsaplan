@@ -2,6 +2,7 @@
   "account": {
     "profile": "Profil",
     "preferences": "Préférences",
+    "notifications": "Notifications",
     "accounts": "Comptes",
     "security": "Sécurité",
     "api-keys": "Clés d'API",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "Le bot auquel les utilisateurs relient leur compte Telegram, et celui qui envoie les notifications Telegram des projets sans bot dédié."
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "Envoie les notifications en messages directs Slack."
     },
     "email": {
       "label": "Fournisseur d'e-mail",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "Dépôts",
-      "description": "Fermez les tickets quand leurs pull requests sont fusionnées sur GitHub, GitLab, Gitea, Forgejo ou Bitbucket."
+      "description": "Fermez les tickets quand leurs pull requests sont fusionnées, et synchronisez les tickets du dépôt avec le tableau."
     },
     "import-export": {
       "label": "Import/Export",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "Agents",
       "description": "Des comptes bots auxquels vous pouvez déléguer des tickets."
-    },
-    "queue": {
-      "label": "Exécutions d'agents",
-      "description": "Exécutions des agents internes et externes du projet : en cours, en attente et passées."
     }
   },
   "previews": {

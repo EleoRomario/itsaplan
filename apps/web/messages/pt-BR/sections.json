@@ -2,6 +2,7 @@
   "account": {
     "profile": "Perfil",
     "preferences": "Preferências",
+    "notifications": "Notificações",
     "accounts": "Contas",
     "security": "Segurança",
     "api-keys": "Chaves de API",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "O bot ao qual as pessoas conectam sua conta do Telegram, e o que entrega notificações do Telegram para projetos que não definem seu próprio bot."
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "Envia as notificações como mensagens diretas no Slack."
     },
     "email": {
       "label": "Provedor de e-mail",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "Repositórios",
-      "description": "Feche issues quando seus pull requests mesclam no GitHub, GitLab, Gitea, Forgejo ou Bitbucket."
+      "description": "Feche issues quando seus pull requests forem mesclados e sincronize as issues do repositório com o quadro."
     },
     "import-export": {
       "label": "Importar/Exportar",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "Agentes de IA",
       "description": "Agentes de IA trabalhando neste projeto."
-    },
-    "queue": {
-      "label": "Execuções de agentes",
-      "description": "Execuções dos agentes internos e externos do projeto: em andamento, aguardando e anteriores."
     }
   },
   "previews": {

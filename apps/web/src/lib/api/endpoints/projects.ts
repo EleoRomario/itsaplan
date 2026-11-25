@@ -62,8 +62,8 @@ export interface Project {
   isFavorite?: boolean;
   isHidden?: boolean;
   // The caller's role in this project, and whether it comes from their membership or
-  // only from their role in the workspace. Only present on the /projects list
-  // response; absent on the create/copy responses.
+  // only from their rank in the team or their role in the workspace. Only present on the
+  // /projects list response; absent on the create/copy responses.
   role?: MemberRole;
   via?: AccessVia;
 }
@@ -85,6 +85,9 @@ export interface Assignee {
   // Whether this person may read issues and can therefore receive watcher
   // notifications without leaking work-item content.
   canReadWorkItems: boolean;
+  // False for a deactivated account: still listed so existing assignments, filters,
+  // member fields and mentions keep resolving, while assignee pickers leave it out.
+  canAssign: boolean;
 }
 
 // The caller's own role in a project (owner/member). Returned with the project;
@@ -97,12 +100,12 @@ export interface ProjectViewer {
   // project's own owner; 'agent' is a bot user reading its own board, which governs
   // nothing.
   teamRole: TeamRole | 'agent' | null;
-  // 'workspace' when the caller is not a member of the project and reaches it through
-  // their role in the workspace that holds it.
+  // 'team' or 'workspace' when the caller is not a member of the project and reaches it
+  // through their rank in its team or their role in the workspace that holds it.
   via: AccessVia;
 }
 
-export type AccessVia = 'member' | 'workspace';
+export type AccessVia = 'member' | 'team' | 'workspace';
 
 // The board scaffold, returned by getProject: everything the work-items UI needs
 // except the issues themselves (those come from getBoardIssues).

@@ -13,6 +13,7 @@ export const qk = {
     ['receivedInvites', userId, email, params] as const,
   externalRunTrace: (runId: number) => ['externalRunTrace', runId] as const,
   runnerQueue: ['runnerQueue'] as const,
+  runningRuns: (projectRef: string) => ['runnerQueue', 'running', projectRef] as const,
   issueAgentRuns: (issueId: number) => ['issueAgentRuns', issueId] as const,
   issueAgentRunTrace: (issueId: number, runId: number, traceId?: string) =>
     ['issueAgentRuns', issueId, 'trace', runId, traceId ?? null] as const,
@@ -29,6 +30,7 @@ export const qk = {
   workspace: (workspaceId: number) => ['workspace', workspaceId] as const,
   workspaceDashboard: (workspaceId: number) => ['workspace', workspaceId, 'dashboard'] as const,
   workspaceManagers: (workspaceId: number) => ['workspace', workspaceId, 'managers'] as const,
+  workspaceSlack: (workspaceId: number) => ['workspace', workspaceId, 'slack'] as const,
   workspaceManagerCandidates: (workspaceId: number, search: string) =>
     ['workspace', workspaceId, 'managers', 'candidates', search] as const,
   scim: scimKey,
@@ -96,8 +98,8 @@ export const qk = {
   gitConnections: (projectKey: string) => ['gitConnections', projectKey] as const,
   gitAvailableRepositories: (projectKey: string, connectionId: number, search: string) =>
     ['gitConnections', projectKey, connectionId, 'repositories', search] as const,
-  // The member's own notification preferences for a project.
-  notificationPreferences: (projectKey: string) => ['notificationPreferences', projectKey] as const,
+  gitRepositoryMapping: (projectKey: string, repositoryId: number) =>
+    ['gitConnections', projectKey, 'mapping', repositoryId] as const,
   views: (projectKey: string) => ['views', projectKey] as const,
   actions: (projectKey: string) => ['actions', projectKey] as const,
   webhooks: (projectKey: string) => ['webhooks', projectKey] as const,
@@ -122,6 +124,11 @@ export const qk = {
   documents: (projectKey: string, q = '', archived = false) =>
     ['documents', projectKey, 'list', archived ? 'archived' : 'active', q] as const,
   documentListsForProject: (projectKey: string) => ['documents', projectKey, 'list'] as const,
+  // Under the lists, so the Docs live refresh and every page write refresh it too.
+  documentsForYou: (projectKey: string) => ['documents', projectKey, 'list', 'forYou'] as const,
+  documentAccessCandidates: (projectKey: string) =>
+    ['documents', projectKey, 'accessCandidates'] as const,
+  projectShares: (projectKey: string) => ['project-shares', projectKey] as const,
   document: (projectKey: string, documentId: number) =>
     ['documents', projectKey, 'document', documentId] as const,
   documentRevisions: (projectKey: string, documentId: number) =>
@@ -221,17 +228,14 @@ export const qk = {
     ['agentSchedules', projectKey, 'page', params] as const,
   agentScheduleRuns: (projectKey: string, scheduleId: number) =>
     ['agentSchedules', projectKey, scheduleId, 'runs'] as const,
-  // The caller's chat threads with one agent (the AI Chat history rail) and the
+  // The caller's chat threads with the agents of a project (the chat history) and the
   // transcript of one thread (restored when a thread is opened). A search is a list of
   // its own, so the unsearched list stays cached while one is typed.
-  agentThreadLists: (projectKey: string, agentId: number) =>
-    ['aiAgents', projectKey, agentId, 'threadList'] as const,
-  agentThreads: (projectKey: string, agentId: number, q = '') =>
-    ['aiAgents', projectKey, agentId, 'threadList', q] as const,
-  // The conversations starred with one agent: the group on top of the history, and what
-  // the star in the tabs bar reads its state from.
-  agentFavoriteThreads: (projectKey: string, agentId: number) =>
-    ['aiAgents', projectKey, agentId, 'favoriteThreads'] as const,
+  chatThreadLists: (projectKey: string) => ['aiAgents', projectKey, 'threadList'] as const,
+  chatThreads: (projectKey: string, q = '') => ['aiAgents', projectKey, 'threadList', q] as const,
+  // The starred ones: the group on top of the history, and what the star of the open chat
+  // reads its state from.
+  favoriteChatThreads: (projectKey: string) => ['aiAgents', projectKey, 'favoriteThreads'] as const,
   agentThreadMessages: (projectKey: string, agentId: number, threadId: string) =>
     ['aiAgents', projectKey, agentId, 'threads', threadId] as const,
   // Everything integration-scoped. A credential belongs to the team, so changing one
@@ -301,7 +305,12 @@ export const qk = {
   // The linkable initiatives behind the issue picker, narrowed by the typed search.
   initiativeOptions: (projectKey: string, params: Record<string, unknown>) =>
     ['initiatives', projectKey, 'options', params] as const,
+  // The caller's favorite initiatives in a project, listed under Initiatives in the sidebar.
+  favoriteInitiatives: (projectKey: string) => ['initiatives', projectKey, 'favorites'] as const,
   initiativeCounts: (projectKey: string) => ['initiativeCounts', projectKey] as const,
+  // Command-palette initiative search; a null projectId searches every project.
+  initiativeSearch: (q: string, projectId: number | null) =>
+    ['initiativeSearch', q, projectId] as const,
   initiative: (id: number) => ['initiative', id] as const,
   initiativeFeed: (id: number) => ['initiativeFeed', id] as const,
   // Prefix keys: issue mutations invalidate every initiative query without
@@ -338,10 +347,13 @@ export const qk = {
   passkeys: ['passkeys'] as const,
   // The OAuth applications the signed-in user authorized (account security page).
   connectedApps: ['connectedApps'] as const,
-  // The signed-in user's connected external accounts (accounts page): the linked
-  // Telegram account, and the auth providers better-auth reports.
-  telegramAccount: ['telegramAccount'] as const,
+  // The auth providers better-auth reports for the signed-in user (accounts page).
   linkedAccounts: ['linkedAccounts'] as const,
+  // The signed-in user's notification preferences in every project, and the accounts the
+  // notifications go to: Telegram, and one per Slack workspace (notifications page).
+  notificationPreferences: ['notificationPreferences'] as const,
+  telegramAccount: ['telegramAccount'] as const,
+  slackAccounts: ['slackAccounts'] as const,
   // Whether the instance sends Web Push, the browsers the signed-in user turned it on in,
   // and this browser's own subscription and permission.
   pushConfig: ['pushConfig'] as const,
@@ -363,6 +375,7 @@ export const qk = {
   instanceGoogleSettings: ['instanceGoogleSettings'] as const,
   instanceOidcSettings: ['instanceOidcSettings'] as const,
   instanceTelegramSettings: ['instanceTelegramSettings'] as const,
+  instanceSlackSettings: ['instanceSlackSettings'] as const,
   instanceProjectDefaults: ['instanceProjectDefaults'] as const,
   instanceAgentSettings: ['instanceAgentSettings'] as const,
   instanceSharingSettings: ['instanceSharingSettings'] as const,

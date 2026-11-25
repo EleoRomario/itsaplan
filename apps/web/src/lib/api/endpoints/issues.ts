@@ -1,10 +1,11 @@
 import type { CycleStatus } from '@/lib/api/endpoints/cycles';
+import type { ActionEffect } from '@/lib/api/endpoints/actions';
 import type { InitiativeStatus } from '@/lib/api/endpoints/initiatives';
 import { request } from '@/lib/api/core/client';
 import type { AgentRunTrigger } from '@/lib/api/endpoints/agents';
 import type { Checklist } from '@/lib/api/endpoints/checklists';
 import type { CustomFieldType } from '@/lib/api/endpoints/customFields';
-import type { DevelopmentLink } from '@/lib/api/endpoints/git';
+import type { DevelopmentLink, LinkedRepositoryIssue } from '@/lib/api/endpoints/git';
 
 // The subtask disposition as the delete route takes it: a query string, since a
 // DELETE carries no body.
@@ -265,6 +266,7 @@ export interface IssueWithWatchers extends IssueRelations {
   watchers: IssueWatcher[];
   checklists: Checklist[];
   development: DevelopmentLink[];
+  repositoryIssue: LinkedRepositoryIssue | null;
 }
 
 export interface NewIssueInput {
@@ -339,6 +341,12 @@ export const getIssueBySeq = (projectKey: string, seq: number, signal?: AbortSig
   });
 
 export const listIssueCycles = (id: number) => request<IssueCycleEntry[]>(`/issues/${id}/cycles`);
+
+export const applyIssueAction = (id: number, actionId: number, effect: ActionEffect) =>
+  request<Issue>(`/issues/${id}/actions/${actionId}`, {
+    method: 'POST',
+    body: JSON.stringify({ effect }),
+  });
 
 export const updateIssue = (id: number, patch: IssuePatch) =>
   request<Issue>(`/issues/${id}`, { method: 'PATCH', body: JSON.stringify(patch) });
@@ -475,6 +483,8 @@ export interface IssueAgentRun {
   contextTokens?: number;
   createdAt: string;
   startedAt: string | null;
+  // When an external agent first took the run; null for one it never received.
+  receivedAt: string | null;
   finishedAt: string | null;
   nextAttemptAt: string;
 }

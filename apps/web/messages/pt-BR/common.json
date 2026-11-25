@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Mostrar ou ocultar o chat da IA"
       },
+      "runs": {
+        "toggle": "Mostrar ou ocultar as execuções de agentes"
+      },
       "issue": {
         "new": "Nova issue"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Detalhes completos da issue",
     "fullDetailsHint": "Responsáveis, etiquetas, campos personalizados e atividade.",
     "includeSubpages": "Incluir subpáginas",
-    "includeSubpagesHint": "Quem tiver o link também pode ler as páginas abaixo desta.",
     "includeIssues": "Mostrar issues vinculadas",
-    "includeIssuesHint": "As issues deste projeto citadas nas páginas mostram título e status e abrem só para leitura: descrição, status, tipo, prioridade e datas. Sem comentários e sem pessoas.",
     "throughDocuments": "Pública por documentos compartilhados",
     "throughDocumentsHint": "Estas páginas compartilhadas citam esta issue e mostram issues vinculadas, então ela pode ser lida pelos links delas.",
     "overviewTitle": "Público",
@@ -217,7 +218,6 @@
     "noImages": "Nenhuma imagem anexada ainda. Envie uma pelo painel de Anexos, ou solte-a direto no editor.",
     "image": "Imagem",
     "linkPreview": "Link preview",
-    "openPreviewLink": "Open {name} in a new tab",
     "loadingPreview": "Loading preview…",
     "previewUnavailable": "A preview is not available. Open the link to view this page.",
     "internalPage": "ItsAPlan page",
@@ -237,7 +237,23 @@
     "editLink": "Editar link",
     "retryPreview": "Tentar novamente",
     "copyLinkFailed": "Não foi possível copiar o link. Selecione e copie a URL acima.",
-    "todoList": "Lista de tarefas"
+    "todoList": "Lista de tarefas",
+    "blocks": "Blocos",
+    "mentionMembers": "Membros",
+    "mentionAgents": "Agentes",
+    "link": "Link",
+    "linkPlaceholder": "Cole ou digite um link",
+    "applyLink": "Aplicar",
+    "open": "Abrir",
+    "heading1": "Título 1",
+    "heading2": "Título 2",
+    "bold": "Negrito",
+    "italic": "Itálico",
+    "strike": "Riscado",
+    "inlineCode": "Código em linha",
+    "quote": "Citação",
+    "bulletList": "Lista com marcadores",
+    "numberedList": "Lista numerada"
   },
   "chart": {
     "download": "Salvar gráfico",
@@ -314,5 +330,16 @@
     "range": "{first}-{last} de {total}"
   },
   "upgradeToPro": "Fazer upgrade para o Pro",
-  "signingOut": "Saindo…"
+  "signingOut": "Saindo…",
+  "slackApp": {
+    "setup": "Crie um app em api.slack.com/apps com o scope de bot chat:write e a Redirect URL. Instale-o no seu workspace do Slack e copie o Client ID e o segredo em Basic Information.",
+    "botToken": "Token do bot",
+    "botTokenHint": "Em OAuth & Permissions. O Slack verifica o token ao salvar.",
+    "clientId": "Client ID",
+    "clientSecret": "Segredo do cliente",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Adicione-a no Slack, em OAuth & Permissions → Redirect URLs.",
+    "workspace": "Workspace do Slack",
+    "workspaceHint": "O workspace do Slack em que o app está instalado. Só contas desse workspace podem se conectar."
+  }
 }

@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react';
 import { ListChecks } from 'lucide-react';
 import type { AgentTool } from '@/lib/api/endpoints/agents';
-import { grantedToolCount, groupInOrder } from '../../utils/agentForm';
+import { groupInOrder } from '@/utils/groupInOrder';
+import { grantedToolCount } from '../../utils/agentForm';
 import { AgentFormSection } from './AgentFormSection';
 import { AgentActionGroup } from './AgentActionGroup';
 import { AgentListSearch, SEARCH_THRESHOLD } from './AgentListSearch';
@@ -33,7 +34,7 @@ export default function AgentActionsSection({
 }) {
   const t = useTranslations('teams.agents');
   const [query, setQuery] = useState('');
-  const [openGroups, setOpenGroups] = useState<Partial<Record<AgentTool['group'], boolean>>>({});
+  const [openGroups, setOpenGroups] = useState<Partial<Record<string, boolean>>>({});
   const activeCount = grantedToolCount(tools, selected);
   const searching = query.trim() !== '';
 
@@ -49,8 +50,9 @@ export default function AgentActionsSection({
     .filter(({ shown }) => shown.length > 0);
 
   // The bulk toggle acts on the opt-in actions the filter leaves on screen, so it never
-  // grants an action the user is not looking at.
-  const shown = matches.filter((tool) => !tool.always);
+  // grants an action the user is not looking at. A locked one it clears, never grants.
+  const shownOptIn = matches.filter((tool) => !tool.always);
+  const shown = shownOptIn.filter((tool) => !tool.locked);
   const allShownGranted = shown.length > 0 && shown.every((tool) => selected.includes(tool.key));
 
   function toggle(keys: string[], on: boolean) {
@@ -92,7 +94,7 @@ export default function AgentActionsSection({
                 type="button"
                 onClick={() =>
                   toggle(
-                    shown.map((tool) => tool.key),
+                    (allShownGranted ? shownOptIn : shown).map((tool) => tool.key),
                     !allShownGranted,
                   )
                 }

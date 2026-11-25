@@ -3,6 +3,7 @@
   "noResults": "未找到結果。",
   "issues": "工作項目",
   "otherProjectIssues": "其他專案的工作項目",
+  "initiatives": "計畫",
   "searchScope": "搜尋範圍",
   "scopeCurrent": "目前專案",
   "scopeAll": "所有專案",
@@ -12,6 +13,7 @@
   "newInitiative": "新建計畫",
   "newProject": "新建專案",
   "toggleChat": "顯示或隱藏 AI 聊天",
+  "toggleRuns": "顯示或隱藏代理執行",
   "board": "看板",
   "commands": "命令",
   "switchProject": "切換專案"

@@ -439,8 +439,13 @@ export async function updateComment(
     const mentioned = await resolveMentionHandles(projectId, added);
     if (mentioned.agentUserIds.length > 0)
       // replyToId is dropped: an edit reaches only the agents it newly names, not
-      // the author of the comment being answered, who a create would reach.
-      await enqueueMentionRuns(projectId, { ...comment, replyToId: null }, mentioned.agentUserIds);
+      // the author of the comment being answered, who a create would reach. The one
+      // who edits names them, whoever wrote the comment.
+      await enqueueMentionRuns(
+        projectId,
+        { ...comment, replyToId: null, actorUserId },
+        mentioned.agentUserIds,
+      );
     await notifyEditedCommentMentions(projectId, comment, mentioned);
   }
   return comment;
@@ -545,6 +550,12 @@ export type ActivityActor = string | null | undefined | { system: string };
 // The user id of an actor, or null when it is a system write.
 export function actorId(actor: ActivityActor): string | null {
   return typeof actor === 'string' ? actor : null;
+}
+
+// A named system actor writes text that came from outside the team, such as a synced
+// repository issue. Like a comment with an authorName, its mentions reach nobody.
+export function isOutsideAuthor(actor: ActivityActor): boolean {
+  return actor != null && typeof actor === 'object';
 }
 
 // What a write runs on: the pool, or the transaction the caller is inside.
@@ -804,7 +815,7 @@ export async function logIssueUpdate(
       statusActivityId: idByAction.get('status') ?? null,
     });
   }
-  if (descriptionChanged) {
+  if (descriptionChanged && !isOutsideAuthor(actor)) {
     await notifyTextMentions({
       projectId: row.projectId,
       issueId: after.id,

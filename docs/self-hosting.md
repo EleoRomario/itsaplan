@@ -32,8 +32,9 @@ On a machine with [Bun](https://bun.sh), the setup script generates them instead
 write the files: it prints `.env` and `apps/web/.env` for you to copy onto the server.
 
 That starts the whole stack: Postgres, RustFS, api, worker, bot, and web. The four services
-run from the images published on each release. `VERSION` in `.env` pins one release instead
-of the newest. The `migrate` service applies migrations before the api starts, and the first account you register
+run from the images published on each release. `VERSION` in `.env` pins a release instead
+of `latest` — an exact version (`1.12.0`), a minor line (`1.12`), or a major line (`1`).
+The `migrate` service applies migrations before the api starts, and the first account you register
 becomes the instance admin.
 
 For the Pro edition, start the stack with `docker compose -f docker-compose.pro.yml up -d`.
@@ -164,7 +165,7 @@ refused token is reported as rejected credentials and is not retried.
 
 ## Push notifications
 
-Members can get their notifications as Web Push, next to email and Telegram, in each browser
+Members can get their notifications as Web Push, next to email, Telegram and Slack, in each browser
 they turn it on in: Chrome, Edge and Firefox, Safari on macOS, and Safari on iOS and iPadOS
 16.4 or later once the app is added to the Home Screen. Push needs three variables, set on the
 api and on the worker:
@@ -179,6 +180,54 @@ While any of them is unset, push is off and the app does not offer it. Generate 
 once: a new pair ends every existing subscription, and members turn push on again in each
 browser. The worker sends to the browsers' push services (Google, Mozilla, Apple), so it needs
 outbound HTTPS. [docs/dev/web-push.md](dev/web-push.md) describes the whole path.
+
+## Slack notifications
+
+A Slack app sends notifications to members as direct messages. Each member connects their Slack
+account with Sign in with Slack.
+
+Configure the app for the instance:
+
+1. At [api.slack.com/apps](https://api.slack.com/apps), select **Create New App** → **From a
+   manifest**. Select your Slack workspace and paste the manifest below. Replace
+   `https://plan.example.com` with your `APP_URL`.
+2. Install the app to the Slack workspace.
+3. Copy the **Bot User OAuth Token** (`xoxb-…`) from **OAuth & Permissions**. Copy the **Client
+   ID** and the **Client Secret** from **Basic Information**.
+4. In god mode, open **Slack**. Paste the three values, set **Enabled** and save. Slack checks the
+   token when you save.
+
+```yaml
+display_information:
+  name: It's a Plan
+features:
+  bot_user:
+    display_name: It's a Plan
+    always_online: true
+  app_home:
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: true
+oauth_config:
+  redirect_urls:
+    - https://plan.example.com/slack/connect
+  scopes:
+    bot:
+      - chat:write
+settings:
+  token_rotation_enabled: false
+```
+
+Keep token rotation off. A rotated token expires after 12 hours.
+
+If the members of a workspace use a different Slack workspace, the workspace owner creates a
+separate app with the same steps. The owner pastes its values in the workspace settings →
+**Slack**.
+
+Members connect their Slack account in their notification settings, once for each Slack
+workspace.
+
+The Slack tools of an agent use a separate credential in **Integrations**. Each tool lists the
+bot scopes that it needs.
 
 ## Single sign-on
 

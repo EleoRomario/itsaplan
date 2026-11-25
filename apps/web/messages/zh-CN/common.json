@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "显示或隐藏 AI 聊天"
       },
+      "runs": {
+        "toggle": "显示或隐藏代理运行"
+      },
       "issue": {
         "new": "新建工作项"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "完整工作项详情",
     "fullDetailsHint": "负责人、标签、自定义字段和活动记录。",
     "includeSubpages": "包含子页面",
-    "includeSubpagesHint": "拥有链接的任何人也可以阅读此页面下的页面。",
     "includeIssues": "显示关联的事项",
-    "includeIssuesHint": "页面中提到的本项目事项会显示标题和状态，并可只读打开：描述、状态、类型、优先级和日期。不含评论和人员。",
     "throughDocuments": "通过共享文档公开",
     "throughDocumentsHint": "这些共享页面提到了此事项并显示关联事项，因此可以通过它们的链接阅读。",
     "overviewTitle": "公开",
@@ -217,7 +218,6 @@
     "noImages": "暂无已附加图片。请从附件面板上传，或直接拖入编辑器。",
     "image": "图片",
     "linkPreview": "Link preview",
-    "openPreviewLink": "Open {name} in a new tab",
     "loadingPreview": "Loading preview…",
     "previewUnavailable": "A preview is not available. Open the link to view this page.",
     "internalPage": "ItsAPlan page",
@@ -237,7 +237,23 @@
     "editLink": "编辑链接",
     "retryPreview": "重试",
     "copyLinkFailed": "无法复制链接。请选择并复制上方的 URL。",
-    "todoList": "待办列表"
+    "todoList": "待办列表",
+    "blocks": "块",
+    "mentionMembers": "成员",
+    "mentionAgents": "代理",
+    "link": "链接",
+    "linkPlaceholder": "粘贴或输入链接",
+    "applyLink": "应用",
+    "open": "打开",
+    "heading1": "标题 1",
+    "heading2": "标题 2",
+    "bold": "粗体",
+    "italic": "斜体",
+    "strike": "删除线",
+    "inlineCode": "行内代码",
+    "quote": "引用",
+    "bulletList": "项目符号列表",
+    "numberedList": "编号列表"
   },
   "chart": {
     "download": "保存图表",
@@ -314,5 +330,16 @@
     "range": "第 {first}-{last} 项，共 {total} 项"
   },
   "upgradeToPro": "升级到 Pro",
-  "signingOut": "正在退出…"
+  "signingOut": "正在退出…",
+  "slackApp": {
+    "setup": "在 api.slack.com/apps 创建应用，添加机器人权限范围 chat:write 和 Redirect URL。将应用安装到你的 Slack 工作区，然后从 Basic Information 复制 Client ID 和密钥。",
+    "botToken": "机器人令牌",
+    "botTokenHint": "位于 OAuth & Permissions。保存时 Slack 会校验它。",
+    "clientId": "Client ID",
+    "clientSecret": "客户端密钥",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "在 Slack 的 OAuth & Permissions → Redirect URLs 中添加它。",
+    "workspace": "Slack 工作区",
+    "workspaceHint": "应用所安装的 Slack 工作区。只有该工作区的账号可以连接。"
+  }
 }

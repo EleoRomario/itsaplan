@@ -172,18 +172,9 @@ export function toUpdatePatch(v: AgentFormValue): AiAgentPatch {
 // How many tools the agent ends up with: the granted ones plus the read-only tools
 // that are always on.
 export function grantedToolCount(tools: AgentTool[], selected: string[]): number {
-  return selected.length + tools.filter((t) => t.always).length;
-}
-
-// Buckets a list by a key, keeping the order the keys first appear in, so a grouped
-// checklist follows the order its source list came in.
-export function groupInOrder<T, K extends string>(items: T[], key: (item: T) => K): [K, T[]][] {
-  const groups = new Map<K, T[]>();
-  for (const item of items) {
-    const group = key(item);
-    const bucket = groups.get(group);
-    if (bucket) bucket.push(item);
-    else groups.set(group, [item]);
-  }
-  return [...groups];
+  const locked = new Set(tools.filter((t) => t.locked).map((t) => t.key));
+  return (
+    selected.filter((key) => !locked.has(key)).length +
+    tools.filter((t) => t.always && !t.locked).length
+  );
 }

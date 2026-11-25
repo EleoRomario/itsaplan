@@ -2,6 +2,7 @@
   "account": {
     "profile": "Профіль",
     "preferences": "Налаштування",
+    "notifications": "Сповіщення",
     "accounts": "Акаунти",
     "security": "Безпека",
     "api-keys": "API-ключі",
@@ -56,6 +57,10 @@
     "telegram": {
       "label": "Telegram",
       "description": "Бот, до якого люди підключають свій Telegram, і бот, що доставляє Telegram-сповіщення для проєктів без власного бота."
+    },
+    "slack": {
+      "label": "Slack",
+      "description": "Надсилає сповіщення в особисті повідомлення Slack."
     },
     "email": {
       "label": "Поштовий провайдер",
@@ -125,7 +130,7 @@
     },
     "git": {
       "label": "Репозиторії",
-      "description": "Закриття задач, коли їхній pull request змержено в GitHub, GitLab, Gitea, Forgejo або Bitbucket."
+      "description": "Закривайте задачі під час мерджу їхніх pull request і синхронізуйте задачі репозиторію з дошкою."
     },
     "import-export": {
       "label": "Імпорт/Експорт",
@@ -134,10 +139,6 @@
     "ai-agents": {
       "label": "ШІ-агенти",
       "description": "ШІ-агенти, які працюють у цьому проєкті."
-    },
-    "queue": {
-      "label": "Запуски агентів",
-      "description": "Запуски внутрішніх і зовнішніх агентів проєкту: у роботі, в очікуванні та завершені."
     }
   },
   "previews": {

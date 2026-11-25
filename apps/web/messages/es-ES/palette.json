@@ -3,6 +3,7 @@
   "noResults": "No se han encontrado resultados.",
   "issues": "Tickets",
   "otherProjectIssues": "Tickets de otros proyectos",
+  "initiatives": "Iniciativas",
   "searchScope": "Ámbito de búsqueda",
   "scopeCurrent": "Este proyecto",
   "scopeAll": "Todos los proyectos",
@@ -12,6 +13,7 @@
   "newInitiative": "Nueva iniciativa",
   "newProject": "Nuevo proyecto",
   "toggleChat": "Mostrar u ocultar el chat de IA",
+  "toggleRuns": "Mostrar u ocultar las ejecuciones de agentes",
   "board": "Tablero",
   "commands": "Comandos",
   "switchProject": "Cambiar de proyecto"

@@ -62,6 +62,9 @@
       "chat": {
         "toggle": "Mostrar u ocultar el chat de IA"
       },
+      "runs": {
+        "toggle": "Mostrar u ocultar las ejecuciones de agentes"
+      },
       "issue": {
         "new": "Nuevo ticket"
       },
@@ -136,9 +139,7 @@
     "fullDetails": "Detalles completos del ticket",
     "fullDetailsHint": "Asignatarios, etiquetas, campos personalizados y actividad.",
     "includeSubpages": "Incluir subpáginas",
-    "includeSubpagesHint": "Quien tenga el enlace también puede leer las páginas que hay debajo de esta.",
     "includeIssues": "Mostrar incidencias vinculadas",
-    "includeIssuesHint": "Las incidencias de este proyecto que nombran las páginas muestran su título y estado, y se abren en modo lectura: descripción, estado, tipo, prioridad y fechas. Sin comentarios ni personas.",
     "throughDocuments": "Pública a través de documentos compartidos",
     "throughDocumentsHint": "Estas páginas compartidas nombran esta incidencia y muestran incidencias vinculadas, así que se puede leer desde sus enlaces.",
     "overviewTitle": "Público",
@@ -217,7 +218,6 @@
     "noImages": "Todavía no hay imágenes adjuntas. Sube una desde el panel de Adjuntos, o suéltala directamente en el editor.",
     "image": "Imagen",
     "linkPreview": "Vista previa del enlace",
-    "openPreviewLink": "Abrir {name} en una pestaña nueva",
     "loadingPreview": "Cargando la vista previa…",
     "previewUnavailable": "No hay una vista previa disponible. Abre el enlace para ver esta página.",
     "internalPage": "Página de ItsAPlan",
@@ -237,7 +237,23 @@
     "editLink": "Editar enlace",
     "retryPreview": "Intentar de nuevo",
     "copyLinkFailed": "No se ha podido copiar el enlace. Selecciona y copia la URL de arriba.",
-    "todoList": "Lista de tareas"
+    "todoList": "Lista de tareas",
+    "blocks": "Bloques",
+    "mentionMembers": "Miembros",
+    "mentionAgents": "Agentes",
+    "link": "Enlace",
+    "linkPlaceholder": "Pega o escribe un enlace",
+    "applyLink": "Aplicar",
+    "open": "Abrir",
+    "heading1": "Título 1",
+    "heading2": "Título 2",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "strike": "Tachada",
+    "inlineCode": "Código en línea",
+    "quote": "Cita",
+    "bulletList": "Lista con puntos",
+    "numberedList": "Lista numerada"
   },
   "chart": {
     "download": "Guardar gráfico",
@@ -314,5 +330,16 @@
     "range": "{first}-{last} de {total}"
   },
   "upgradeToPro": "Pasar a Pro",
-  "signingOut": "Cerrando sesión…"
+  "signingOut": "Cerrando sesión…",
+  "slackApp": {
+    "setup": "Crea una app en api.slack.com/apps con el scope de bot chat:write y la Redirect URL. Instálala en tu espacio de trabajo de Slack y copia el Client ID y el secreto desde Basic Information.",
+    "botToken": "Token del bot",
+    "botTokenHint": "En OAuth & Permissions. Slack lo comprueba al guardar.",
+    "clientId": "Client ID",
+    "clientSecret": "Secreto de cliente",
+    "redirectUrl": "Redirect URL",
+    "redirectUrlHint": "Añádela en Slack, en OAuth & Permissions → Redirect URLs.",
+    "workspace": "Espacio de trabajo de Slack",
+    "workspaceHint": "El espacio de trabajo de Slack donde está instalada la app. Solo pueden conectarse cuentas de ese espacio."
+  }
 }

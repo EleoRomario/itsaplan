@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import type { RunnerQueueRun } from '@/lib/api/endpoints/runnerQueue';
+import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AgentRunExternalTrace from '@/components/common/agent-runs/AgentRunExternalTrace';
 import AgentRunInternalTrace from '@/components/common/agent-runs/AgentRunInternalTrace';
 import { useRunSteps } from '../hooks/useRunSteps';
+import RunnerQueueRunFactGrid from './RunnerQueueRunFactGrid';
 import RunnerQueueRunHeader from './RunnerQueueRunHeader';
 import RunnerQueueRunNotice from './RunnerQueueRunNotice';
 import RunnerQueueRunProperties from './RunnerQueueRunProperties';
@@ -17,18 +19,23 @@ type Tab = 'result' | 'steps' | 'task';
 // it failed, and on what it was asked while it has not started.
 function firstTab(run: RunnerQueueRun): Tab {
   if (run.output && run.executionState === 'success') return 'result';
+  if (!run.canReadSteps) return run.output ? 'result' : 'task';
   if (run.executionState === 'queued' || run.executionState === 'canceled') {
     return run.attempts > 0 ? 'steps' : 'task';
   }
   return 'steps';
 }
 
+// A run on the page of `listPath`, or in the side panel without it. `withColumn` keeps its
+// properties in a column of their own, where there is room for one.
 export default function RunnerQueueRunDetail({
   run,
   listPath,
+  withColumn = listPath != null,
 }: {
   run: RunnerQueueRun;
-  listPath: string;
+  listPath?: string;
+  withColumn?: boolean;
 }) {
   const t = useTranslations('issue.agentRuns');
   const [tab, setTab] = useState(() => firstTab(run));
@@ -49,7 +56,13 @@ export default function RunnerQueueRunDetail({
     <article className="@container space-y-6">
       <RunnerQueueRunHeader run={run} listPath={listPath} />
       <RunnerQueueRunNotice run={run} onShowFailedStep={failedStep ? showFailedStep : undefined} />
-      <div className="grid items-start gap-6 @5xl:grid-cols-[minmax(0,1fr)_340px] @5xl:gap-10">
+      {!withColumn && <RunnerQueueRunFactGrid run={run} />}
+      <div
+        className={cn(
+          'grid items-start gap-6',
+          withColumn && '@5xl:grid-cols-[minmax(0,1fr)_340px] @5xl:gap-10',
+        )}
+      >
         <Tabs
           ref={panels}
           value={tab}
@@ -58,38 +71,42 @@ export default function RunnerQueueRunDetail({
         >
           <TabsList variant="line">
             <TabsTrigger value="result">{t('result')}</TabsTrigger>
-            <TabsTrigger value="steps">
-              {t('stepsTab')}
-              {toolCalls > 0 && (
-                <span className="text-xs font-normal text-muted-foreground tabular-nums">
-                  {toolCalls}
-                </span>
-              )}
-              {failedStep && (
-                <span
-                  role="img"
-                  aria-label={t('failed')}
-                  className="size-1.5 rounded-full bg-destructive"
-                />
-              )}
-            </TabsTrigger>
+            {run.canReadSteps && (
+              <TabsTrigger value="steps">
+                {t('stepsTab')}
+                {toolCalls > 0 && (
+                  <span className="text-xs font-normal text-muted-foreground tabular-nums">
+                    {toolCalls}
+                  </span>
+                )}
+                {failedStep && (
+                  <span
+                    role="img"
+                    aria-label={t('failed')}
+                    className="size-1.5 rounded-full bg-destructive"
+                  />
+                )}
+              </TabsTrigger>
+            )}
             <TabsTrigger value="task">{t('task')}</TabsTrigger>
           </TabsList>
           <TabsContent value="result">
             <RunnerQueueRunResult run={run} />
           </TabsContent>
-          <TabsContent value="steps">
-            {run.kind === 'internal' ? (
-              <AgentRunInternalTrace runId={run.id} />
-            ) : (
-              <AgentRunExternalTrace runId={run.id} />
-            )}
-          </TabsContent>
+          {run.canReadSteps && (
+            <TabsContent value="steps">
+              {run.kind === 'internal' ? (
+                <AgentRunInternalTrace runId={run.id} />
+              ) : (
+                <AgentRunExternalTrace run={run} />
+              )}
+            </TabsContent>
+          )}
           <TabsContent value="task">
             <RunnerQueueRunTask prompt={run.prompt} />
           </TabsContent>
         </Tabs>
-        <RunnerQueueRunProperties run={run} />
+        {withColumn && <RunnerQueueRunProperties run={run} listPath={listPath} />}
       </div>
     </article>
   );

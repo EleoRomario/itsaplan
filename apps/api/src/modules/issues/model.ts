@@ -1,8 +1,8 @@
 import { t } from 'elysia';
 import { MAX_SUBTASK_DEPTH } from '@repo/db';
-import { agentExecutionState } from '#modules/agents/model';
+import { agentExecutionState, runReceivedAt } from '#modules/agents/model';
 import { ActivityPayloadResponse } from '#shared/activity';
-import { DevelopmentLinkResponse } from '#modules/git/model';
+import { DevelopmentLinkResponse, LinkedRepositoryIssueResponse } from '#modules/git/model';
 import { AgentTraceDetailResponse } from '#modules/agents/core/model';
 import { instantQuery, isoDate } from '#shared/schemas';
 
@@ -39,18 +39,6 @@ export const createIssuePullRequestBody = t.Object({
   title: t.String({ minLength: 1, maxLength: 500 }),
   description: t.String({ maxLength: 50_000 }),
   draft: t.Boolean(),
-});
-
-export const DevelopmentRepositoryResponse = t.Object({
-  id: t.Number(),
-  provider: t.Union([
-    t.Literal('github'),
-    t.Literal('gitlab'),
-    t.Literal('gitea'),
-    t.Literal('forgejo'),
-  ]),
-  fullName: t.String(),
-  webUrl: t.String(),
 });
 
 export const LinkablePullRequestResponse = t.Object({
@@ -330,6 +318,7 @@ export const IssueWithFieldsResponse = t.Composite([
     }),
     checklists: t.Array(ChecklistResponse),
     development: t.Array(DevelopmentLinkResponse),
+    repositoryIssue: t.Nullable(LinkedRepositoryIssueResponse),
   }),
 ]);
 
@@ -352,6 +341,7 @@ export const IssueSearchHitResponse = t.Object({
   identifier: t.String(),
   title: t.String(),
   columnId: t.Number(),
+  position: t.Number(),
   typeId: t.Nullable(t.Number()),
   initiativeId: t.Nullable(t.Number()),
   cycleId: t.Nullable(t.Number()),
@@ -505,7 +495,9 @@ export const createIssueBody = t.Object({
   assigneeUserId: t.Optional(
     t.Nullable(
       t.String({
-        description: "User id from get_project.assignees with kind 'member'.",
+        description:
+          "User id from get_project.assignees with kind 'member' and active true. " +
+          'A deactivated account (active false) is refused as a new assignee.',
       }),
     ),
   ),
@@ -622,6 +614,27 @@ export const listIssuesQuery = t.Object({
     }),
   ),
   includeArchived: t.Optional(t.String({ description: "'true' includes archived issues." })),
+  sort: t.Optional(
+    t.Union(
+      [
+        t.Literal('position'),
+        t.Literal('updated'),
+        t.Literal('created'),
+        t.Literal('dueDate'),
+        t.Literal('priority'),
+      ],
+      {
+        description:
+          'position gives the same sequence as the board. With priority, asc shows urgent ' +
+          'first. Omit for the most recently updated first.',
+      },
+    ),
+  ),
+  dir: t.Optional(
+    t.Union([t.Literal('asc'), t.Literal('desc')], {
+      description: 'Default asc. Issues without a value are last in both directions.',
+    }),
+  ),
   limit: t.Optional(t.Numeric({ description: '1-500. Default 50.' })),
 });
 
@@ -637,6 +650,8 @@ export const listAllIssuesQuery = t.Composite([
     'updatedFrom',
     'updatedTo',
     'includeArchived',
+    'sort',
+    'dir',
     'limit',
   ]),
   t.Object({
@@ -842,6 +857,7 @@ export const IssueAgentRunPageResponse = t.Object({
       contextTokens: t.Optional(t.Number()),
       createdAt: t.String(),
       startedAt: t.Nullable(t.String()),
+      receivedAt: runReceivedAt,
       finishedAt: t.Nullable(t.String()),
       nextAttemptAt: t.String(),
     }),

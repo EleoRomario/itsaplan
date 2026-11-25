@@ -3,6 +3,7 @@
   "noResults": "No results found.",
   "issues": "Issues",
   "otherProjectIssues": "Issues in other projects",
+  "initiatives": "Initiatives",
   "searchScope": "Search scope",
   "scopeCurrent": "This project",
   "scopeAll": "All projects",
@@ -12,6 +13,7 @@
   "newInitiative": "New initiative",
   "newProject": "New project",
   "toggleChat": "Show or hide the AI chat",
+  "toggleRuns": "Show or hide the agent runs",
   "board": "Board",
   "commands": "Commands",
   "switchProject": "Switch project"
